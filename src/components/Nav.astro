@@ -1,0 +1,56 @@
+---
+const isHome = Astro.url.pathname === '/';
+
+const links = [
+  { href: '/posts', label: '文章' },
+  { href: '/projects', label: '项目' },
+  { href: '/docs', label: '文档' },
+  { href: '/about', label: '关于' },
+];
+---
+
+<header class="sticky top-0 z-50 backdrop-blur border-b" style="background: color-mix(in srgb, var(--color-bg) 85%, transparent); border-color: var(--color-border);">
+  <nav class="max-w-5xl mx-auto flex items-center justify-between px-4 h-14">
+    <a
+      href="/"
+      class="text-lg font-bold tracking-tight hover:opacity-80 transition-opacity"
+      style="color: var(--color-text);"
+    >
+      🦅 EagleCoder
+    </a>
+
+    <div class="flex items-center gap-6">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="text-sm font-medium transition-colors hover:opacity-80 hidden sm:block"
+          style={{
+            color: Astro.url.pathname.startsWith(link.href) ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+          }}
+        >
+          {link.label}
+        </a>
+      ))}
+
+      <!-- 主题切换按钮 -->
+      <button
+        id="theme-toggle"
+        class="p-1.5 rounded-md transition-colors cursor-pointer"
+        style="background: var(--color-bg-secondary);"
+        aria-label="切换暗色模式"
+      >
+        <span id="theme-icon-sun" class="hidden dark:block text-sm">☀️</span>
+        <span id="theme-icon-moon" class="block dark:hidden text-sm">🌙</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const btn = document.getElementById('theme-toggle')!;
+  btn.addEventListener('click', () => {
+    const html = document.documentElement;
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+  });
+</script>

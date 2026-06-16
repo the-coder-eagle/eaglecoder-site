@@ -1,6 +1,10 @@
 # build output
 dist/
 
+# deploy keys
+deploy_key
+deploy_key.pub
+
 # generated types
 .astro/
 

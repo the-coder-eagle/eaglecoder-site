@@ -1,0 +1,57 @@
+---
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allDocs = await getCollection('docs');
+// 按分类分组
+const categories = new Map<string, typeof allDocs>();
+allDocs
+  .sort((a, b) => a.data.order - b.data.order)
+  .forEach((doc) => {
+    const cat = doc.data.category;
+    if (!categories.has(cat)) categories.set(cat, []);
+    categories.get(cat)!.push(doc);
+  });
+---
+
+<Layout title="文档" description="EagleCoder 的文档存档">
+  <Nav />
+
+  <div class="max-w-5xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-2">文档</h1>
+    <p class="mb-8" style="color: var(--color-text-secondary);">学习笔记、参考手册、工具速查，随用随取。</p>
+
+    {allDocs.length === 0 ? (
+      <div class="text-center py-20">
+        <p class="text-lg mb-2">📝 还没有文档</p>
+        <p class="text-sm" style="color: var(--color-text-secondary);">开始整理你的第一条笔记吧。</p>
+      </div>
+    ) : (
+      <div class="space-y-8">
+        {[...categories.entries()].map(([category, docs]) => (
+          <section>
+            <h2 class="text-xl font-semibold mb-3 px-2">{category}</h2>
+            <div class="grid gap-3">
+              {docs.map((doc) => (
+                <a
+                  href={`/docs/${doc.slug}`}
+                  class="block p-4 rounded-lg border transition-all hover:shadow-md"
+                  style="border-color: var(--color-border); background: var(--color-bg-secondary);"
+                >
+                  <h3 class="font-medium">{doc.data.title}</h3>
+                  {doc.data.description && (
+                    <p class="text-sm mt-1" style="color: var(--color-text-secondary);">{doc.data.description}</p>
+                  )}
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <Footer />
+</Layout>

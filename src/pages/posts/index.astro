@@ -1,0 +1,94 @@
+---
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts');
+const posts = allPosts
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+// 收集所有标签
+const tagCounts = new Map<string, number>();
+posts.forEach((p) => {
+  p.data.tags?.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1));
+});
+
+// 获取当前 URL 的标签过滤参数
+const selectedTag = Astro.url.searchParams.get('tag');
+const filteredPosts = selectedTag
+  ? posts.filter((p) => p.data.tags?.includes(selectedTag))
+  : posts;
+---
+
+<Layout title="文章" description="EagleCoder 的技术文章">
+  <Nav />
+
+  <div class="max-w-5xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-2">文章</h1>
+    <p class="mb-8" style="color: var(--color-text-secondary);">记录学习经验和技术分享。</p>
+
+    <!-- 标签过滤 -->
+    {tagCounts.size > 0 && (
+      <div class="flex flex-wrap gap-2 mb-8">
+        <a
+          href="/posts"
+          class="text-xs px-2.5 py-1 rounded-full border transition-colors"
+          style={{
+            background: !selectedTag ? 'var(--color-primary)' : 'transparent',
+            color: !selectedTag ? 'white' : 'var(--color-text-secondary)',
+            borderColor: !selectedTag ? 'var(--color-primary)' : 'var(--color-border)',
+          }}
+        >
+          全部 ({posts.length})
+        </a>
+        {[...tagCounts.entries()].sort((a, b) => b[1] - a[1]).map(([tag, count]) => (
+          <a
+            href={`/posts?tag=${encodeURIComponent(tag)}`}
+            class="text-xs px-2.5 py-1 rounded-full border transition-colors"
+            style={{
+              background: selectedTag === tag ? 'var(--color-primary)' : 'transparent',
+              color: selectedTag === tag ? 'white' : 'var(--color-text-secondary)',
+              borderColor: selectedTag === tag ? 'var(--color-primary)' : 'var(--color-border)',
+            }}
+          >
+            {tag} ({count})
+          </a>
+        ))}
+      </div>
+    )}
+
+    {filteredPosts.length === 0 ? (
+      <p style="color: var(--color-text-secondary);">这个分类下还没有文章。</p>
+    ) : (
+      <div class="grid gap-4">
+        {filteredPosts.map((post) => (
+          <a
+            href={`/posts/${post.slug}`}
+            class="block p-5 rounded-lg border transition-all hover:shadow-md fade-in"
+            style="border-color: var(--color-border); background: var(--color-bg-secondary);"
+          >
+            <div class="flex items-baseline gap-3 mb-1 flex-wrap">
+              <time class="text-xs font-mono" style="color: var(--color-text-secondary);">
+                {post.data.publishedAt.toISOString().slice(0, 10)}
+              </time>
+              {post.data.tags?.map((tag) => (
+                <span
+                  class="text-xs px-2 py-0.5 rounded-full"
+                  style="background: var(--color-bg); color: var(--color-primary);"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <h2 class="font-semibold text-lg">{post.data.title}</h2>
+            <p class="text-sm mt-1" style="color: var(--color-text-secondary);">{post.data.description}</p>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <Footer />
+</Layout>

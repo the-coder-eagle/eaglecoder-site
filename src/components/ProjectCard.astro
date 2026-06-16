@@ -1,0 +1,46 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  tech?: string[];
+  github?: string;
+  demo?: string;
+  image?: string;
+}
+
+const { title, description, tech = [], github, demo, image } = Astro.props;
+---
+
+<div class="rounded-lg border p-5 transition-all hover:shadow-md fade-in" style="border-color: var(--color-border); background: var(--color-bg-secondary);">
+  {image && (
+    <img src={image} alt={title} class="w-full h-40 object-cover rounded-md mb-4" loading="lazy" />
+  )}
+  <h3 class="font-semibold text-lg mb-2">{title}</h3>
+  <p class="text-sm mb-3" style="color: var(--color-text-secondary);">{description}</p>
+
+  {tech.length > 0 && (
+    <div class="flex flex-wrap gap-1.5 mb-3">
+      {tech.map((t) => (
+        <span
+          class="text-xs px-2 py-0.5 rounded-full font-medium"
+          style="background: var(--color-bg); color: var(--color-primary);"
+        >
+          {t}
+        </span>
+      ))}
+    </div>
+  )}
+
+  <div class="flex gap-3 text-sm mt-auto">
+    {github && (
+      <a href={github} target="_blank" rel="noopener" class="hover:underline" style="color: var(--color-primary);">
+        GitHub →
+      </a>
+    )}
+    {demo && (
+      <a href={demo} target="_blank" rel="noopener" class="hover:underline" style="color: var(--color-primary);">
+        在线演示 →
+      </a>
+    )}
+  </div>
+</div>

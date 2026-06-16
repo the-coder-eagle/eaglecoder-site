@@ -1,23 +1,49 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+export interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  type?: 'article' | 'website';
+}
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+const {
+  title,
+  description = 'EagleCoder — 个人技术博客，记录学习与成长',
+  ogImage = '/og-default.png',
+  type = 'website',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO -->
+    <title>{title} | EagleCoder</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={`${title} | EagleCoder`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 防止 FOUC（暗色模式闪烁） -->
+    <script is:inline>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col font-sans antialiased">
+    <slot />
+  </body>
+</html>

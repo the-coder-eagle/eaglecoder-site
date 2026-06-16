@@ -1,0 +1,58 @@
+---
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Giscus from '../../components/Giscus.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts
+    .filter((p) => !p.data.draft)
+    .map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title} description={post.data.description} type="article">
+  <Nav />
+
+  <article class="max-w-5xl mx-auto px-4 py-12">
+    <header class="mb-10 fade-in">
+      <div class="flex items-center gap-3 mb-4 text-sm" style="color: var(--color-text-secondary);">
+        <time class="font-mono">{post.data.publishedAt.toISOString().slice(0, 10)}</time>
+        {post.data.updatedAt && (
+          <span class="font-mono">· 更新于 {post.data.updatedAt.toISOString().slice(0, 10)}</span>
+        )}
+        {post.data.readingTime && <span>· 阅读约 {post.data.readingTime} 分钟</span>}
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">{post.data.title}</h1>
+      <p class="text-lg" style="color: var(--color-text-secondary);">{post.data.description}</p>
+
+      {post.data.tags && post.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          {post.data.tags.map((tag) => (
+            <a
+              href={`/posts?tag=${encodeURIComponent(tag)}`}
+              class="text-xs px-2.5 py-1 rounded-full border transition-colors hover:opacity-80"
+              style="border-color: var(--color-border); color: var(--color-primary);"
+            >
+              {tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="prose max-w-none fade-in">
+      <Content />
+    </div>
+
+    <Giscus term="pathname" />
+  </article>
+
+  <Footer />
+</Layout>

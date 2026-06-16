@@ -1,0 +1,40 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="关于" description="关于 EagleCoder">
+  <Nav />
+
+  <div class="max-w-3xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-6">关于我</h1>
+
+    <div class="prose">
+      <p>
+        你好，我是 <strong>EagleCoder</strong>，软件工程大一学生。
+      </p>
+
+      <h2>这个网站</h2>
+      <ul>
+        <li>📝 <strong>文章</strong> — 记录学习过程中的思考和总结</li>
+        <li>🚀 <strong>项目</strong> — 展示我做的小项目，每个都是成长的脚印</li>
+        <li>📚 <strong>文档</strong> — 学习笔记和参考资料的存档</li>
+      </ul>
+
+      <h2>技术栈</h2>
+      <p>
+        这个网站本身也是我的学习项目之一，使用 <strong>Astro</strong> 构建，部署在腾讯云香港服务器上。
+        源码托管在 GitHub，通过 GitHub Actions 自动部署。
+      </p>
+
+      <h2>联系我</h2>
+      <p>
+        欢迎通过 <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> 找到我。
+        这个网站还在不断完善中 🚧
+      </p>
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
