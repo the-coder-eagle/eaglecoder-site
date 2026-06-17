@@ -19,6 +19,7 @@ const links = [
       🦅 EagleCoder
     </a>
 
+    <!-- 桌面端导航链接 -->
     <div class="flex items-center gap-6">
       {links.map((link) => (
         <a
@@ -32,6 +33,17 @@ const links = [
         </a>
       ))}
 
+      <!-- 汉堡按钮 — 仅手机端可见 -->
+      <button
+        id="menu-toggle"
+        class="sm:hidden p-1.5 rounded-md transition-colors cursor-pointer"
+        style="background: var(--color-bg-secondary);"
+        aria-label="打开菜单"
+      >
+        <span id="menu-icon-open" class="text-sm">☰</span>
+        <span id="menu-icon-close" class="text-sm" style="display:none;">✕</span>
+      </button>
+
       <!-- 主题切换按钮 -->
       <button
         id="theme-toggle"
@@ -44,9 +56,60 @@ const links = [
       </button>
     </div>
   </nav>
+
+  <!-- 手机端下拉菜单 -->
+  <div
+    id="mobile-menu"
+    class="sm:hidden border-t"
+    style="display:none; border-color: var(--color-border); background: var(--color-bg);"
+  >
+    <div class="px-4 py-3 flex flex-col gap-1">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="mobile-menu-link text-sm font-medium py-2 px-3 rounded-md transition-colors"
+          style={{
+            color: Astro.url.pathname.startsWith(link.href) ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+            background: Astro.url.pathname.startsWith(link.href) ? 'var(--color-bg-secondary)' : 'transparent',
+          }}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
 </header>
 
 <script>
+  function setupMenu() {
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('menu-icon-open');
+    const iconClose = document.getElementById('menu-icon-close');
+    const links = menu?.querySelectorAll('.mobile-menu-link');
+
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener('click', () => {
+      const isOpen = menu.style.display !== 'none';
+      menu.style.display = isOpen ? 'none' : 'block';
+      if (iconOpen) iconOpen.style.display = isOpen ? 'inline' : 'none';
+      if (iconClose) iconClose.style.display = isOpen ? 'none' : 'inline';
+    });
+
+    // 点击菜单链接后自动关闭
+    links?.forEach((link) => {
+      link.addEventListener('click', () => {
+        menu.style.display = 'none';
+        if (iconOpen) iconOpen.style.display = 'inline';
+        if (iconClose) iconClose.style.display = 'none';
+      });
+    });
+  }
+
+  setupMenu();
+
+  // 主题切换
   const btn = document.getElementById('theme-toggle')!;
   btn.addEventListener('click', () => {
     const html = document.documentElement;

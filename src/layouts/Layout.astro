@@ -1,4 +1,7 @@
 ---
+import '../styles/global.css';
+import { easyQuestions, hardQuestions } from '../assets/gate-questions';
+
 export interface Props {
   title: string;
   description?: string;
@@ -12,6 +15,9 @@ const {
   ogImage = '/og-default.png',
   type = 'website',
 } = Astro.props;
+
+const easyJson = JSON.stringify(easyQuestions);
+const hardJson = JSON.stringify(hardQuestions);
 ---
 
 <!doctype html>
@@ -42,8 +48,284 @@ const {
         }
       })();
     </script>
+
+    <style is:inline>
+      /* 进站门样式 — inline 确保在 CSS 加载前就生效 */
+      #gate-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-bg, #fff);
+        transition: opacity 0.3s;
+      }
+      html.dark #gate-overlay {
+        background: var(--color-bg, #0f172a);
+      }
+    </style>
   </head>
-  <body class="min-h-screen flex flex-col font-sans antialiased">
+  <body class="min-h-screen flex flex-col antialiased">
+    <!-- ====== 进站验证遮罩 ====== -->
+    <div id="gate-overlay">
+      <div style="max-width: 420px; width: 90%; text-align: center; padding: 40px 24px;">
+        <div style="font-size: 48px; margin-bottom: 12px;">🛡️</div>
+        <h2 id="gate-title" style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--color-text);">
+          身份验证
+        </h2>
+        <p id="gate-subtitle" style="font-size: 14px; margin-bottom: 24px; color: var(--color-text-secondary);">
+          答对题目即可进入，验证你是谁
+        </p>
+
+        <!-- 题目区 -->
+        <div id="gate-question-box"
+          style="background: var(--color-bg-secondary); border-radius: 10px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--color-border);">
+          <p id="gate-question" style="font-size: 15px; font-weight: 500; color: var(--color-text); line-height: 1.6;"></p>
+        </div>
+
+        <!-- 输入 -->
+        <input
+          id="gate-answer"
+          type="text"
+          placeholder="输入你的答案"
+          autocomplete="off"
+          style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--color-border); font-size: 15px; margin-bottom: 12px; background: var(--color-bg); color: var(--color-text); box-sizing: border-box;"
+        />
+
+        <!-- 反馈 -->
+        <p id="gate-feedback" style="font-size: 13px; min-height: 20px; margin-bottom: 8px;"></p>
+
+        <!-- 按钮行 -->
+        <div style="display: flex; gap: 8px;">
+          <button id="gate-submit"
+            style="flex: 1; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; background: var(--color-primary); color: white; transition: opacity 0.2s;">
+            提交
+          </button>
+          <button id="gate-skip"
+            style="padding: 12px 16px; border-radius: 8px; font-size: 14px; border: 1px solid var(--color-border); cursor: pointer; background: transparent; color: var(--color-text-secondary); white-space: nowrap; display: none;">
+            换一题 →
+          </button>
+        </div>
+
+        <!-- 剩余次数 -->
+        <p id="gate-attempts" style="font-size: 12px; margin-top: 12px; color: var(--color-text-secondary);">
+          剩余尝试次数：3
+        </p>
+      </div>
+    </div>
+
     <slot />
   </body>
 </html>
+
+<script define:vars={{ easyJson, hardJson }}>
+  (function() {
+    var EASY = JSON.parse(easyJson);
+    var HARD = JSON.parse(hardJson);
+
+    var STORAGE_PASSED = 'gate-passed';
+    var STORAGE_LOCK = 'gate-locked-until';
+    var STORAGE_ATTEMPTS = 'gate-attempts';
+    var MAX_ATTEMPTS = 3;
+    var LOCK_MINUTES = 10;
+
+    var overlay = document.getElementById('gate-overlay');
+    var questionEl = document.getElementById('gate-question');
+    var answerInput = document.getElementById('gate-answer');
+    var submitBtn = document.getElementById('gate-submit');
+    var skipBtn = document.getElementById('gate-skip');
+    var feedbackEl = document.getElementById('gate-feedback');
+    var attemptsEl = document.getElementById('gate-attempts');
+    var titleEl = document.getElementById('gate-title');
+    var subtitleEl = document.getElementById('gate-subtitle');
+
+    function hasPassed() {
+      return sessionStorage.getItem(STORAGE_PASSED) === 'true';
+    }
+
+    function getLockUntil() {
+      return parseInt(localStorage.getItem(STORAGE_LOCK) || '0', 10);
+    }
+
+    function setLock(durationMs) {
+      localStorage.setItem(STORAGE_LOCK, String(Date.now() + durationMs));
+    }
+
+    function getAttempts() {
+      return parseInt(sessionStorage.getItem(STORAGE_ATTEMPTS) || '0', 10);
+    }
+
+    function incAttempts() {
+      var n = getAttempts() + 1;
+      sessionStorage.setItem(STORAGE_ATTEMPTS, String(n));
+      return n;
+    }
+
+    // 根据已错次数选题池：错 0-1 次用 easy，错 2 次（最后一次）用 hard
+    function getPool() {
+      return getAttempts() >= 2 ? HARD : EASY;
+    }
+
+    function pickQuestion() {
+      var pool = getPool();
+      var idx = Math.floor(Math.random() * pool.length);
+      return pool[idx];
+    }
+
+    var currentQuestion = pickQuestion();
+
+    function showQuestion() {
+      questionEl.textContent = currentQuestion.q;
+      answerInput.value = '';
+      answerInput.focus();
+      feedbackEl.textContent = '';
+      feedbackEl.style.color = '';
+      skipBtn.style.display = 'none';
+
+      // 最后一次机会换提示
+      if (getAttempts() >= 2) {
+        subtitleEl.textContent = '既然不了解，那就拿实力说话罢';
+        subtitleEl.style.color = '#f59e0b';
+      }
+    }
+
+    function renderLocked() {
+      var lockUntil = getLockUntil();
+      overlay.style.display = 'flex';
+      titleEl.textContent = '🔒 已锁定';
+      subtitleEl.textContent = '尝试次数过多，请 ' + LOCK_MINUTES + ' 分钟后再来';
+      questionEl.textContent = '';
+      answerInput.style.display = 'none';
+      submitBtn.style.display = 'none';
+      skipBtn.style.display = 'none';
+      attemptsEl.textContent = '';
+
+      feedbackEl.textContent = '';
+      var timer = setInterval(function() {
+        var remaining = Math.max(0, Math.ceil((lockUntil - Date.now()) / 1000));
+        if (remaining <= 0) {
+          clearInterval(timer);
+          localStorage.removeItem(STORAGE_LOCK);
+          sessionStorage.removeItem(STORAGE_ATTEMPTS);
+          renderNormal();
+          return;
+        }
+        var m = Math.floor(remaining / 60);
+        var s = remaining % 60;
+        feedbackEl.textContent = '剩余等待时间：' + m + ' 分 ' + (s < 10 ? '0' : '') + s + ' 秒';
+        feedbackEl.style.color = 'var(--color-text-secondary)';
+      }, 1000);
+    }
+
+    function renderNormal() {
+      overlay.style.display = 'flex';
+      titleEl.textContent = '🛡️ 身份验证';
+
+      // 根据剩余次数显示不同提示
+      var left = MAX_ATTEMPTS - getAttempts();
+      if (left <= 1) {
+        subtitleEl.textContent = '既然不了解，那就拿实力说话罢';
+        subtitleEl.style.color = '#f59e0b';
+      } else {
+        subtitleEl.textContent = '答对题目即可进入';
+        subtitleEl.style.color = '';
+      }
+      answerInput.style.display = '';
+      submitBtn.style.display = '';
+      attemptsEl.style.display = '';
+      attemptsEl.textContent = '剩余尝试次数：' + left;
+      attemptsEl.style.color = left <= 1 ? '#ef4444' : 'var(--color-text-secondary)';
+      showQuestion();
+    }
+
+    function renderPassed() {
+      overlay.style.display = 'none';
+    }
+
+    function checkAnswer() {
+      var input = answerInput.value.trim();
+      var correct = currentQuestion.a.trim();
+
+      if (!input) {
+        feedbackEl.textContent = '请输入答案';
+        feedbackEl.style.color = '#f59e0b';
+        return;
+      }
+
+      // 支持 | 分隔的多答案（如 "安徽|安徽省"）
+      var answers = correct.split('|');
+      var matched = answers.some(function(a) {
+        return input.toLowerCase() === a.trim().toLowerCase();
+      });
+
+      if (matched) {
+        sessionStorage.setItem(STORAGE_PASSED, 'true');
+        sessionStorage.removeItem(STORAGE_ATTEMPTS);
+        feedbackEl.textContent = '✅ 答对了！欢迎进入 🎉';
+        feedbackEl.style.color = '#22c55e';
+        setTimeout(function() {
+          overlay.style.opacity = '0';
+          setTimeout(function() { renderPassed(); }, 300);
+        }, 600);
+      } else {
+        var used = incAttempts();
+        var left = MAX_ATTEMPTS - used;
+
+        if (left <= 0) {
+          feedbackEl.textContent = '❌ 3 次机会已用完，' + LOCK_MINUTES + ' 分钟内不可尝试';
+          feedbackEl.style.color = '#ef4444';
+          setLock(LOCK_MINUTES * 60 * 1000);
+          setTimeout(function() { renderLocked(); }, 800);
+        } else {
+          feedbackEl.textContent = '❌ 不对哦，还剩 ' + left + ' 次机会。可以换一题试试';
+          feedbackEl.style.color = '#ef4444';
+          skipBtn.style.display = '';
+          attemptsEl.textContent = '剩余尝试次数：' + left;
+          attemptsEl.style.color = left <= 1 ? '#ef4444' : 'var(--color-text-secondary)';
+          answerInput.value = '';
+          answerInput.focus();
+        }
+      }
+    }
+
+    function skipQuestion() {
+      var next;
+      var pool = getPool();
+      do {
+        next = pickQuestion();
+      } while (pool.length > 1 && next.q === currentQuestion.q);
+      currentQuestion = next;
+      showQuestion();
+      answerInput.focus();
+    }
+
+    submitBtn.addEventListener('click', checkAnswer);
+    skipBtn.addEventListener('click', skipQuestion);
+    answerInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkAnswer();
+    });
+
+    function init() {
+      if (hasPassed()) {
+        renderPassed();
+        return;
+      }
+
+      var lockUntil = getLockUntil();
+      if (lockUntil > Date.now()) {
+        renderLocked();
+        return;
+      }
+
+      if (lockUntil > 0 && lockUntil <= Date.now()) {
+        localStorage.removeItem(STORAGE_LOCK);
+        sessionStorage.removeItem(STORAGE_ATTEMPTS);
+      }
+
+      renderNormal();
+    }
+
+    init();
+  })();
+</script>

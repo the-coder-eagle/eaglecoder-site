@@ -3,12 +3,12 @@
 /* ===== 暗色模式 CSS 变量 ===== */
 :root {
   --color-bg: #ffffff;
-  --color-bg-secondary: #f9fafb;
+  --color-bg-secondary: #E0F2FE;
   --color-text: #111827;
   --color-text-secondary: #6b7280;
   --color-border: #e5e7eb;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
+  --color-primary: #5B2D8E;
+  --color-primary-hover: #7B4FBF;
   --color-code-bg: #1e293b;
 }
 
@@ -18,8 +18,8 @@ html.dark {
   --color-text: #f1f5f9;
   --color-text-secondary: #94a3b8;
   --color-border: #334155;
-  --color-primary: #3b82f6;
-  --color-primary-hover: #60a5fa;
+  --color-primary: #A78BFA;
+  --color-primary-hover: #C4B5FD;
   --color-code-bg: #0f172a;
 }
 
@@ -33,6 +33,7 @@ body {
 .prose {
   max-width: 72ch;
   line-height: 1.8;
+  font-family: SimSun, STSong, '宋体', 'Noto Serif SC', serif;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4 {

@@ -3,15 +3,17 @@ import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Giscus from '../../components/Giscus.astro';
 import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const docs = await getCollection('docs');
-  return docs.map((d) => ({ params: { slug: d.slug }, props: { doc: d } }));
+  return docs.map((d) => ({ params: { slug: d.id } }));
 }
 
-const { doc } = Astro.props;
-const { Content } = await doc.render();
+const { slug } = Astro.params;
+const docs = await getCollection('docs');
+const doc = docs.find((d) => d.id === slug)!;
+const { Content } = await render(doc);
 ---
 
 <Layout title={doc.data.title} description={doc.data.description}>

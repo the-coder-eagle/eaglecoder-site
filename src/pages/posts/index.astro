@@ -14,12 +14,6 @@ const tagCounts = new Map<string, number>();
 posts.forEach((p) => {
   p.data.tags?.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1));
 });
-
-// 获取当前 URL 的标签过滤参数
-const selectedTag = Astro.url.searchParams.get('tag');
-const filteredPosts = selectedTag
-  ? posts.filter((p) => p.data.tags?.includes(selectedTag))
-  : posts;
 ---
 
 <Layout title="文章" description="EagleCoder 的技术文章">
@@ -31,64 +25,114 @@ const filteredPosts = selectedTag
 
     <!-- 标签过滤 -->
     {tagCounts.size > 0 && (
-      <div class="flex flex-wrap gap-2 mb-8">
-        <a
-          href="/posts"
-          class="text-xs px-2.5 py-1 rounded-full border transition-colors"
-          style={{
-            background: !selectedTag ? 'var(--color-primary)' : 'transparent',
-            color: !selectedTag ? 'white' : 'var(--color-text-secondary)',
-            borderColor: !selectedTag ? 'var(--color-primary)' : 'var(--color-border)',
-          }}
+      <div id="tag-filters" class="flex flex-wrap gap-2 mb-8">
+        <button
+          data-tag=""
+          class="tag-filter-btn text-xs px-2.5 py-1 rounded-full border transition-colors cursor-pointer"
+          style="background: var(--color-primary); color: white; border-color: var(--color-primary);"
         >
           全部 ({posts.length})
-        </a>
+        </button>
         {[...tagCounts.entries()].sort((a, b) => b[1] - a[1]).map(([tag, count]) => (
-          <a
-            href={`/posts?tag=${encodeURIComponent(tag)}`}
-            class="text-xs px-2.5 py-1 rounded-full border transition-colors"
-            style={{
-              background: selectedTag === tag ? 'var(--color-primary)' : 'transparent',
-              color: selectedTag === tag ? 'white' : 'var(--color-text-secondary)',
-              borderColor: selectedTag === tag ? 'var(--color-primary)' : 'var(--color-border)',
-            }}
+          <button
+            data-tag={tag}
+            class="tag-filter-btn text-xs px-2.5 py-1 rounded-full border transition-colors cursor-pointer"
+            style="background: transparent; color: var(--color-text-secondary); border-color: var(--color-border);"
           >
             {tag} ({count})
-          </a>
+          </button>
         ))}
       </div>
     )}
 
-    {filteredPosts.length === 0 ? (
-      <p style="color: var(--color-text-secondary);">这个分类下还没有文章。</p>
-    ) : (
-      <div class="grid gap-4">
-        {filteredPosts.map((post) => (
-          <a
-            href={`/posts/${post.slug}`}
-            class="block p-5 rounded-lg border transition-all hover:shadow-md fade-in"
-            style="border-color: var(--color-border); background: var(--color-bg-secondary);"
-          >
-            <div class="flex items-baseline gap-3 mb-1 flex-wrap">
-              <time class="text-xs font-mono" style="color: var(--color-text-secondary);">
-                {post.data.publishedAt.toISOString().slice(0, 10)}
-              </time>
-              {post.data.tags?.map((tag) => (
-                <span
-                  class="text-xs px-2 py-0.5 rounded-full"
-                  style="background: var(--color-bg); color: var(--color-primary);"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <h2 class="font-semibold text-lg">{post.data.title}</h2>
-            <p class="text-sm mt-1" style="color: var(--color-text-secondary);">{post.data.description}</p>
-          </a>
-        ))}
-      </div>
-    )}
+    <!-- 文章列表 -->
+    <div id="posts-grid" class="grid gap-4">
+      {posts.map((post) => (
+        <a
+          href={`/posts/${post.id}`}
+          data-tags={post.data.tags?.join(',') || ''}
+          class="post-card block p-5 rounded-lg border transition-all hover:shadow-md fade-in"
+          style="border-color: var(--color-border); background: var(--color-bg-secondary);"
+        >
+          <div class="flex items-baseline gap-3 mb-1 flex-wrap">
+            <time class="text-xs font-mono" style="color: var(--color-text-secondary);">
+              {post.data.publishedAt.toISOString().slice(0, 10)}
+            </time>
+            {post.data.tags?.map((tag) => (
+              <span
+                class="text-xs px-2 py-0.5 rounded-full"
+                style="background: var(--color-bg); color: var(--color-primary);"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+          <h2 class="font-semibold text-lg">{post.data.title}</h2>
+          <p class="text-sm mt-1" style="color: var(--color-text-secondary);">{post.data.description}</p>
+        </a>
+      ))}
+    </div>
+
+    <p id="no-posts-msg" style="display:none; color: var(--color-text-secondary);">这个分类下还没有文章。</p>
   </div>
 
   <Footer />
 </Layout>
+
+<script>
+  function setupTagFilter() {
+    const buttons = document.querySelectorAll('.tag-filter-btn');
+    const cards = document.querySelectorAll('.post-card');
+    const noMsg = document.getElementById('no-posts-msg');
+
+    if (!buttons.length || !cards.length) return;
+
+    // 读取 URL 参数，初始化选中状态
+    const params = new URLSearchParams(window.location.search);
+    const initialTag = params.get('tag') || '';
+
+    function applyFilter(tag: string) {
+      let visibleCount = 0;
+      cards.forEach((card) => {
+        const tags = (card.getAttribute('data-tags') || '').split(',');
+        const match = !tag || tags.includes(tag);
+        (card as HTMLElement).style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      if (noMsg) {
+        (noMsg as HTMLElement).style.display = visibleCount === 0 ? '' : 'none';
+      }
+
+      // 更新按钮样式
+      buttons.forEach((btn) => {
+        const btnTag = btn.getAttribute('data-tag') || '';
+        const isActive = btnTag === tag;
+        (btn as HTMLElement).style.background = isActive ? 'var(--color-primary)' : 'transparent';
+        (btn as HTMLElement).style.color = isActive ? 'white' : 'var(--color-text-secondary)';
+        (btn as HTMLElement).style.borderColor = isActive ? 'var(--color-primary)' : 'var(--color-border)';
+      });
+
+      // 更新 URL
+      const url = new URL(window.location.href);
+      if (tag) {
+        url.searchParams.set('tag', tag);
+      } else {
+        url.searchParams.delete('tag');
+      }
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tag = btn.getAttribute('data-tag') || '';
+        applyFilter(tag);
+      });
+    });
+
+    // 初始应用
+    applyFilter(initialTag);
+  }
+
+  setupTagFilter();
+</script>
