@@ -1,0 +1,86 @@
+id: loop-06
+title: "反转整数"
+difficulty: easy
+tags:
+  - "while循环"
+  - "数字操作"
+description_md: |
+  ## 背景故事
+  
+  循环是计算机最强大的能力之一。人类做重复劳动会累，但计算机可以在几毫秒内完成数百万次重复操作。从计算 1 到 100 万的和，到处理成千上万条用户数据，循环让编程变得真正有用。掌握循环是区分会写代码和能解决问题的分水岭。
+  
+  ## 题目描述
+  
+  Solve: 反转整数. Read the input/output format and examples below carefully.
+  
+  **Tags: while循环, 数字操作** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### while循环
+  `while (条件) { 循环体 }`——条件为真时反复执行。适合不知道要循环多少次的场景。小心死循环！
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `123\n` | `321\n` | Sample 1 |
+  | `1000\n` | `1\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. while (n>0) { rev = rev*10 + n%10; n/=10; }
+  2. 第一步：仔细读题，明确输入什么、输出什么。
+  3. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  4. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  5. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  6. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  7. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "123
+"
+    expected_output: "321
+"
+  - input: "1000
+"
+    expected_output: "1
+"
+hints:
+  - "while (n>0) { rev = rev*10 + n%10; n/=10; }"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  #include <stdio.h>
+  int main() {
+      int n, rev=0;
+      scanf("%d", &n);
+      while(n){ rev=rev*10+n%10; n/=10; }
+      printf("%d\n", rev);
+      return 0;
+  }

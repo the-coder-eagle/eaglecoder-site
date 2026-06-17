@@ -1,0 +1,93 @@
+id: ds-01
+title: "双向链表实现"
+difficulty: medium
+tags:
+  - "链表"
+  - "数据结构"
+  - "双向链表"
+description_md: |
+  ## 背景故事
+  
+  数据结构决定了你的程序能跑多快。HashMap 让查找变成 O(1)，堆让取最值变成 O(log n)，并查集让连通性判断快到惊人。理解这些结构的设计思想，你才能在实际项目中做出正确的技术选型。
+  
+  ## 题目描述
+  
+  实现双向链表。每个节点有 prev 和 next 指针。
+  支持：头部插入、尾部插入、正向打印、反向打印。
+  输入命令：h v=头部插入值v，t v=尾部插入值v，p=正向打印，r=反向打印，q=退出
+  
+  **Tags: 链表, 数据结构, 双向链表** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 链表
+  链表由节点组成，每个节点有数据和指向下一个节点的指针。优点：动态增长、快速插入删除。缺点：不能随机访问（必须从头遍历）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `h 1\nt 2\nt 3\np\nr\nq` | `1 2 3 \n3 2 1 \n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. insert_head: 新节点的 next 指向原 head
+  2. 如果 tail 为空，新节点同时是 head 和 tail
+  3. 双链表需要同时维护 prev 和 next
+  4. 第一步：先在纸上画出你的思路或算法流程。
+  5. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  6. 第三步：选择合适的数据结构——数组？指针？结构体？
+  7. 第四步：用示例中的测试数据验证你的程序。
+  8. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  
+template_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "h 1
+t 2
+t 3
+p
+r
+q"
+    expected_output: "1 2 3 
+3 2 1 
+"
+hints:
+  - "insert_head: 新节点的 next 指向原 head"
+  - "如果 tail 为空，新节点同时是 head 和 tail"
+  - "双链表需要同时维护 prev 和 next"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+solution_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  typedef struct Node{int data;struct Node*prev,*next;}Node;
+  Node*head=0,*tail=0;
+  void insert_head(int v){Node*n=malloc(sizeof(Node));n->data=v;n->prev=0;n->next=head;if(head)head->prev=n;else tail=n;head=n;}
+  void insert_tail(int v){Node*n=malloc(sizeof(Node));n->data=v;n->next=0;n->prev=tail;if(tail)tail->next=n;else head=n;tail=n;}
+  void print_forward(){for(Node*c=head;c;c=c->next)printf("%d ",c->data);printf("\n");}
+  void print_backward(){for(Node*c=tail;c;c=c->prev)printf("%d ",c->data);printf("\n");}
+  int main(){char c;int v;while(scanf(" %c",&c)&&c!='q'){if(c=='h'){scanf("%d",&v);insert_head(v);}else if(c=='t'){scanf("%d",&v);insert_tail(v);}else if(c=='p')print_forward();else if(c=='r')print_backward();}return 0;}

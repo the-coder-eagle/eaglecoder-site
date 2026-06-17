@@ -1,0 +1,97 @@
+id: exp-03
+title: "LRU 缓存"
+difficulty: hard
+tags:
+  - "LRU"
+  - "缓存"
+  - "哈希表"
+  - "双向链表"
+description_md: |
+  ## 背景故事
+  
+  这些题目是为想挑战自己的学习者准备的。它们涉及多个知识点的综合运用，需要你设计数据结构、选择算法、处理边界条件。做对这些题目，你就达到了能独立完成实际项目的能力水平。
+  
+  ## 题目描述
+  
+  实现 LRU（最近最少使用）缓存，容量为 3。
+  支持 get(key) 返回 value 或 -1，put(key, value) 插入/更新。
+  输入：g k=get 操作，p k v=put 操作，q=退出
+  
+  **Tags: LRU, 缓存, 哈希表, 双向链表** | **Difficulty: 困难**
+  
+  ## 关键概念
+  
+  ### 哈希表
+  哈希表（Hash Table）通过哈希函数将键映射到桶，实现 O(1) 平均查找。C 语言中需自己实现或用第三方库。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `p 1 1\np 2 2\ng 1\np 3 3\ng 2\np 4 4\ng ` | `1 -1 -1 3 4` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：困难
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 哈希表快速定位节点
+  2. 双向链表维护访问顺序（最近访问的在头部）
+  3. 容量满时淘汰链表尾部
+  4. get 时把节点移到头部
+  5. 第一步：把大问题拆解成几个小问题分别解决。
+  6. 第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？
+  7. 第三步：先显式处理所有边界情况，再写主逻辑。
+  8. 第四步：暴力解法可能超时（TLE），选择更高效的算法。
+  
+template_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "p 1 1
+p 2 2
+g 1
+p 3 3
+g 2
+p 4 4
+g 1
+g 3
+g 4
+q"
+    expected_output: "1 -1 -1 3 4 "
+hints:
+  - "哈希表快速定位节点"
+  - "双向链表维护访问顺序（最近访问的在头部）"
+  - "容量满时淘汰链表尾部"
+  - "get 时把节点移到头部"
+  - "第一步：把大问题拆解成几个小问题分别解决。"
+  - "第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？"
+  - "第三步：先显式处理所有边界情况，再写主逻辑。"
+  - "第四步：暴力解法可能超时（TLE），选择更高效的算法。"
+solution_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  #define CAP 3
+  typedef struct N{int k,v;struct N*p,*n;}N;
+  N*h=0,*t=0,*c[100]={0};int sz=0;
+  void mv(N*nn){if(nn==h)return;if(nn->p)nn->p->n=nn->n;if(nn->n)nn->n->p=nn->p;if(nn==t)t=nn->p;nn->n=h;nn->p=0;if(h)h->p=nn;h=nn;if(!t)t=h;}
+  int get(int k){N*nn=c[k%100];while(nn&&nn->k!=k)nn=nn->n;if(!nn)return-1;mv(nn);return nn->v;}
+  void put(int k,int v){N*nn=c[k%100],*p=0;while(nn&&nn->k!=k){p=nn;nn=nn->n;}if(nn){nn->v=v;mv(nn);return;}
+  nn=malloc(sizeof(N));nn->k=k;nn->v=v;nn->n=c[k%100];nn->p=0;c[k%100]=nn;sz++;mv(nn);
+  if(sz>CAP){N*old=t;t=t->p;t->n=0;sz--;}}

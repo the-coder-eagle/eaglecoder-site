@@ -1,0 +1,89 @@
+id: fio-05
+title: "二进制学生记录"
+difficulty: medium
+tags:
+  - "文件"
+  - "二进制"
+  - "fwrite"
+  - "fread"
+description_md: |
+  ## 背景故事
+  
+  文件 I/O 让程序拥有了记忆力。没有文件操作，程序每次运行都从零开始——用户数据、游戏存档、配置文件全部消失。学会文件读写，你的程序才能真正保存和加载数据，从一个演示变成工具。
+  
+  ## 题目描述
+  
+  定义 Student 结构体（id(int), score(float)）。写入 3 条记录到 student.dat（二进制），然后读回并输出总分。
+  
+  **Tags: 文件, 二进制, fwrite, fread** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 文件
+  文件 I/O 让程序能保存数据。核心函数：`fopen()` 打开、`fprintf()`/`fscanf()` 读写、`fclose()` 关闭（必须关！）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `1 85.5\n2 90.0\n3 78.5\n` | `254.0\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. fwrite(ss, sizeof(Student), 3, fp)
+  2. fread 读回
+  3. 总分保留 1 位小数
+  4. 第一步：先在纸上画出你的思路或算法流程。
+  5. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  6. 第三步：选择合适的数据结构——数组？指针？结构体？
+  7. 第四步：用示例中的测试数据验证你的程序。
+  8. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "1 85.5
+2 90.0
+3 78.5
+"
+    expected_output: "254.0
+"
+hints:
+  - "fwrite(ss, sizeof(Student), 3, fp)"
+  - "fread 读回"
+  - "总分保留 1 位小数"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+solution_code: |
+  int main(){
+      Student ss[3], rr[3]; float t=0;
+      for(int i=0;i<3;i++) scanf("%d %f",&ss[i].id,&ss[i].score);
+      FILE *f=fopen("student.dat","wb");
+      fwrite(ss,sizeof(Student),3,f); fclose(f);
+      f=fopen("student.dat","rb");
+      fread(rr,sizeof(Student),3,f); fclose(f);
+      for(int i=0;i<3;i++) t+=rr[i].score;
+      printf("%.1f\n",t); return 0;
+  }

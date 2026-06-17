@@ -44,6 +44,16 @@ const links = [
         <span id="menu-icon-close" class="text-sm" style="display:none;">✕</span>
       </button>
 
+      <!-- 搜索按钮 -->
+      <button
+        id="search-toggle"
+        class="p-1.5 rounded-md transition-colors cursor-pointer"
+        style="background: var(--color-bg-secondary);"
+        aria-label="搜索"
+      >
+        <span class="text-sm">🔍</span>
+      </button>
+
       <!-- 主题切换按钮 -->
       <button
         id="theme-toggle"
@@ -108,6 +118,14 @@ const links = [
   }
 
   setupMenu();
+
+  // 搜索
+  const searchBtn = document.getElementById('search-toggle');
+  if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+      (window as any).__openSearch?.();
+    });
+  }
 
   // 主题切换
   const btn = document.getElementById('theme-toggle')!;

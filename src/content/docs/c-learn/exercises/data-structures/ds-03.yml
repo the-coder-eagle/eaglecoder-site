@@ -1,0 +1,88 @@
+id: ds-03
+title: "最小栈"
+difficulty: medium
+tags:
+  - "栈"
+  - "数据结构"
+  - "设计"
+description_md: |
+  ## 背景故事
+  
+  数据结构决定了你的程序能跑多快。HashMap 让查找变成 O(1)，堆让取最值变成 O(log n)，并查集让连通性判断快到惊人。理解这些结构的设计思想，你才能在实际项目中做出正确的技术选型。
+  
+  ## 题目描述
+  
+  设计一个栈，支持 push、pop、top 和 getMin（获取最小值）操作。
+  所有操作 O(1) 时间。维护一个辅助栈存储最小值。
+  输入：push v=压入，pop=弹出，top=栈顶，min=最小值，q=退出
+  
+  **Tags: 栈, 数据结构, 设计** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 栈
+  栈（Stack）是一种后进先出（LIFO）的数据结构，像一摞盘子。操作：push（压入）、pop（弹出）、top（查看栈顶）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `push -2\npush 0\npush -3\nmin\npop\ntop\` | `-3 0 -2` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 辅助栈 min_data 同步维护当前最小值
+  2. push 时: min = min(val, current_min)
+  3. pop 时辅助栈也弹出
+  4. 第一步：先在纸上画出你的思路或算法流程。
+  5. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  6. 第三步：选择合适的数据结构——数组？指针？结构体？
+  7. 第四步：用示例中的测试数据验证你的程序。
+  8. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "push -2
+push 0
+push -3
+min
+pop
+top
+min
+q"
+    expected_output: "-3 0 -2 "
+hints:
+  - "辅助栈 min_data 同步维护当前最小值"
+  - "push 时: min = min(val, current_min)"
+  - "pop 时辅助栈也弹出"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+solution_code: |
+  #include <stdio.h>
+  #define MAX 100
+  typedef struct{int d[MAX],m[MAX];int t;}MS;
+  void init(MS*s){s->t=-1;}
+  void push(MS*s,int v){s->t++;s->d[s->t]=v;s->m[s->t]=(s->t==0)?v:(v<s->m[s->t-1]?v:s->m[s->t-1]);}

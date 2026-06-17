@@ -1,0 +1,87 @@
+id: math-05
+title: "分数化简"
+difficulty: easy
+tags:
+  - "数学"
+  - "分数"
+  - "GCD"
+description_md: |
+  ## 背景故事
+  
+  编程和数学密不可分。很多看似复杂的数学问题，用几行代码就能解决——不是因为你数学好，而是因为计算机可以穷举、迭代、快速验证。这些题目帮你建立用代码解决数学问题的思维模式。
+  
+  ## 题目描述
+  
+  Solve: 分数化简. Read the input/output format and examples below carefully.
+  
+  **Tags: 数学, 分数, GCD** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 数学
+  C 语言 `<math.h>` 提供数学函数：`sqrt()` 开方、`pow()` 幂、`abs()` 绝对值、`fabs()` 浮点绝对值。编译时可能需要加 `-lm` 链接数学库。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `8 12\n` | `2/3\n` | Sample 1 |
+  | `100 25\n` | `4/1\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 分子分母同除以 GCD
+  2. 辗转相除求 GCD
+  3. 第一步：仔细读题，明确输入什么、输出什么。
+  4. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  5. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  6. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  7. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  8. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "8 12
+"
+    expected_output: "2/3
+"
+  - input: "100 25
+"
+    expected_output: "4/1
+"
+hints:
+  - "分子分母同除以 GCD"
+  - "辗转相除求 GCD"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  int gcd(int a,int b){ while(b){ int t=a%b; a=b; b=t; } return a; }
+  int main(){
+      int n,d; scanf("%d %d",&n,&d);
+      int g=gcd(n,d);
+      printf("%d/%d\n",n/g,d/g); return 0;
+  }

@@ -1,8 +1,5 @@
 ---
-// Giscus 评论组件
-// 需要在 GitHub 上开启 Discussions 功能: Settings → General → Features → Discussions
-// 然后安装 Giscus App: https://github.com/apps/giscus
-// 配置完成后替换下面的 data-repo 和 data-repo-id 等参数
+// Giscus 评论区 — GitHub Discussions 驱动
 export interface Props {
   term?: string;
 }
@@ -12,27 +9,22 @@ const { term = 'pathname' } = Astro.props;
 
 <div class="mt-12 pt-8 border-t" style="border-color: var(--color-border);">
   <h3 class="text-lg font-semibold mb-4">评论</h3>
-  <p class="text-sm mb-4" style="color: var(--color-text-secondary);">
-    评论系统将在你完成 GitHub 仓库配置后启用。
-    <a href="https://giscus.app/zh-CN" target="_blank" rel="noopener" class="underline" style="color: var(--color-primary);">前往 Giscus 配置 →</a>
-  </p>
-  <!--
-    配置完成后取消注释下面的代码，替换你的参数：
-
-  <script src="https://giscus.app/client.js"
-    data-repo="你的GitHub用户名/你的仓库名"
-    data-repo-id="Giscus给你的repo-id"
-    data-category="Announcements"
-    data-category-id="Giscus给你的category-id"
-    data-mapping={term}
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="preferred_color_scheme"
-    data-lang="zh-CN"
-    crossorigin="anonymous"
-    async>
-  </script>
-  -->
+  <div class="giscus"></div>
 </div>
+
+<script src="https://giscus.app/client.js"
+  data-repo="the-coder-eagle/eaglecoder-site"
+  data-repo-id="R_kgDOS8gHPg"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOS8gHPs4C_VWM"
+  data-mapping={term}
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="zh-CN"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async>
+</script>

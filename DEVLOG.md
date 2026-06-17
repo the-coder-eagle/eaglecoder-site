@@ -1,6 +1,34 @@
 # 开发日志
 
-## 2026-06-17 — UI 大改 + 门禁系统
+## 2026-06-17 — 第二阶段：项目卡片、评论、搜索、C-Learn 文档
+
+### 项目卡片美化
+- 统一白底 + 左紫条风格，和文章卡片一致
+
+### Giscus 评论区
+- 配置 GitHub Discussions 驱动的评论系统
+- `data-repo`: `the-coder-eagle/eaglecoder-site`
+- 暗色模式自动跟随网站主题 (`preferred_color_scheme`)
+- 出现在每篇文章底部
+
+### Pagefind 全站搜索
+- 安装 `pagefind`，构建后自动索引（`npm run build` 末尾）
+- 搜索弹窗：点导航栏 🔍 或按 `Ctrl+K` 打开
+- 首次索引：49 页 / 5536 词
+
+### 新增文件
+- `src/components/Search.astro` — Pagefind 搜索弹窗
+- `src/content/projects/c-learn.md` — C Learn 项目展示
+- `src/content/docs/c-learn/` — 36 课 C 语言教程 + 广告页（99-github.md）
+
+### 修改文件
+- `src/components/ProjectCard.astro` — 白底 + 左紫条
+- `src/components/Giscus.astro` — 填入配置
+- `src/components/Nav.astro` — 搜索按钮 + 事件
+- `src/layouts/Layout.astro` — 导入 Search 组件
+- `package.json` — build 脚本加 `pagefind --site dist`
+
+## 2026-06-17 — 第一阶段：UI 大改 + 门禁系统
 
 ### 配色与字体
 - 主色调改为南大紫 `#5B2D8E`（亮色）/ `#A78BFA`（暗色）

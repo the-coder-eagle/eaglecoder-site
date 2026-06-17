@@ -1,0 +1,85 @@
+id: str-01
+title: "字符串长度"
+difficulty: easy
+tags:
+  - "字符串"
+  - "遍历"
+description_md: |
+  ## 背景故事
+  
+  字符串处理是实际编程中最常见的任务之一。从用户登录验证到搜索引擎关键词匹配，从文本编辑器到聊天软件，字符串无处不在。C 语言的字符串是字符数组，因此理解字符串能同时加深你对数组和指针的理解。
+  
+  ## 题目描述
+  
+  Solve: 字符串长度. Read the input/output format and examples below carefully.
+  
+  **Tags: 字符串, 遍历** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 字符串
+  C 语言没有字符串类型——字符串是字符数组，以 `\0`（空字符）结尾。`char s[100]` 最多存 99 个有效字符（留 1 个给 `\0`）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `hello\n` | `5\n` | Sample 1 |
+  | `CProgramming\n` | `11\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 遍历直到遇到 '\0'
+  2. 第一步：仔细读题，明确输入什么、输出什么。
+  3. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  4. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  5. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  6. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  7. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "hello
+"
+    expected_output: "5
+"
+  - input: "CProgramming
+"
+    expected_output: "11
+"
+hints:
+  - "遍历直到遇到 '\0'"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  #include <stdio.h>
+  int main(){
+      char s[200]; int len=0;
+      scanf("%s",s);
+      while(s[len]) len++;
+      printf("%d\n",len); return 0;
+  }

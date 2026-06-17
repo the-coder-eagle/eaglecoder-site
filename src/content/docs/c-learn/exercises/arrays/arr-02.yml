@@ -1,0 +1,84 @@
+id: arr-02
+title: "数组最大值"
+difficulty: easy
+tags:
+  - "数组"
+  - "极值"
+description_md: |
+  ## 背景故事
+  
+  数组让你可以同时处理大量数据。想象一下：不用数组的话，存储一个班级 50 个学生的成绩需要 50 个变量；用数组，只需要一行代码。数组是所有数据结构的基础——字符串是字符数组，链表是结构体加指针的链式数组。
+  
+  ## 题目描述
+  
+  Solve: 数组最大值. Read the input/output format and examples below carefully.
+  
+  **Tags: 数组, 极值** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 数组
+  数组是一组相同类型的变量，连续存储在内存中。声明：`int arr[10];`。访问：`arr[0]` 是第一个，`arr[9]` 是最后一个。索引从 0 开始！
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `5\n3 8 1 9 2\n` | `9 3\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 记录 max_val 和 max_idx
+  2. 遍历比较
+  3. 第一步：仔细读题，明确输入什么、输出什么。
+  4. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  5. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  6. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  7. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  8. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "5
+3 8 1 9 2
+"
+    expected_output: "9 3
+"
+hints:
+  - "记录 max_val 和 max_idx"
+  - "遍历比较"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  #include <stdio.h>
+  int main() {
+      int n,a[100]; scanf("%d",&n);
+      for(int i=0;i<n;i++) scanf("%d",&a[i]);
+      int mx=0;
+      for(int i=1;i<n;i++) if(a[i]>a[mx]) mx=i;
+      printf("%d %d\n",a[mx],mx); return 0;
+  }

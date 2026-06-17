@@ -1,0 +1,88 @@
+id: pre-01
+title: "宏定义最大值"
+difficulty: easy
+tags:
+  - "宏"
+  - "define"
+  - "三目"
+description_md: |
+  ## 背景故事
+  
+  预处理器是编译前的代码生成器。#include 不是魔法——它只是把另一个文件的内容复制过来。#define 可以定义常量、创建代码模板。理解预处理器能帮你读懂大型 C 项目的头文件组织方式。
+  
+  ## 题目描述
+  
+  用 `#define MAX(a,b) ((a)>(b)?(a):(b))` 定义宏。读入三个整数，用 MAX 宏找出最大值输出。
+  
+  **Tags: 宏, define, 三目** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 宏
+  `#define` 定义宏——编译前文本替换。如 `#define PI 3.14159`。注意宏只是简单文本替换，小心运算符优先级陷阱！
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3 9 5\n` | `9\n` | Sample 1 |
+  | `-1 0 -5\n` | `0\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. #define MAX(a,b) ((a)>(b)?(a):(b))
+  2. 嵌套: MAX(MAX(a,b),c)
+  3. 第一步：仔细读题，明确输入什么、输出什么。
+  4. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  5. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  6. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  7. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  8. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3 9 5
+"
+    expected_output: "9
+"
+  - input: "-1 0 -5
+"
+    expected_output: "0
+"
+hints:
+  - "#define MAX(a,b) ((a)>(b)?(a):(b))"
+  - "嵌套: MAX(MAX(a,b),c)"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  #include <stdio.h>
+  #define MAX(a,b) ((a)>(b)?(a):(b))
+  int main(){
+      int a,b,c; scanf("%d %d %d",&a,&b,&c);
+      printf("%d\n",MAX(MAX(a,b),c));
+      return 0;
+  }

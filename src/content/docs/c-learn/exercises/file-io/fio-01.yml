@@ -1,0 +1,83 @@
+id: fio-01
+title: "写入文件"
+difficulty: easy
+tags:
+  - "文件"
+  - "fopen"
+  - "fprintf"
+description_md: |
+  ## 背景故事
+  
+  文件 I/O 让程序拥有了记忆力。没有文件操作，程序每次运行都从零开始——用户数据、游戏存档、配置文件全部消失。学会文件读写，你的程序才能真正保存和加载数据，从一个演示变成工具。
+  
+  ## 题目描述
+  
+  编写程序，将用户输入的一行字符串写入文件 output.txt（覆盖模式），然后屏幕输出 'Done'。
+  
+  **Tags: 文件, fopen, fprintf** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 文件
+  文件 I/O 让程序能保存数据。核心函数：`fopen()` 打开、`fprintf()`/`fscanf()` 读写、`fclose()` 关闭（必须关！）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `Hello, File IO!\n` | `Done\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. fopen("output.txt", "w")
+  2. fprintf 写入
+  3. fclose 关闭
+  4. 第一步：仔细读题，明确输入什么、输出什么。
+  5. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  6. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  7. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  8. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "Hello, File IO!
+"
+    expected_output: "Done
+"
+hints:
+  - "fopen('output.txt', 'w')"
+  - "fprintf 写入"
+  - "fclose 关闭"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+solution_code: |
+  #include <stdio.h>
+  int main(){
+      char l[200]; scanf("%[^\n]",l);
+      FILE *f=fopen("output.txt","w");
+      fprintf(f,"%s",l); fclose(f);
+      printf("Done\n"); return 0;
+  }

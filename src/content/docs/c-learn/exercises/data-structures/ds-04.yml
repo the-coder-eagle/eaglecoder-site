@@ -1,0 +1,104 @@
+id: ds-04
+title: "哈希表实现"
+difficulty: medium
+tags:
+  - "哈希表"
+  - "数据结构"
+  - "链表"
+description_md: |
+  ## 背景故事
+  
+  数据结构决定了你的程序能跑多快。HashMap 让查找变成 O(1)，堆让取最值变成 O(log n)，并查集让连通性判断快到惊人。理解这些结构的设计思想，你才能在实际项目中做出正确的技术选型。
+  
+  ## 题目描述
+  
+  用链地址法实现哈希表。表大小 10，hash(key) = key % 10。
+  支持插入和查找。输入：i val=插入，s val=查找（输出 yes/no），q=退出
+  
+  **Tags: 哈希表, 数据结构, 链表** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 哈希表
+  哈希表（Hash Table）通过哈希函数将键映射到桶，实现 O(1) 平均查找。C 语言中需自己实现或用第三方库。
+  
+  ### 链表
+  链表由节点组成，每个节点有数据和指向下一个节点的指针。优点：动态增长、快速插入删除。缺点：不能随机访问（必须从头遍历）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `i 5\ni 15\ni 25\ns 5\ns 15\ns 10\nq` | `yes\nyes\nno\n` | Sample 1 |
+  | `i 3\ns 3\ns 7\nq` | `yes\nno\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. hash(key) = key % SIZE 确定槽位
+  2. 每个槽位是一个链表头
+  3. 插入时在链表头部插入（O(1)）
+  4. 查找时遍历该槽位的链表
+  5. 第一步：先在纸上画出你的思路或算法流程。
+  6. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  7. 第三步：选择合适的数据结构——数组？指针？结构体？
+  8. 第四步：用示例中的测试数据验证你的程序。
+  
+template_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "i 5
+i 15
+i 25
+s 5
+s 15
+s 10
+q"
+    expected_output: "yes
+yes
+no
+"
+  - input: "i 3
+s 3
+s 7
+q"
+    expected_output: "yes
+no
+"
+hints:
+  - "hash(key) = key % SIZE 确定槽位"
+  - "每个槽位是一个链表头"
+  - "插入时在链表头部插入（O(1)）"
+  - "查找时遍历该槽位的链表"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+solution_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  #define SZ 10
+  typedef struct N{int k;struct N*n;}N;
+  N*t[SZ]={0};
+  int h(int k){return k%SZ;}
+  void ins(int k){int i=h(k);N*n=malloc(sizeof(N));n->k=k;n->n=t[i];t[i]=n;}
+  int srch(int k){for(N*c=t[h(k)];c;c=c->n)if(c->k==k)return 1;return 0;}

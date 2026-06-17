@@ -1,0 +1,77 @@
+id: basic-01
+title: "Hello World"
+difficulty: easy
+tags:
+  - "printf"
+  - "入门"
+description_md: |
+  ## 背景故事
+  
+  这是你 C 语言学习之旅的起点。掌握输入输出是编程的第一步——无论是开发一个计算器、一个游戏，还是一个人工智能系统，都离不开最基础的数据输入和结果显示。本节的所有题目都只需要用到最基础的语法，但它们是建造高楼大厦的地基。
+  
+  ## 题目描述
+  
+  Solve: Hello World. Read the input/output format and examples below carefully.
+  
+  **Tags: printf, 入门** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### printf
+  `printf` 是 C 语言最常用的输出函数（print formatted）。用法：`printf("格式字符串", 变量)`。`\n` 是换行符，让光标跳到下一行。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `` | `Hello, C Learn!\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 使用 printf 函数
+  2. 第一步：仔细读题，明确输入什么、输出什么。
+  3. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  4. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  5. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  6. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  7. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: ""
+    expected_output: "Hello, C Learn!
+"
+hints:
+  - "使用 printf 函数"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  #include <stdio.h>
+  int main() {
+      printf("Hello, C Learn!\n");
+      return 0;
+  }

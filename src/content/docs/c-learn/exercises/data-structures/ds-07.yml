@@ -1,0 +1,92 @@
+id: ds-07
+title: "Trie 树（前缀树）"
+difficulty: hard
+tags:
+  - "Trie"
+  - "前缀树"
+  - "字符串"
+  - "数据结构"
+description_md: |
+  ## 背景故事
+  
+  数据结构决定了你的程序能跑多快。HashMap 让查找变成 O(1)，堆让取最值变成 O(log n)，并查集让连通性判断快到惊人。理解这些结构的设计思想，你才能在实际项目中做出正确的技术选型。
+  
+  ## 题目描述
+  
+  实现前缀树（只含小写字母 a-z）。支持插入单词和查找单词。
+  输入：i word=插入单词，s word=查找（yes/no），q=退出
+  
+  **Tags: Trie, 前缀树, 字符串, 数据结构** | **Difficulty: 困难**
+  
+  ## 关键概念
+  
+  ### 字符串
+  C 语言没有字符串类型——字符串是字符数组，以 `\0`（空字符）结尾。`char s[100]` 最多存 99 个有效字符（留 1 个给 `\0`）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `i apple\ni app\ns apple\ns app\ns ap\nq` | `yes\nyes\nno\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：困难
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 每个节点有 26 个孩子指针（对应 a-z）
+  2. is_end 标记该节点是否为某个单词的结尾
+  3. 插入：逐个字符向下走，不存在就创建
+  4. 查找：逐个字符走，最后检查 is_end
+  5. 第一步：把大问题拆解成几个小问题分别解决。
+  6. 第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？
+  7. 第三步：先显式处理所有边界情况，再写主逻辑。
+  8. 第四步：暴力解法可能超时（TLE），选择更高效的算法。
+  
+template_code: |
+  #include <stdio.h>
+  #include <string.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "i apple
+i app
+s apple
+s app
+s ap
+q"
+    expected_output: "yes
+yes
+no
+"
+hints:
+  - "每个节点有 26 个孩子指针（对应 a-z）"
+  - "is_end 标记该节点是否为某个单词的结尾"
+  - "插入：逐个字符向下走，不存在就创建"
+  - "查找：逐个字符走，最后检查 is_end"
+  - "第一步：把大问题拆解成几个小问题分别解决。"
+  - "第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？"
+  - "第三步：先显式处理所有边界情况，再写主逻辑。"
+  - "第四步：暴力解法可能超时（TLE），选择更高效的算法。"
+solution_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  typedef struct T{struct T*c[26];int e;}T;
+  T*cr(){T*t=malloc(sizeof(T));for(int i=0;i<26;i++)t->c[i]=0;t->e=0;return t;}
+  void ins(T*r,char*w){T*n=r;for(int i=0;w[i];i++){int idx=w[i]-'a';if(!n->c[idx])n->c[idx]=cr();n=n->c[idx];}n->e=1;}
+  int sr(T*r,char*w){T*n=r;for(int i=0;w[i];i++){int idx=w[i]-'a';if(!n->c[idx])return 0;n=n->c[idx];}return n->e;}

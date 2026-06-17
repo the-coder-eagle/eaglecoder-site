@@ -1,0 +1,85 @@
+id: loop-08
+title: "最大公约数"
+difficulty: easy
+tags:
+  - "循环"
+  - "数学"
+  - "欧几里得"
+description_md: |
+  ## 背景故事
+  
+  循环是计算机最强大的能力之一。人类做重复劳动会累，但计算机可以在几毫秒内完成数百万次重复操作。从计算 1 到 100 万的和，到处理成千上万条用户数据，循环让编程变得真正有用。掌握循环是区分会写代码和能解决问题的分水岭。
+  
+  ## 题目描述
+  
+  Solve: 最大公约数. Read the input/output format and examples below carefully.
+  
+  **Tags: 循环, 数学, 欧几里得** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 数学
+  C 语言 `<math.h>` 提供数学函数：`sqrt()` 开方、`pow()` 幂、`abs()` 绝对值、`fabs()` 浮点绝对值。编译时可能需要加 `-lm` 链接数学库。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `12 18\n` | `6\n` | Sample 1 |
+  | `17 23\n` | `1\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 辗转相除法: while(b){ t=a%b; a=b; b=t; }
+  2. 第一步：仔细读题，明确输入什么、输出什么。
+  3. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  4. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  5. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  6. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  7. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "12 18
+"
+    expected_output: "6
+"
+  - input: "17 23
+"
+    expected_output: "1
+"
+hints:
+  - "辗转相除法: while(b){ t=a%b; a=b; b=t; }"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  #include <stdio.h>
+  int main() {
+      int a,b,t; scanf("%d %d",&a,&b);
+      while(b){ t=a%b; a=b; b=t; }
+      printf("%d\n",a); return 0;
+  }

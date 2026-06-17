@@ -1,0 +1,90 @@
+id: stu-06
+title: "分数结构体数组"
+difficulty: medium
+tags:
+  - "struct"
+  - "统计"
+  - "数组"
+description_md: |
+  ## 背景故事
+  
+  结构体让你可以自定义数据类型。现实世界中的事物往往是多种属性的组合——一个学生有姓名、学号、成绩；一本书有书名、作者、价格。结构体让你可以把这些相关数据打包在一起，是面向对象编程思想的前身。
+  
+  ## 题目描述
+  
+  定义 Score 结构体（name[20], chinese, math, english, total）。读入 N 个学生的姓名和语数英成绩，计算每人总分，输出总分最高者的信息。
+  
+  **Tags: struct, 统计, 数组** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 数组
+  数组是一组相同类型的变量，连续存储在内存中。声明：`int arr[10];`。访问：`arr[0]` 是第一个，`arr[9]` 是最后一个。索引从 0 开始！
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3\nXiaoMing 85 92 78\nXiaoHong 90 88 95\` | `XiaoHong 90 88 95 273\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. total = chinese + math + english
+  2. 遍历找 max total
+  3. 第一步：先在纸上画出你的思路或算法流程。
+  4. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  5. 第三步：选择合适的数据结构——数组？指针？结构体？
+  6. 第四步：用示例中的测试数据验证你的程序。
+  7. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  8. 效率提示：注意算法的时间复杂度，避免不必要的嵌套循环。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3
+XiaoMing 85 92 78
+XiaoHong 90 88 95
+XiaoLi 70 80 75
+"
+    expected_output: "XiaoHong 90 88 95 273
+"
+hints:
+  - "total = chinese + math + english"
+  - "遍历找 max total"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+  - "效率提示：注意算法的时间复杂度，避免不必要的嵌套循环。"
+solution_code: |
+  int main(){
+      int n,mxi=0; Score ss[50];
+      scanf("%d",&n);
+      for(int i=0;i<n;i++){
+          scanf("%s %d %d %d",ss[i].n,&ss[i].c,&ss[i].m,&ss[i].e);
+          ss[i].t=ss[i].c+ss[i].m+ss[i].e;
+          if(ss[i].t>ss[mxi].t) mxi=i;
+      }
+      printf("%s %d %d %d %d\n",ss[mxi].n,ss[mxi].c,ss[mxi].m,ss[mxi].e,ss[mxi].t);
+      return 0;
+  }

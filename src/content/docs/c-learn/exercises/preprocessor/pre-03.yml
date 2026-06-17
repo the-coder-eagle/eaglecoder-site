@@ -1,0 +1,88 @@
+id: pre-03
+title: "条件编译调试开关"
+difficulty: easy
+tags:
+  - "宏"
+  - "条件编译"
+  - "ifdef"
+  - "debug"
+description_md: |
+  ## 背景故事
+  
+  预处理器是编译前的代码生成器。#include 不是魔法——它只是把另一个文件的内容复制过来。#define 可以定义常量、创建代码模板。理解预处理器能帮你读懂大型 C 项目的头文件组织方式。
+  
+  ## 题目描述
+  
+  编写程序，用 `#ifdef DEBUG` 条件编译：定义 DEBUG 宏时输出详细调试信息，否则只输出最终结果。
+  
+  **Tags: 宏, 条件编译, ifdef, debug** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 宏
+  `#define` 定义宏——编译前文本替换。如 `#define PI 3.14159`。注意宏只是简单文本替换，小心运算符优先级陷阱！
+  
+  ### 条件编译
+  `#ifdef`/`#ifndef`/`#endif` 根据宏是否定义来选择性编译代码。用于跨平台适配、调试代码开关等。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `` | `Result: 84\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. #ifdef DEBUG ... #endif
+  2. gcc -DDEBUG 编译时定义宏
+  3. 默认不定义 DEBUG 则不输出调试信息
+  4. 第一步：仔细读题，明确输入什么、输出什么。
+  5. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  6. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  7. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  8. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: ""
+    expected_output: "Result: 84
+"
+hints:
+  - "#ifdef DEBUG ... #endif"
+  - "gcc -DDEBUG 编译时定义宏"
+  - "默认不定义 DEBUG 则不输出调试信息"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+solution_code: |
+  #include <stdio.h>
+  int main(){
+      int x=42;
+  #ifdef DEBUG
+      printf("DEBUG: x=%d\n",x);
+  #endif
+      printf("Result: %d\n",x*2);
+      return 0;
+  }

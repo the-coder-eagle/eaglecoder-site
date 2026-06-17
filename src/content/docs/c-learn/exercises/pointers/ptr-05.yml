@@ -1,0 +1,91 @@
+id: ptr-05
+title: "二级指针排序"
+difficulty: hard
+tags:
+  - "指针"
+  - "二级指针"
+  - "排序"
+description_md: |
+  ## 背景故事
+  
+  指针是 C 语言的灵魂，也是最让初学者头疼的概念。但别怕——把指针想象成快递单号：变量是包裹里的东西，指针是快递单号，通过单号你可以找到包裹、修改包裹里的东西。掌握了指针，你才真正理解了计算机的内存模型。
+  
+  ## 题目描述
+  
+  Solve: 二级指针排序. Read the input/output format and examples below carefully.
+  
+  **Tags: 指针, 二级指针, 排序** | **Difficulty: 困难**
+  
+  ## 关键概念
+  
+  ### 指针
+  指针是 C 语言的灵魂——它存储另一个变量的内存地址。`&x` 获取 x 的地址，`*p` 解引用（访问 p 指向的值）。可以理解为：指针 = 快递单号，*指针 = 打开包裹。
+  
+  ### 排序
+  排序是把数据从小到大（或从大到小）排列。常见排序算法：冒泡排序（相邻比较交换）、选择排序（每次选最小的放前面）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `banana apple cherry elder date\n` | `apple banana cherry date elder\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：困难
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. strcmp 比较
+  2. 交换指针而非字符串内容
+  3. 第一步：把大问题拆解成几个小问题分别解决。
+  4. 第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？
+  5. 第三步：先显式处理所有边界情况，再写主逻辑。
+  6. 第四步：暴力解法可能超时（TLE），选择更高效的算法。
+  7. 第五步：用极端数据测试——最小值、最大值、零、负数、重复值。
+  8. 数据结构提示：选择正确的数据结构可以大幅降低代码复杂度。
+  
+template_code: |
+  #include <stdio.h>
+  #include <string.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "banana apple cherry elder date
+"
+    expected_output: "apple banana cherry date elder
+"
+hints:
+  - "strcmp 比较"
+  - "交换指针而非字符串内容"
+  - "第一步：把大问题拆解成几个小问题分别解决。"
+  - "第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？"
+  - "第三步：先显式处理所有边界情况，再写主逻辑。"
+  - "第四步：暴力解法可能超时（TLE），选择更高效的算法。"
+  - "第五步：用极端数据测试——最小值、最大值、零、负数、重复值。"
+  - "数据结构提示：选择正确的数据结构可以大幅降低代码复杂度。"
+solution_code: |
+  #include <stdio.h>
+  #include <string.h>
+  int main(){
+      char *w[5], buf[5][50];
+      for(int i=0;i<5;i++){ scanf("%s",buf[i]); w[i]=buf[i]; }
+      for(int i=0;i<4;i++)
+          for(int j=i+1;j<5;j++)
+              if(strcmp(w[i],w[j])>0){ char *t=w[i]; w[i]=w[j]; w[j]=t; }
+      for(int i=0;i<5;i++) printf("%s ",w[i]);
+      printf("\n"); return 0;
+  }

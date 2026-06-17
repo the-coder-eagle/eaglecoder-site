@@ -1,0 +1,86 @@
+id: ptr-03
+title: "动态数组"
+difficulty: medium
+tags:
+  - "malloc"
+  - "free"
+  - "动态内存"
+description_md: |
+  ## 背景故事
+  
+  指针是 C 语言的灵魂，也是最让初学者头疼的概念。但别怕——把指针想象成快递单号：变量是包裹里的东西，指针是快递单号，通过单号你可以找到包裹、修改包裹里的东西。掌握了指针，你才真正理解了计算机的内存模型。
+  
+  ## 题目描述
+  
+  用 malloc 分配 N 个 int 的数组，读入并求和，最后 free。
+  
+  **Tags: malloc, free, 动态内存** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### malloc
+  `malloc(size)` 从堆上动态分配内存。返回 void* 指针，通常需要强制类型转换。用完必须 `free(ptr)`！否则内存泄漏。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3\n10 20 30\n` | `60\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. int *arr = malloc(n * sizeof(int))
+  2. free(arr)
+  3. 第一步：先在纸上画出你的思路或算法流程。
+  4. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  5. 第三步：选择合适的数据结构——数组？指针？结构体？
+  6. 第四步：用示例中的测试数据验证你的程序。
+  7. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  8. 效率提示：注意算法的时间复杂度，避免不必要的嵌套循环。
+  
+template_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3
+10 20 30
+"
+    expected_output: "60
+"
+hints:
+  - "int *arr = malloc(n * sizeof(int))"
+  - "free(arr)"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+  - "效率提示：注意算法的时间复杂度，避免不必要的嵌套循环。"
+solution_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  int main(){
+      int n,s=0; scanf("%d",&n);
+      int *a=malloc(n*sizeof(int));
+      for(int i=0;i<n;i++){ scanf("%d",&a[i]); s+=a[i]; }
+      printf("%d\n",s); free(a); return 0;
+  }

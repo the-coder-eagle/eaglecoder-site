@@ -1,0 +1,93 @@
+id: ds-02
+title: "循环队列"
+difficulty: medium
+tags:
+  - "队列"
+  - "循环队列"
+  - "数据结构"
+description_md: |
+  ## 背景故事
+  
+  数据结构决定了你的程序能跑多快。HashMap 让查找变成 O(1)，堆让取最值变成 O(log n)，并查集让连通性判断快到惊人。理解这些结构的设计思想，你才能在实际项目中做出正确的技术选型。
+  
+  ## 题目描述
+  
+  实现循环队列（数组实现）。容量固定为 5。
+  命令：e v=入队，d=出队并打印，p=打印队列所有元素，q=退出
+  
+  **Tags: 队列, 循环队列, 数据结构** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 队列
+  队列（Queue）是一种先进先出（FIFO）的数据结构，像排队。操作：enqueue（入队）、dequeue（出队）、front（查看队首）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `e 1\ne 2\ne 3\nd\nd\ne 4\ne 5\nd\nd\nd\n` | `1 2 3 4 5` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 入队: rear = (rear + 1) % CAPACITY
+  2. 出队: 取 data[front], front = (front + 1) % CAPACITY
+  3. 维护 size 判断空/满
+  4. 第一步：先在纸上画出你的思路或算法流程。
+  5. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  6. 第三步：选择合适的数据结构——数组？指针？结构体？
+  7. 第四步：用示例中的测试数据验证你的程序。
+  8. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "e 1
+e 2
+e 3
+d
+d
+e 4
+e 5
+d
+d
+d
+q"
+    expected_output: "1 2 3 4 5 "
+hints:
+  - "入队: rear = (rear + 1) % CAPACITY"
+  - "出队: 取 data[front], front = (front + 1) % CAPACITY"
+  - "维护 size 判断空/满"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+solution_code: |
+  #include <stdio.h>
+  #define CAP 5
+  typedef struct{int d[CAP];int f,r,s;}CQ;
+  void init(CQ*q){q->f=0;q->r=-1;q->s=0;}
+  int full(CQ*q){return q->s==CAP;}
+  int empty(CQ*q){return q->s==0;}
+  void enq(CQ*q,int v){if(!full(q)){q->r=(q->r+1)%CAP;q->d[q->r]=v;q->s++;}}
+  int deq(CQ*q){if(empty(q))return-1;int v=q->d[q->f];q->f=(q->f+1)%CAP;q->s--;return v;}

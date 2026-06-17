@@ -1,0 +1,95 @@
+id: exp-02
+title: "表达式求值器"
+difficulty: hard
+tags:
+  - "表达式"
+  - "栈"
+  - "解析"
+description_md: |
+  ## 背景故事
+  
+  这些题目是为想挑战自己的学习者准备的。它们涉及多个知识点的综合运用，需要你设计数据结构、选择算法、处理边界条件。做对这些题目，你就达到了能独立完成实际项目的能力水平。
+  
+  ## 题目描述
+  
+  计算只含 +、-、*、/ 和括号的整数表达式（不考虑优先级，严格左结合）。
+  使用双栈法：操作数栈 + 运算符栈。
+  输入：一个表达式（无空格），输出：计算结果。
+  
+  **Tags: 表达式, 栈, 解析** | **Difficulty: 困难**
+  
+  ## 关键概念
+  
+  ### 栈
+  栈（Stack）是一种后进先出（LIFO）的数据结构，像一摞盘子。操作：push（压入）、pop（弹出）、top（查看栈顶）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3+5*2` | `13` | Sample 1 |
+  | `10-2-3` | `5` | Sample 2 |
+  | `2*(3+4)` | `14` | Sample 3 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：困难
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 遍历表达式，遇到数字解析完整整数
+  2. 遇到运算符：如果栈顶优先级 >= 当前，先计算栈顶
+  3. 遇到 '(' 直接入栈，遇到 ')' 计算到 '(' 为止
+  4. 优先级：* / > + -
+  5. 第一步：把大问题拆解成几个小问题分别解决。
+  6. 第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？
+  7. 第三步：先显式处理所有边界情况，再写主逻辑。
+  8. 第四步：暴力解法可能超时（TLE），选择更高效的算法。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3+5*2"
+    expected_output: "13"
+  - input: "10-2-3"
+    expected_output: "5"
+  - input: "2*(3+4)"
+    expected_output: "14"
+hints:
+  - "遍历表达式，遇到数字解析完整整数"
+  - "遇到运算符：如果栈顶优先级 >= 当前，先计算栈顶"
+  - "遇到 '(' 直接入栈，遇到 ')' 计算到 '(' 为止"
+  - "优先级：* / > + -"
+  - "第一步：把大问题拆解成几个小问题分别解决。"
+  - "第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？"
+  - "第三步：先显式处理所有边界情况，再写主逻辑。"
+  - "第四步：暴力解法可能超时（TLE），选择更高效的算法。"
+solution_code: |
+  #include <stdio.h>
+  #include <ctype.h>
+  #include <string.h>
+  int prec(char c){if(c=='*'||c=='/')return 2;if(c=='+'||c=='-')return 1;return 0;}
+  int apply(int a,int b,char op){if(op=='+')return a+b;if(op=='-')return a-b;if(op=='*')return a*b;return a/b;}
+  int eval(char*e){int vs[100],vt=-1;char os[100];int ot=-1;
+  for(int i=0;e[i];i++){
+  if(isdigit(e[i])){int v=0;while(isdigit(e[i]))v=v*10+(e[i++]-'0');i--;vs[++vt]=v;}
+  else if(e[i]=='(')os[++ot]='(';
+  else if(e[i]==')'){while(ot>=0&&os[ot]!='('){int b=vs[vt--],a=vs[vt--];vs[++vt]=apply(a,b,os[ot--]);}ot--;}
+  else{while(ot>=0&&prec(os[ot])>=prec(e[i])){int b=vs[vt--],a=vs[vt--];vs[++vt]=apply(a,b,os[ot--]);}os[++ot]=e[i];}}
+  while(ot>=0){int b=vs[vt--],a=vs[vt--];vs[++vt]=apply(a,b,os[ot--]);}
+  return vs[0];}

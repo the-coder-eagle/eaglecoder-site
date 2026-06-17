@@ -1,0 +1,99 @@
+id: algo-04
+title: "众数查找"
+difficulty: medium
+tags:
+  - "算法"
+  - "数组"
+  - "多数投票"
+description_md: |
+  ## 背景故事
+  
+  算法是编程的核心竞争力。同样的功能，好的算法比差的算法快几百倍甚至几万倍。这些题目覆盖了经典算法思想：贪心、分治、模拟、搜索。理解这些思想后，你可以解决任何看起来没见过的题目。
+  
+  ## 题目描述
+  
+  Boyer-Moore 多数投票算法。给定 n 个数，找到出现次数超过 n/2 的众数。
+  保证众数一定存在。要求 O(n) 时间 O(1) 空间。
+  
+  **Tags: 算法, 数组, 多数投票** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 数组
+  数组是一组相同类型的变量，连续存储在内存中。声明：`int arr[10];`。访问：`arr[0]` 是第一个，`arr[9]` 是最后一个。索引从 0 开始！
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3 2 3` | `3` | Sample 1 |
+  | `2 2 1 1 1 2 2` | `2` | Sample 2 |
+  | `1` | `1` | Sample 3 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 维护一个候选人和计数器
+  2. 遇到相同数字 count++，不同 count--
+  3. count 归零时换候选人
+  4. 第一步：先在纸上画出你的思路或算法流程。
+  5. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  6. 第三步：选择合适的数据结构——数组？指针？结构体？
+  7. 第四步：用示例中的测试数据验证你的程序。
+  8. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3 2 3"
+    expected_output: "3"
+  - input: "2 2 1 1 1 2 2"
+    expected_output: "2"
+  - input: "1"
+    expected_output: "1"
+hints:
+  - "维护一个候选人和计数器"
+  - "遇到相同数字 count++，不同 count--"
+  - "count 归零时换候选人"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+solution_code: |
+  #include <stdio.h>
+  
+  int majority_element(int arr[], int n) {
+      int candidate = arr[0], count = 1;
+      for (int i = 1; i < n; i++) {
+          if (count == 0) { candidate = arr[i]; count = 1; }
+          else if (arr[i] == candidate) count++;
+          else count--;
+      }
+      return candidate;
+  }
+  
+  int main() {
+      int arr[1000], n = 0, x;
+      while (scanf("%d", &x) != EOF) arr[n++] = x;
+      printf("%d", majority_element(arr, n));
+      return 0;
+  }

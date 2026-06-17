@@ -1,0 +1,90 @@
+id: stu-07
+title: "图书管理系统"
+difficulty: hard
+tags:
+  - "struct"
+  - "数组"
+  - "搜索"
+description_md: |
+  ## 背景故事
+  
+  结构体让你可以自定义数据类型。现实世界中的事物往往是多种属性的组合——一个学生有姓名、学号、成绩；一本书有书名、作者、价格。结构体让你可以把这些相关数据打包在一起，是面向对象编程思想的前身。
+  
+  ## 题目描述
+  
+  定义 Book 结构体（title[50], author[30], year, pages）。读入 N 本书的信息，然后输入一个年份 Y，输出所有在 Y 年之后出版的书的标题（每行一个）。
+  
+  **Tags: struct, 数组, 搜索** | **Difficulty: 困难**
+  
+  ## 关键概念
+  
+  ### 数组
+  数组是一组相同类型的变量，连续存储在内存中。声明：`int arr[10];`。访问：`arr[0]` 是第一个，`arr[9]` 是最后一个。索引从 0 开始！
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3\nCLangBook Kernighan 1988 272\nCppPrim` | `CppPrimer DeepLearning\n` | Sample 1 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：困难
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 遍历筛选 year > y
+  2. 如果没有匹配的书输出 NONE
+  3. 第一步：把大问题拆解成几个小问题分别解决。
+  4. 第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？
+  5. 第三步：先显式处理所有边界情况，再写主逻辑。
+  6. 第四步：暴力解法可能超时（TLE），选择更高效的算法。
+  7. 第五步：用极端数据测试——最小值、最大值、零、负数、重复值。
+  8. 数据结构提示：选择正确的数据结构可以大幅降低代码复杂度。
+  
+template_code: |
+  #include <stdio.h>
+  #include <string.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3
+CLangBook Kernighan 1988 272
+CppPrimer Lippman 2012 976
+DeepLearning Goodfellow 2016 800
+2000
+"
+    expected_output: "CppPrimer DeepLearning
+"
+hints:
+  - "遍历筛选 year > y"
+  - "如果没有匹配的书输出 NONE"
+  - "第一步：把大问题拆解成几个小问题分别解决。"
+  - "第二步：考虑时间复杂度——你的算法能处理最大规模的数据吗？"
+  - "第三步：先显式处理所有边界情况，再写主逻辑。"
+  - "第四步：暴力解法可能超时（TLE），选择更高效的算法。"
+  - "第五步：用极端数据测试——最小值、最大值、零、负数、重复值。"
+  - "数据结构提示：选择正确的数据结构可以大幅降低代码复杂度。"
+solution_code: |
+  int main(){
+      int n,y,f=0; Book bs[100];
+      scanf("%d",&n);
+      for(int i=0;i<n;i++) scanf("%s %s %d %d",bs[i].title,bs[i].author,&bs[i].year,&bs[i].pages);
+      scanf("%d",&y);
+      for(int i=0;i<n;i++) if(bs[i].year>y){ printf("%s ",bs[i].title); f=1; }
+      if(!f) printf("NONE");
+      printf("\n"); return 0;
+  }

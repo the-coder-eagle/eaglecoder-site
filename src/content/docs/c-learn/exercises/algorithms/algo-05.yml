@@ -1,0 +1,110 @@
+id: algo-05
+title: "区间合并"
+difficulty: medium
+tags:
+  - "算法"
+  - "排序"
+  - "区间"
+description_md: |
+  ## 背景故事
+  
+  算法是编程的核心竞争力。同样的功能，好的算法比差的算法快几百倍甚至几万倍。这些题目覆盖了经典算法思想：贪心、分治、模拟、搜索。理解这些思想后，你可以解决任何看起来没见过的题目。
+  
+  ## 题目描述
+  
+  合并所有重叠的区间。输入 n 个区间 [start, end)，输出合并后的区间数。
+  输入：先输入 n，然后 n 对整数。
+  
+  **Tags: 算法, 排序, 区间** | **Difficulty: 中等**
+  
+  ## 关键概念
+  
+  ### 排序
+  排序是把数据从小到大（或从大到小）排列。常见排序算法：冒泡排序（相邻比较交换）、选择排序（每次选最小的放前面）。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `4\n1 3\n2 6\n8 10\n15 18` | `3` | Sample 1 |
+  | `3\n1 4\n4 5\n6 7` | `2` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：中等
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. 先按 start 排序
+  2. 遍历时维护当前合并区间的 end
+  3. 如果下一个 start <= 当前 end，则合并
+  4. 第一步：先在纸上画出你的思路或算法流程。
+  5. 第二步：确定边界情况——空输入、最大值、负数等怎么处理？
+  6. 第三步：选择合适的数据结构——数组？指针？结构体？
+  7. 第四步：用示例中的测试数据验证你的程序。
+  8. 提示：开发时可以用 printf 打印中间变量来调试逻辑。
+  
+template_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "4
+1 3
+2 6
+8 10
+15 18"
+    expected_output: "3"
+  - input: "3
+1 4
+4 5
+6 7"
+    expected_output: "2"
+hints:
+  - "先按 start 排序"
+  - "遍历时维护当前合并区间的 end"
+  - "如果下一个 start <= 当前 end，则合并"
+  - "第一步：先在纸上画出你的思路或算法流程。"
+  - "第二步：确定边界情况——空输入、最大值、负数等怎么处理？"
+  - "第三步：选择合适的数据结构——数组？指针？结构体？"
+  - "第四步：用示例中的测试数据验证你的程序。"
+  - "提示：开发时可以用 printf 打印中间变量来调试逻辑。"
+solution_code: |
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  typedef struct { int start, end; } Interval;
+  int cmp(const void *a, const void *b) { return ((Interval*)a)->start - ((Interval*)b)->start; }
+  
+  int merge_intervals(Interval arr[], int n) {
+      qsort(arr, n, sizeof(Interval), cmp);
+      int count = 0, cur_end = arr[0].end;
+      for (int i = 1; i < n; i++) {
+          if (arr[i].start <= cur_end) {
+              if (arr[i].end > cur_end) cur_end = arr[i].end;
+          } else { count++; cur_end = arr[i].end; }
+      }
+      return count + 1;
+  }
+  
+  int main() {
+      int n; scanf("%d", &n);
+      Interval arr[100];
+      for (int i = 0; i < n; i++) scanf("%d %d", &arr[i].start, &arr[i].end);
+      printf("%d", merge_intervals(arr, n));
+      return 0;
+  }

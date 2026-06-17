@@ -1,0 +1,95 @@
+id: enu-01
+title: "星期枚举"
+difficulty: easy
+tags:
+  - "enum"
+  - "枚举"
+  - "switch"
+description_md: |
+  ## 背景故事
+  
+  枚举和联合体是 C 语言中容易被忽视但非常有用的特性。枚举让代码更可读（用 RED 代替 1），联合体让你用不同方式解释同一块内存。理解它们能帮你读懂操作系统源码和网络协议实现。
+  
+  ## 题目描述
+  
+  定义 enum Weekday {MON=1, TUE, WED, THU, FRI, SAT, SUN}。输入 1-7 的数字，输出对应的星期英文名。
+  
+  **Tags: enum, 枚举, switch** | **Difficulty: 简单**
+  
+  ## 关键概念
+  
+  ### 枚举
+  `enum` 给整数常量起名字，让代码更可读。如 `enum Color { RED=0, GREEN=1, BLUE=2 };`。
+  
+  ## 输入格式
+  
+  仔细阅读下面的示例，确定输入数据的格式。
+  
+  ## 输出格式
+  
+  按照题目要求输出结果。注意输出格式必须与示例完全一致（包括空格和换行）。
+  
+  ## 示例
+  
+  | 输入 | 输出 | 解释 |
+  |------|------|------|
+  | `3\n` | `Wednesday\n` | Sample 1 |
+  | `7\n` | `Sunday\n` | Sample 2 |
+  
+  ## 数据范围与约束
+  
+  - 难度等级：简单
+  - 请考虑边界情况：零值、负数、最小值、最大值等
+  - 时间限制：1 秒 | 内存限制：128 MB
+  
+  ## 提示
+  
+  1. switch(w) 分情况输出
+  2. enum 值从 1 开始
+  3. 第一步：仔细读题，明确输入什么、输出什么。
+  4. 第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。
+  5. 第三步：用 scanf 读入数据，处理后用 printf 输出结果。
+  6. 常见错误：scanf 中忘记写 & 符号，如 scanf("%d", &x) 不能写成 scanf("%d", x)。
+  7. 常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。
+  8. 测试技巧：尝试不同的输入值验证你的程序是否正确。
+  
+template_code: |
+  #include <stdio.h>
+  
+  int main() {
+      // Write your code here
+      return 0;
+  }
+test_cases:
+  - input: "3
+"
+    expected_output: "Wednesday
+"
+  - input: "7
+"
+    expected_output: "Sunday
+"
+hints:
+  - "switch(w) 分情况输出"
+  - "enum 值从 1 开始"
+  - "第一步：仔细读题，明确输入什么、输出什么。"
+  - "第二步：声明变量，选对类型——整数用 int，小数用 float 或 double。"
+  - "第三步：用 scanf 读入数据，处理后用 printf 输出结果。"
+  - "常见错误：scanf 中忘记写 & 符号，如 scanf('%d', &x) 不能写成 scanf('%d', x)。"
+  - "常见错误：判断相等用 ==（两个等号），一个等号 = 是赋值。"
+  - "测试技巧：尝试不同的输入值验证你的程序是否正确。"
+solution_code: |
+  int main(){
+      int d; scanf("%d",&d);
+      switch(d){
+          case 1: printf("Monday\n"); break;
+          case 2: printf("Tuesday\n"); break;
+          case 3: printf("Wednesday\n"); break;
+          case 4: printf("Thursday\n"); break;
+          case 5: printf("Friday\n"); break;
+          case 6: printf("Saturday\n"); break;
+          case 7: printf("Sunday\n"); break;
+          default: printf("Invalid\n");
+      }
+      return 0;
+  }
