@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
