@@ -15,11 +15,12 @@ interface LCQuestion {
   title: string;
   titleSlug: string;
   difficulty: string;
-  translatedTitle: string;
-  translatedContent: string;
+  translatedTitle?: string;
+  translatedContent?: string;
+  content?: string;          // leetcode.com 用这个
   sampleTestCase: string;
   codeSnippets: { lang: string; langSlug: string; code: string }[];
-  topicTags: { name: string; translatedName: string }[];
+  topicTags: { name: string; translatedName?: string }[];
   questionFrontendId: string;
 }
 
@@ -48,9 +49,8 @@ function mapDifficulty(lcDifficulty: string): 'easy' | 'medium' | 'hard' {
 const LANG_MAP: Record<string, string> = {
   c: 'c',
   cpp: 'c',
-  csharp: 'javascript',
-  java: 'javascript',
   javascript: 'javascript',
+  typescript: 'javascript',
   python: 'python',
   python3: 'python',
 };
@@ -250,8 +250,9 @@ async function main() {
   const title = question.translatedTitle || question.title;
   const difficulty = mapDifficulty(question.difficulty);
   const tags = question.topicTags.map((t) => t.translatedName || t.name);
-  const description = stripHtml(question.translatedContent || question.title);
   const url = `https://leetcode.com/problems/${question.titleSlug}/`;
+  const rawContent = question.translatedContent || question.content || '';
+  const description = rawContent ? stripHtml(rawContent) : `${title}\n\n> LeetCode #${question.questionFrontendId} | ${difficulty}\n> 查看原题: ${url}`;
   const id = `lc-${question.questionFrontendId}`;
 
   console.log(`   题目: [${difficulty}] ${title} (#${question.questionFrontendId})`);
