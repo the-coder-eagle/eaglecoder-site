@@ -11,6 +11,11 @@ export default defineConfig({
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      proxy: {
+        '/api': 'http://localhost:3000',
+      },
+    },
   },
   markdown: {
     rehypePlugins: [

@@ -10,8 +10,6 @@ import { getTodaysChallenge, type SupportedLanguage } from '../../data/challenge
 
 const challenge = getTodaysChallenge();
 const defaultLang: SupportedLanguage = 'c';
-
-// 序列化题目数据供客户端使用
 const challengeJson = JSON.stringify(challenge);
 ---
 
@@ -39,27 +37,23 @@ const challengeJson = JSON.stringify(challenge);
 
     <!-- 两栏布局 -->
     <div class="grid lg:grid-cols-2 gap-8">
-      <!-- 左栏：题目描述 -->
       <div class="fade-in">
         <ChallengeView challenge={challenge} />
       </div>
 
-      <!-- 右栏：编辑器 -->
       <div>
         <div class="sticky top-20">
-          <!-- 语言选择 -->
           <LanguageSelector active={defaultLang} />
 
-          <!-- 代码编辑器 -->
           <CodeEditor language={defaultLang} initialCode={challenge.template[defaultLang]} />
 
-          <!-- 用户名 + 提交（阶段 1 占位，阶段 2 接入后端） -->
+          <!-- 用户名 + 提交按钮 -->
           <div class="mt-4 flex items-center gap-3">
             <div class="flex-1">
               <input
                 id="username-input"
                 type="text"
-                placeholder="输入你的用户名（可选）"
+                placeholder="输入你的用户名"
                 maxlength="30"
                 autocomplete="off"
                 class="w-full px-3 py-2 rounded-lg border text-sm transition-colors"
@@ -68,16 +62,15 @@ const challengeJson = JSON.stringify(challenge);
             </div>
             <button
               id="submit-btn"
-              class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-md"
+              class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               style="background: var(--color-primary);"
-              disabled
             >
-              提交代码
+              🚀 提交判题
             </button>
           </div>
-          <p class="text-xs mt-1" style="color: var(--color-text-secondary);">
-            ⚡ 判题功能将在后端上线后启用。现在可以复制代码到本地测试。
-          </p>
+
+          <!-- 判题结果显示 -->
+          <div id="results-container" class="mt-4"></div>
         </div>
       </div>
     </div>
@@ -86,32 +79,134 @@ const challengeJson = JSON.stringify(challenge);
   <Footer />
 </Layout>
 
-<script>
-  // 传递题目数据给客户端组件
-  const challenge = JSON.parse(challengeJson);
-  (window as any).__challengeTemplates = challenge.template;
-  (window as any).__editorLang = defaultLang;
-  (window as any).__editorCode = challenge.template[defaultLang];
-
-  // 暂存用户名的 localStorage key
+<script is:inline define:vars={{ challengeJson, defaultLang }}>
+  (function() {
+  const CHALLENGE = JSON.parse(challengeJson);
   const USERNAME_KEY = 'oj-username';
+
+  window.__challengeTemplates = CHALLENGE.template;
+  window.__editorLang = defaultLang;
+  window.__editorCode = CHALLENGE.template[defaultLang];
 
   const usernameInput = document.getElementById('username-input') as HTMLInputElement;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const resultsContainer = document.getElementById('results-container') as HTMLDivElement;
 
-  // 恢复之前保存的用户名
+  // 恢复用户名
   const saved = localStorage.getItem(USERNAME_KEY);
-  if (saved) {
-    usernameInput.value = saved;
-  }
-
-  // 阶段 1：提交按钮暂不可用（纯前端无后端）
-  // 阶段 2：接入 /api/judge 后启用
+  if (saved) usernameInput.value = saved;
   usernameInput.addEventListener('input', () => {
-    const val = usernameInput.value.trim();
-    localStorage.setItem(USERNAME_KEY, val);
+    localStorage.setItem(USERNAME_KEY, usernameInput.value.trim());
   });
 
-  // 监听编辑器内容变化，有代码就启用按钮视觉
-  // 阶段 2 时移除 disabled，接入真实 API
+  // 当前选中的语言
+  let currentLang = defaultLang;
+
+  // 语言切换时更新 currentLang
+  const origSwitch = window.__editorSwitchLang;
+  window.__editorSwitchLang = (lang: string) => {
+    currentLang = lang;
+    if (origSwitch) origSwitch(lang);
+  };
+
+  /** 渲染判题结果 */
+  function renderResults(data: any) {
+    const { passed, total, score, status, results, username } = data;
+
+    const statusIcons: Record<string, string> = {
+      accepted: '✅', wrong_answer: '❌', time_limit_exceeded: '⏱️',
+      runtime_error: '💥', compile_error: '🔧', error: '⚠️',
+    };
+    const statusLabels: Record<string, string> = {
+      accepted: '通过', wrong_answer: '答案错误', time_limit_exceeded: '超时',
+      runtime_error: '运行错误', compile_error: '编译错误', error: '系统错误',
+    };
+
+    let html = '';
+    const isAllPassed = status === 'accepted';
+    html += `<div class="rounded-lg p-4 mb-4" style="border: 2px solid ${isAllPassed ? '#22c55e' : '#ef4444'}; background: var(--color-bg-secondary);">`;
+    html += `<div class="flex items-center justify-between mb-2">`;
+    html += `<span class="text-lg font-bold">${isAllPassed ? '🎉 全部通过！' : '❌ 未通过'}</span>`;
+    html += `<span class="text-2xl font-extrabold" style="color: ${isAllPassed ? '#22c55e' : '#ef4444'};">${score}/100</span>`;
+    html += `</div>`;
+    html += `<p class="text-sm" style="color: var(--color-text-secondary);">${passed}/${total} 个测试用例${username ? ' · 提交者：' + username : ''}</p>`;
+    html += `</div>`;
+
+    html += `<div class="border rounded-lg overflow-hidden" style="border-color: var(--color-border);">`;
+    html += `<table class="w-full text-sm"><thead><tr style="background: var(--color-bg-secondary);">`;
+    html += `<th class="text-left p-2 border-b" style="border-color: var(--color-border);">#</th>`;
+    html += `<th class="text-left p-2 border-b" style="border-color: var(--color-border);">状态</th>`;
+    html += `<th class="text-left p-2 border-b" style="border-color: var(--color-border);">期望</th>`;
+    html += `<th class="text-left p-2 border-b" style="border-color: var(--color-border);">实际</th>`;
+    html += `<th class="text-left p-2 border-b" style="border-color: var(--color-border);">耗时</th>`;
+    html += `</tr></thead><tbody>`;
+
+    for (const r of results) {
+      const bg = r.status === 'accepted' ? 'transparent' : '#fef2f2';
+      html += `<tr style="background: ${bg}; border-bottom: 1px solid var(--color-border);">`;
+      html += `<td class="p-2 font-mono text-xs" style="color: var(--color-text-secondary);">${r.caseIndex}</td>`;
+      html += `<td class="p-2 text-xs">${statusIcons[r.status] || '❓'} ${statusLabels[r.status] || r.status}</td>`;
+      html += `<td class="p-2 font-mono text-xs">${escapeHtml(r.expected)}</td>`;
+      html += `<td class="p-2 font-mono text-xs">${r.actual ? escapeHtml(r.actual) : (r.error ? '<span style="color:#ef4444;">'+escapeHtml(r.error)+'</span>' : '—')}</td>`;
+      html += `<td class="p-2 font-mono text-xs" style="color: var(--color-text-secondary);">${r.time}</td>`;
+      html += `</tr>`;
+    }
+    html += `</tbody></table></div>`;
+    resultsContainer.innerHTML = html;
+  }
+
+  function escapeHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /** 提交判题 */
+  submitBtn.addEventListener('click', async () => {
+    const code = window.__editorGetCode?.() || '';
+    const username = usernameInput.value.trim();
+
+    if (!code.trim()) {
+      resultsContainer.innerHTML = '<p style="color: #f59e0b; margin-top: 12px;">⚠️ 请先写点代码再提交</p>';
+      return;
+    }
+
+    // 按钮 loading 状态
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ 判题中...';
+    resultsContainer.innerHTML = '<p style="text-align: center; padding: 32px; color: var(--color-text-secondary);">⏳ 正在运行你的代码...</p>';
+
+    try {
+      const res = await fetch('/api/judge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: currentLang,
+          code,
+          challengeId: CHALLENGE.id,
+          username: username || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        renderResults(data);
+      } else {
+        resultsContainer.innerHTML = `<p style="color: #ef4444; margin-top: 12px;">❌ ${data.error || '判题失败'}</p>`;
+      }
+    } catch (err: any) {
+      resultsContainer.innerHTML = `<p style="color: #ef4444; margin-top: 12px;">❌ 连接判题服务失败：${err.message}</p>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🚀 提交判题';
+    }
+  });
+
+  // 回车快捷提交（Ctrl+Enter）
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      submitBtn.click();
+    }
+  });
+
+  })(); // IIFE end
 </script>

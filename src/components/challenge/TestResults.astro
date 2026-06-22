@@ -1,0 +1,102 @@
+---
+// TestResults — 判题结果展示
+export interface TestResultItem {
+  caseIndex: number;
+  status: 'accepted' | 'wrong_answer' | 'time_limit_exceeded' | 'runtime_error' | 'compile_error' | 'error';
+  input: string;
+  expected: string;
+  actual: string;
+  time: string;
+  error?: string;
+}
+
+export interface Props {
+  results: TestResultItem[];
+  passed: number;
+  total: number;
+  score: number;
+  status: string;
+  loading?: boolean;
+  username?: string;
+}
+
+const { results, passed, total, score, status, loading = false, username } = Astro.props;
+---
+
+<div id="test-results" class="mt-4 fade-in" style={`display: ${results.length > 0 || loading ? 'block' : 'none'};`}>
+  <!-- Loading -->
+  {loading && (
+    <div class="text-center py-8">
+      <p class="text-lg mb-2">⏳ 判题中...</p>
+      <p class="text-sm" style="color: var(--color-text-secondary);">正在服务器上运行你的代码</p>
+    </div>
+  )}
+
+  <!-- 结果概要 -->
+  {!loading && results.length > 0 && (
+    <>
+      <div
+        class={`rounded-lg p-4 mb-4 ${status === 'accepted' ? 'border-green-500' : 'border-red-500'}`}
+        style="border-width: 2px; background: var(--color-bg-secondary);"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-lg font-bold">
+            {status === 'accepted' ? '✅ 全部通过！' : '❌ 未通过'}
+          </span>
+          <span class="text-2xl font-extrabold" style={`color: ${status === 'accepted' ? '#22c55e' : '#ef4444'};`}>
+            {score}/100
+          </span>
+        </div>
+        <p class="text-sm" style="color: var(--color-text-secondary);">
+          通过 {passed}/{total} 个测试用例
+          {username && <span> · 提交者：{username}</span>}
+        </p>
+      </div>
+
+      <!-- 逐用例结果 -->
+      <div class="border rounded-lg overflow-hidden" style="border-color: var(--color-border);">
+        <table class="w-full text-sm">
+          <thead>
+            <tr style="background: var(--color-bg-secondary);">
+              <th class="text-left p-2.5 border-b" style="border-color: var(--color-border);">#</th>
+              <th class="text-left p-2.5 border-b" style="border-color: var(--color-border);">状态</th>
+              <th class="text-left p-2.5 border-b hidden sm:table-cell" style="border-color: var(--color-border);">输入</th>
+              <th class="text-left p-2.5 border-b" style="border-color: var(--color-border);">期望</th>
+              <th class="text-left p-2.5 border-b" style="border-color: var(--color-border);">实际输出</th>
+              <th class="text-left p-2.5 border-b hidden sm:table-cell" style="border-color: var(--color-border);">耗时</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((r) => {
+              const statusIcon: Record<string, string> = {
+                accepted: '✅',
+                wrong_answer: '❌',
+                time_limit_exceeded: '⏱️',
+                runtime_error: '💥',
+                compile_error: '🔧',
+                error: '⚠️',
+              };
+              const rowBg = r.status === 'accepted' ? 'transparent' : '#fef2f2';
+              return (
+                <tr style={`background: ${r.status !== 'accepted' ? rowBg : 'transparent'};`}>
+                  <td class="p-2.5 border-b font-mono text-xs" style="border-color: var(--color-border); color: var(--color-text-secondary);">
+                    {r.caseIndex}
+                  </td>
+                  <td class="p-2.5 border-b text-xs" style="border-color: var(--color-border);">
+                    {statusIcon[r.status] || '❓'} {r.status === 'accepted' ? '通过' : r.status === 'wrong_answer' ? '答案错误' : r.status === 'time_limit_exceeded' ? '超时' : r.status === 'runtime_error' ? '运行错误' : r.status === 'compile_error' ? '编译错误' : '系统错误'}
+                  </td>
+                  <td class="p-2.5 border-b font-mono text-xs hidden sm:table-cell" style="border-color: var(--color-border);">{r.input.replace(/\n/g, ' ⏎ ')}</td>
+                  <td class="p-2.5 border-b font-mono text-xs" style="border-color: var(--color-border);">{r.expected}</td>
+                  <td class="p-2.5 border-b font-mono text-xs" style="border-color: var(--color-border);">
+                    {r.actual || (r.error ? <span style="color: #ef4444;">{r.error}</span> : '—')}
+                  </td>
+                  <td class="p-2.5 border-b font-mono text-xs hidden sm:table-cell" style="border-color: var(--color-border); color: var(--color-text-secondary);">{r.time}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+</div>
