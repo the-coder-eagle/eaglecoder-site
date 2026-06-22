@@ -5,12 +5,16 @@
  * LeetCode.cn GraphQL API，无需认证，返回完整题目 + 样例测试用例
  */
 
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createPool } from 'mysql2/promise';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// 加载 .env（无论从哪里运行都能找到）
+dotenv.config({ path: '/www/wwwroot/eaglecoder-repo/server/.env' });
+dotenv.config({ path: new URL('../../../.env', import.meta.url).pathname });
 
 // 数据库连接
 const pool = createPool({
