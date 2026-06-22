@@ -99,15 +99,8 @@ const challengeJson = JSON.stringify(challenge);
     localStorage.setItem(USERNAME_KEY, usernameInput.value.trim());
   });
 
-  // 当前选中的语言
-  let currentLang = defaultLang;
-
-  // 语言切换时更新 currentLang
-  const origSwitch = window.__editorSwitchLang;
-  window.__editorSwitchLang = (lang) => {
-    currentLang = lang;
-    if (origSwitch) origSwitch(lang);
-  };
+  // 初始化当前语言标记
+  window.__editorCurrentLang = defaultLang;
 
   /** 渲染判题结果 */
   function renderResults(data) {
@@ -179,7 +172,7 @@ const challengeJson = JSON.stringify(challenge);
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          language: currentLang,
+          language: window.__editorCurrentLang || defaultLang,
           code,
           challengeId: CHALLENGE.id,
           username: username || undefined,

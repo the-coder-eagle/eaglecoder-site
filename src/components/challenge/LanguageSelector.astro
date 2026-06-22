@@ -47,6 +47,7 @@ const { active } = Astro.props;
 
       // 切换编辑器语言
       (window as any).__editorSwitchLang?.(lang);
+      (window as any).__editorCurrentLang = lang;
 
       // 切换模板代码
       const templates = (window as any).__challengeTemplates;
