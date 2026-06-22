@@ -249,7 +249,7 @@ async function main() {
 
   const title = question.translatedTitle || question.title;
   const difficulty = mapDifficulty(question.difficulty);
-  const tags = question.topicTags.map((t) => t.translatedName || t.name);
+  const tags = (question.topicTags || []).map((t) => t.translatedName || t.name);
   const url = `https://leetcode.com/problems/${question.titleSlug}/`;
   const rawContent = question.translatedContent || question.content || '';
   const description = rawContent ? stripHtml(rawContent) : `${title}\n\n> LeetCode #${question.questionFrontendId} | ${difficulty}\n> 查看原题: ${url}`;
@@ -264,7 +264,7 @@ async function main() {
   // 提取代码模板
   const template: Record<string, string> = { c: '', javascript: '', python: '' };
 
-  for (const snippet of question.codeSnippets) {
+  for (const snippet of (question.codeSnippets || [])) {
     const lang = LANG_MAP[snippet.langSlug];
     if (lang && !template[lang]) {
       // 用注释包装一下
