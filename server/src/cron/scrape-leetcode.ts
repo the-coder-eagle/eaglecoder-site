@@ -5,11 +5,20 @@
  * LeetCode.cn GraphQL API，无需认证，返回完整题目 + 样例测试用例
  */
 
-import { writeFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { createPool } from 'mysql2/promise';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// 数据库连接
+const pool = createPool({
+  host: process.env.DB_HOST || '127.0.0.1',
+  user: process.env.DB_USER || 'oj',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'eaglecoder_oj',
+  charset: 'utf8mb4',
+});
 
 interface LCQuestion {
   title: string;
@@ -279,30 +288,65 @@ async function main() {
 
   console.log(`   样例数: ${testCases.length}`);
 
-  const output = {
-    id,
-    title,
-    slug: question.titleSlug,
-    difficulty,
-    tags,
-    description,
-    examples,
-    testCases,
-    template,
-    hints: [],
-    source: { name: 'LeetCode', url },
-  };
+  const today = new Date().toISOString().slice(0, 10);
 
-  const outDir = join(__dirname, '..', '..', '..', 'src', 'data');
-  const outPath = join(outDir, 'lc-scraped.json');
-  writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf-8');
-  console.log(`✅ 已保存到 ${outPath}`);
+  // 写入 MySQL challenges 表（替换今天的题目）
+  const tagJson = JSON.stringify(tags);
+  const templateJson = JSON.stringify(template);
+  const testCasesJson = JSON.stringify(testCases);
+  const examplesJson = JSON.stringify(examples);
 
-  // 输出简要，方便手动加入 challenges.ts
-  console.log('');
-  console.log('📋 手动添加到 src/data/challenges.ts:');
-  console.log(`   challenges.push(${JSON.stringify({ id: output.id, title: output.title, difficulty: output.difficulty, tags: output.tags })});`);
-  console.log(`   💡 打开 ${outPath} 复制完整内容`);
+  await pool.execute(
+    `INSERT INTO challenges (title, slug, difficulty, tags, test_case_count, scheduled_date, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, NOW())
+     ON DUPLICATE KEY UPDATE
+       title = VALUES(title), difficulty = VALUES(difficulty),
+       tags = VALUES(tags), test_case_count = VALUES(test_case_count)`,
+    [title, question.titleSlug, difficulty, tagJson, testCases.length, today]
+  );
+
+  // 存到单独的表以存储完整数据
+  await pool.execute(
+    `CREATE TABLE IF NOT EXISTS challenge_data (
+       slug VARCHAR(200) PRIMARY KEY,
+       description TEXT,
+       template JSON,
+       test_cases JSON,
+       examples JSON,
+       source_name VARCHAR(100),
+       source_url VARCHAR(500),
+       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
+  );
+
+  await pool.execute(
+    `INSERT INTO challenge_data (slug, description, template, test_cases, examples, source_name, source_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       description = VALUES(description), template = VALUES(template),
+       test_cases = VALUES(test_cases), examples = VALUES(examples),
+       source_name = VALUES(source_name), source_url = VALUES(source_url)`,
+    [question.titleSlug, description, templateJson, testCasesJson, examplesJson, 'LeetCode', url]
+  );
+
+  console.log(`✅ 已写入数据库: challenges + challenge_data`);
+  console.log(`   日期: ${today}`);
+  console.log(`   链接: ${url}`);
+
+  // 自动部署
+  const { execSync } = await import('child_process');
+  const repoDir = join(__dirname, '..', '..', '..');
+  try {
+    console.log('');
+    console.log('🚀 自动部署网站...');
+    execSync('npm run build', { cwd: repoDir, stdio: 'pipe', timeout: 60000 });
+    execSync(`rsync -avz --delete ${repoDir}/dist/ /www/wwwroot/eaglecoder.cn/`, { stdio: 'pipe', timeout: 30000 });
+    console.log('✅ 部署完成！新题已上线');
+  } catch (err: any) {
+    console.log(`⚠️ 自动部署失败: ${err.message}，请手动运行 sudo bash /www/wwwroot/deploy.sh`);
+  }
+
+  await pool.end();
 }
 
 main();
