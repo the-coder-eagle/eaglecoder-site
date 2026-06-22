@@ -1,0 +1,122 @@
+---
+// ChallengeView — 题目描述展示组件
+import type { Challenge } from '../../data/challenges';
+
+export interface Props {
+  challenge: Challenge;
+}
+
+const { challenge } = Astro.props;
+---
+
+<div class="challenge-view fade-in">
+  <!-- 题目标题 + 难度 -->
+  <div class="mb-6">
+    <div class="flex items-center gap-3 mb-2 flex-wrap">
+      <h1 class="text-2xl font-bold">{challenge.title}</h1>
+      <span
+        class={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+          challenge.difficulty === 'easy'
+            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+            : challenge.difficulty === 'medium'
+              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+              : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+        }`}
+      >
+        {challenge.difficulty === 'easy' ? '简单' : challenge.difficulty === 'medium' ? '中等' : '困难'}
+      </span>
+    </div>
+
+    <!-- 标签 -->
+    <div class="flex flex-wrap gap-1.5 mb-3">
+      {challenge.tags.map((tag) => (
+        <span class="text-xs px-2 py-0.5 rounded-full" style="background: var(--color-bg-secondary); color: var(--color-primary);">
+          {tag}
+        </span>
+      ))}
+    </div>
+
+    {challenge.source && (
+      <p class="text-xs" style="color: var(--color-text-secondary);">
+        来源：<a href={challenge.source.url} target="_blank" rel="noopener" class="hover:underline" style="color: var(--color-primary);">{challenge.source.name}</a>
+      </p>
+    )}
+  </div>
+
+  <!-- 题目描述 -->
+  <div class="prose mb-8">
+    <div set:html={challenge.description.replace(/\n/g, '<br>')} />
+  </div>
+
+  <!-- 示例 -->
+  <div class="mb-8">
+    <h3 class="text-sm font-semibold mb-3" style="color: var(--color-text-secondary);">📋 示例</h3>
+    {challenge.examples.map((ex, i) => (
+      <div class="mb-3 rounded-lg border p-4" style="border-color: var(--color-border); background: var(--color-bg-secondary);">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs px-1.5 py-0.5 rounded font-mono" style="background: var(--color-primary); color: white;">示例 {i + 1}</span>
+          {ex.explanation && <span class="text-xs" style="color: var(--color-text-secondary);">{ex.explanation}</span>}
+        </div>
+        <div class="grid gap-2 text-sm">
+          <div>
+            <span class="font-mono font-semibold" style="color: var(--color-text-secondary);">输入：</span>
+            <code class="font-mono px-1.5 py-0.5 rounded text-xs" style="background: var(--color-code-bg); color: #e2e8f0;">{ex.input}</code>
+          </div>
+          <div>
+            <span class="font-mono font-semibold" style="color: var(--color-text-secondary);">输出：</span>
+            <code class="font-mono px-1.5 py-0.5 rounded text-xs" style="background: var(--color-code-bg); color: #e2e8f0;">{ex.output}</code>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- 测试用例 -->
+  <div class="mb-8">
+    <h3 class="text-sm font-semibold mb-3" style="color: var(--color-text-secondary);">
+      🧪 测试用例 ({challenge.testCases.length} 个)
+    </h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr style="background: var(--color-bg-secondary);">
+            <th class="text-left p-2 border" style="border-color: var(--color-border);">#</th>
+            <th class="text-left p-2 border" style="border-color: var(--color-border);">输入</th>
+            <th class="text-left p-2 border" style="border-color: var(--color-border);">期望输出</th>
+            <th class="text-left p-2 border" style="border-color: var(--color-border);">说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          {challenge.testCases.map((tc, i) => (
+            <tr class="border" style="border-color: var(--color-border);">
+              <td class="p-2 font-mono text-xs" style="color: var(--color-text-secondary);">{i + 1}</td>
+              <td class="p-2 font-mono text-xs">{tc.input.replace(/\n/g, ' ⏎ ')}</td>
+              <td class="p-2 font-mono text-xs">{tc.expected}</td>
+              <td class="p-2 text-xs" style="color: var(--color-text-secondary);">{tc.description || '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 提示 -->
+  {challenge.hints && challenge.hints.length > 0 && (
+    <details class="mb-6">
+      <summary class="text-sm font-semibold cursor-pointer hover:opacity-80" style="color: var(--color-primary);">
+        💡 提示 ({challenge.hints.length} 条)
+      </summary>
+      <div class="mt-2 pl-4 border-l-2" style="border-color: var(--color-primary);">
+        {challenge.hints.map((hint) => (
+          <p class="text-sm mb-1" style="color: var(--color-text-secondary);">{hint}</p>
+        ))}
+      </div>
+    </details>
+  )}
+</div>
+
+<style>
+  .challenge-view .prose {
+    max-width: none;
+  }
+</style>

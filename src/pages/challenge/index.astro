@@ -1,0 +1,117 @@
+---
+// /challenge — 每日一题
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+import ChallengeView from '../../components/challenge/ChallengeView.astro';
+import CodeEditor from '../../components/challenge/CodeEditor.astro';
+import LanguageSelector from '../../components/challenge/LanguageSelector.astro';
+import { getTodaysChallenge, type SupportedLanguage } from '../../data/challenges';
+
+const challenge = getTodaysChallenge();
+const defaultLang: SupportedLanguage = 'c';
+
+// 序列化题目数据供客户端使用
+const challengeJson = JSON.stringify(challenge);
+---
+
+<Layout title={`每日一题 - ${challenge.title}`} description={challenge.title}>
+  <Nav />
+
+  <div class="max-w-7xl mx-auto px-4 py-8" data-pagefind-ignore>
+    <!-- 顶部通栏 -->
+    <div class="flex items-center justify-between mb-8 fade-in">
+      <div>
+        <p class="text-sm mb-1" style="color: var(--color-text-secondary);">
+          🗓️ 每日一题 · {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <a
+          href="/challenge/history"
+          class="text-sm px-4 py-2 rounded-lg border transition-all hover:shadow-sm"
+          style="border-color: var(--color-border); color: var(--color-text-secondary);"
+        >
+          📚 历史题目
+        </a>
+      </div>
+    </div>
+
+    <!-- 两栏布局 -->
+    <div class="grid lg:grid-cols-2 gap-8">
+      <!-- 左栏：题目描述 -->
+      <div class="fade-in">
+        <ChallengeView challenge={challenge} />
+      </div>
+
+      <!-- 右栏：编辑器 -->
+      <div>
+        <div class="sticky top-20">
+          <!-- 语言选择 -->
+          <LanguageSelector active={defaultLang} />
+
+          <!-- 代码编辑器 -->
+          <CodeEditor language={defaultLang} initialCode={challenge.template[defaultLang]} />
+
+          <!-- 用户名 + 提交（阶段 1 占位，阶段 2 接入后端） -->
+          <div class="mt-4 flex items-center gap-3">
+            <div class="flex-1">
+              <input
+                id="username-input"
+                type="text"
+                placeholder="输入你的用户名（可选）"
+                maxlength="30"
+                autocomplete="off"
+                class="w-full px-3 py-2 rounded-lg border text-sm transition-colors"
+                style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-text);"
+              />
+            </div>
+            <button
+              id="submit-btn"
+              class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-md"
+              style="background: var(--color-primary);"
+              disabled
+            >
+              提交代码
+            </button>
+          </div>
+          <p class="text-xs mt-1" style="color: var(--color-text-secondary);">
+            ⚡ 判题功能将在后端上线后启用。现在可以复制代码到本地测试。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
+
+<script>
+  // 传递题目数据给客户端组件
+  const challenge = JSON.parse(challengeJson);
+  (window as any).__challengeTemplates = challenge.template;
+  (window as any).__editorLang = defaultLang;
+  (window as any).__editorCode = challenge.template[defaultLang];
+
+  // 暂存用户名的 localStorage key
+  const USERNAME_KEY = 'oj-username';
+
+  const usernameInput = document.getElementById('username-input') as HTMLInputElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  // 恢复之前保存的用户名
+  const saved = localStorage.getItem(USERNAME_KEY);
+  if (saved) {
+    usernameInput.value = saved;
+  }
+
+  // 阶段 1：提交按钮暂不可用（纯前端无后端）
+  // 阶段 2：接入 /api/judge 后启用
+  usernameInput.addEventListener('input', () => {
+    const val = usernameInput.value.trim();
+    localStorage.setItem(USERNAME_KEY, val);
+  });
+
+  // 监听编辑器内容变化，有代码就启用按钮视觉
+  // 阶段 2 时移除 disabled，接入真实 API
+</script>

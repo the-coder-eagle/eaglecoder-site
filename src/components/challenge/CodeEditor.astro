@@ -1,0 +1,124 @@
+---
+// CodeEditor — CodeMirror 6 封装
+// 支持语言切换、暗色模式、外部读写代码
+export interface Props {
+  language: string;  // 'c' | 'javascript' | 'python'
+  initialCode?: string;
+}
+
+const { language, initialCode = '' } = Astro.props;
+---
+
+<div
+  id="code-editor"
+  class="rounded-lg overflow-hidden border"
+  style="border-color: var(--color-border);"
+>
+  <div id="cm-editor"></div>
+</div>
+
+<style>
+  #cm-editor {
+    font-size: 14px;
+    min-height: 280px;
+  }
+  #cm-editor .cm-editor {
+    height: 100%;
+  }
+  #cm-editor .cm-scroller {
+    overflow: auto;
+    max-height: 480px;
+  }
+  /* 暗色模式 */
+  :global(html.dark) #cm-editor .cm-editor {
+    background: var(--color-code-bg);
+  }
+</style>
+
+<script>
+  import { EditorView, keymap, lineNumbers, highlightActiveLine } from '@codemirror/view';
+  import { EditorState, Compartment } from '@codemirror/state';
+  import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+  import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
+  import { autocompletion, closeBrackets } from '@codemirror/autocomplete';
+  import { searchKeymap } from '@codemirror/search';
+  import { oneDark } from '@codemirror/theme-one-dark';
+  import { cpp } from '@codemirror/lang-cpp';
+  import { javascript } from '@codemirror/lang-javascript';
+  import { python } from '@codemirror/lang-python';
+
+  // 语言 compartment — 允许动态切换
+  const languageCompartment = new Compartment();
+
+  function getLanguageExtension(lang: string) {
+    switch (lang) {
+      case 'c': return cpp();
+      case 'javascript': return javascript();
+      case 'python': return python();
+      default: return javascript();
+    }
+  }
+
+  // 暗色模式 theme compartment
+  const themeCompartment = new Compartment();
+
+  function getTheme(isDark: boolean) {
+    return isDark ? oneDark : defaultHighlightStyle;
+  }
+
+  // 初始值
+  const initialLang = (window as any).__editorLang || 'python';
+  const initialCode = (window as any).__editorCode || '';
+  const isDark = document.documentElement.classList.contains('dark');
+
+  const view = new EditorView({
+    doc: initialCode,
+    extensions: [
+      lineNumbers(),
+      highlightActiveLine(),
+      bracketMatching(),
+      closeBrackets(),
+      autocompletion(),
+      history(),
+      keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+      languageCompartment.of(getLanguageExtension(initialLang)),
+      themeCompartment.of(isDark ? [syntaxHighlighting(oneDark)] : [syntaxHighlighting(defaultHighlightStyle)]),
+      EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          (window as any).__editorGetCode = () => view.state.doc.toString();
+        }
+      }),
+    ],
+    parent: document.getElementById('cm-editor')!,
+  });
+
+  // 暴露给外部的方法
+  (window as any).__editorGetCode = () => view.state.doc.toString();
+
+  (window as any).__editorSetCode = (code: string) => {
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: code },
+    });
+  };
+
+  (window as any).__editorSwitchLang = (lang: string) => {
+    view.dispatch({
+      effects: languageCompartment.reconfigure(getLanguageExtension(lang)),
+    });
+  };
+
+  (window as any).__editorToggleTheme = (dark: boolean) => {
+    view.dispatch({
+      effects: themeCompartment.reconfigure(
+        dark ? [syntaxHighlighting(oneDark)] : [syntaxHighlighting(defaultHighlightStyle)]
+      ),
+    });
+  };
+
+  // 监听暗色模式切换（外部触发时同步编辑器主题）
+  const observer = new MutationObserver(() => {
+    const dark = document.documentElement.classList.contains('dark');
+    (window as any).__editorToggleTheme(dark);
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+</script>

@@ -1,0 +1,58 @@
+---
+// LanguageSelector — 编程语言切换标签
+import { LANGUAGES, type SupportedLanguage } from '../../data/challenges';
+
+export interface Props {
+  active: SupportedLanguage;
+}
+
+const { active } = Astro.props;
+---
+
+<div class="flex items-center gap-2 mb-4">
+  <span class="text-xs font-semibold mr-1" style="color: var(--color-text-secondary);">语言：</span>
+  {LANGUAGES.map((lang) => (
+    <button
+      type="button"
+      class={`lang-btn text-xs px-3 py-1.5 rounded-md font-medium transition-all border ${
+        lang.value === active
+          ? 'active'
+          : ''
+      }`}
+      data-lang={lang.value}
+      style={lang.value === active
+        ? `background: var(--color-primary); color: white; border-color: var(--color-primary);`
+        : `background: var(--color-bg); color: var(--color-text-secondary); border-color: var(--color-border);`
+      }
+    >
+      {lang.label}
+    </button>
+  ))}
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.lang-btn');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      if (!lang) return;
+
+      // 更新按钮样式
+      buttons.forEach((b) => {
+        b.setAttribute('style', '');
+        b.classList.remove('active');
+      });
+      btn.setAttribute('style', 'background: var(--color-primary); color: white; border-color: var(--color-primary);');
+
+      // 切换编辑器语言
+      (window as any).__editorSwitchLang?.(lang);
+
+      // 切换模板代码
+      const templates = (window as any).__challengeTemplates;
+      if (templates && templates[lang]) {
+        (window as any).__editorSetCode?.(templates[lang]);
+      }
+    });
+  });
+</script>

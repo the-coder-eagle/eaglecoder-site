@@ -1,0 +1,113 @@
+---
+// /challenge/history — 历史题目列表
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+import { challenges, type Challenge } from '../../data/challenges';
+
+const difficultyLabel: Record<Challenge['difficulty'], string> = {
+  easy: '简单',
+  medium: '中等',
+  hard: '困难',
+};
+
+const difficultyColor: Record<Challenge['difficulty'], string> = {
+  easy: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+  medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
+  hard: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+};
+
+const difficultyBar: Record<Challenge['difficulty'], string> = {
+  easy: '#22c55e',
+  medium: '#eab308',
+  hard: '#ef4444',
+};
+
+const counts = {
+  easy: challenges.filter((c) => c.difficulty === 'easy').length,
+  medium: challenges.filter((c) => c.difficulty === 'medium').length,
+  hard: challenges.filter((c) => c.difficulty === 'hard').length,
+};
+---
+
+<Layout title="历史题目" description="每日一题历史存档">
+  <Nav />
+
+  <div class="max-w-5xl mx-auto px-4 py-12" data-pagefind-ignore>
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold mb-2">📚 历史题目</h1>
+        <p style="color: var(--color-text-secondary);">全部 {challenges.length} 道题，持续更新中</p>
+      </div>
+      <a
+        href="/challenge"
+        class="text-sm px-4 py-2 rounded-lg border transition-all hover:shadow-sm"
+        style="border-color: var(--color-border); color: var(--color-text-secondary);"
+      >
+        ← 今日题目
+      </a>
+    </div>
+
+    <!-- 难度统计 -->
+    <div class="flex gap-4 mb-8">
+      {(['easy', 'medium', 'hard']).map((diff) => {
+        const label = difficultyLabel[diff];
+        const color = difficultyColor[diff];
+        const count = counts[diff];
+        return (
+          <div class="flex items-center gap-2 text-sm px-4 py-2 rounded-lg border" style="border-color: var(--color-border);">
+            <span class={`text-xs px-2 py-0.5 rounded-full ${color}`}>{label}</span>
+            <span class="font-semibold">{count}</span>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- 题目网格 -->
+    <div class="grid sm:grid-cols-2 gap-4">
+      {challenges.map((challenge, i) => (
+        <a
+          href={`/challenge?id=${challenge.id}`}
+          class="flex rounded-lg border overflow-hidden transition-all hover:shadow-md"
+          style="border-color: var(--color-border); background: var(--color-bg);"
+        >
+          <!-- 左侧彩色竖条 -->
+          <div
+            class="w-1 flex-shrink-0"
+            style={`background: ${difficultyBar[challenge.difficulty]};`}
+          ></div>
+
+          <!-- 内容 -->
+          <div class="p-5 flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-mono" style="color: var(--color-text-secondary);">#{challenge.id}</span>
+              <span class={`text-xs px-1.5 py-0.5 rounded-full ${difficultyColor[challenge.difficulty]}`}>
+                {difficultyLabel[challenge.difficulty]}
+              </span>
+            </div>
+
+            <h3 class="font-semibold text-lg mb-2">{challenge.title}</h3>
+
+            <div class="flex flex-wrap gap-1.5">
+              {challenge.tags.slice(0, 3).map((tag) => (
+                <span
+                  class="text-xs px-2 py-0.5 rounded-full"
+                  style="background: var(--color-bg-secondary); color: var(--color-primary);"
+                >
+                  {tag}
+                </span>
+              ))}
+              {challenge.tags.length > 3 && (
+                <span class="text-xs px-2 py-0.5 rounded-full" style="color: var(--color-text-secondary);">
+                  +{challenge.tags.length - 3}
+                </span>
+              )}
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
