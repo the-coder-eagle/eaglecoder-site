@@ -88,9 +88,9 @@ const challengeJson = JSON.stringify(challenge);
   window.__editorLang = defaultLang;
   window.__editorCode = CHALLENGE.template[defaultLang];
 
-  const usernameInput = document.getElementById('username-input') as HTMLInputElement;
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-  const resultsContainer = document.getElementById('results-container') as HTMLDivElement;
+  const usernameInput = document.getElementById('username-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const resultsContainer = document.getElementById('results-container');
 
   // 恢复用户名
   const saved = localStorage.getItem(USERNAME_KEY);
@@ -104,20 +104,20 @@ const challengeJson = JSON.stringify(challenge);
 
   // 语言切换时更新 currentLang
   const origSwitch = window.__editorSwitchLang;
-  window.__editorSwitchLang = (lang: string) => {
+  window.__editorSwitchLang = (lang) => {
     currentLang = lang;
     if (origSwitch) origSwitch(lang);
   };
 
   /** 渲染判题结果 */
-  function renderResults(data: any) {
+  function renderResults(data) {
     const { passed, total, score, status, results, username } = data;
 
-    const statusIcons: Record<string, string> = {
+    const statusIcons = {
       accepted: '✅', wrong_answer: '❌', time_limit_exceeded: '⏱️',
       runtime_error: '💥', compile_error: '🔧', error: '⚠️',
     };
-    const statusLabels: Record<string, string> = {
+    const statusLabels = {
       accepted: '通过', wrong_answer: '答案错误', time_limit_exceeded: '超时',
       runtime_error: '运行错误', compile_error: '编译错误', error: '系统错误',
     };
@@ -155,7 +155,7 @@ const challengeJson = JSON.stringify(challenge);
     resultsContainer.innerHTML = html;
   }
 
-  function escapeHtml(s: string) {
+  function escapeHtml(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
@@ -193,7 +193,7 @@ const challengeJson = JSON.stringify(challenge);
       } else {
         resultsContainer.innerHTML = `<p style="color: #ef4444; margin-top: 12px;">❌ ${data.error || '判题失败'}</p>`;
       }
-    } catch (err: any) {
+    } catch (err) {
       resultsContainer.innerHTML = `<p style="color: #ef4444; margin-top: 12px;">❌ 连接判题服务失败：${err.message}</p>`;
     } finally {
       submitBtn.disabled = false;
