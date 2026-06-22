@@ -131,8 +131,58 @@ async function main() {
   console.log(`   标签: ${pick.tags.map(translateTag).join(', ')}`);
   console.log(`   解决人数: ${stats?.solvedCount || '?'}`);
 
-  // 5. 生成输出
+  // 5. 抓取题目页面的样例测试用例
   const problemUrl = `https://codeforces.com/problemset/problem/${pick.contestId}/${pick.index}`;
+
+  console.log(`   抓取样例数据...`);
+  let examples: { input: string; output: string; explanation?: string }[] = [];
+  let testCases: { input: string; expected: string; description?: string }[] = [];
+
+  try {
+    const htmlRes = await fetch(problemUrl, {
+      signal: AbortSignal.timeout(15000),
+      headers: { 'User-Agent': 'EagleCoder-OJ/1.0 (educational)' },
+    });
+    const html = await htmlRes.text();
+
+    // 提取 <pre> 标签内容（CF 的样例格式）
+    const preContent = html.match(/<pre>(.*?)<\/pre>/gs) || [];
+    const inputs: string[] = [];
+    const outputs: string[] = [];
+
+    // CF 页面：class="input" 里的 pre 是输入，class="output" 里的 pre 是输出
+    const inputBlocks = html.match(/class="input"[^>]*>[\s\S]*?<pre>([\s\S]*?)<\/pre>/gi) || [];
+    const outputBlocks = html.match(/class="output"[^>]*>[\s\S]*?<pre>([\s\S]*?)<\/pre>/gi) || [];
+
+    for (const block of inputBlocks) {
+      const m = block.match(/<pre>([\s\S]*?)<\/pre>/i);
+      if (m) inputs.push(m[1].replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim());
+    }
+    for (const block of outputBlocks) {
+      const m = block.match(/<pre>([\s\S]*?)<\/pre>/i);
+      if (m) outputs.push(m[1].replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim());
+    }
+
+    const count = Math.min(inputs.length, outputs.length);
+    for (let i = 0; i < count; i++) {
+      examples.push({
+        input: inputs[i],
+        output: outputs[i],
+        explanation: `样例 ${i + 1}`,
+      });
+      testCases.push({
+        input: inputs[i],
+        expected: outputs[i],
+        description: `样例 ${i + 1}`,
+      });
+    }
+
+    console.log(`   抓到 ${count} 个样例测试用例`);
+  } catch (err: any) {
+    console.log(`   ⚠️ 抓取样例失败: ${err.message}，使用空模板`);
+  }
+
+  // 6. 生成输出
 
   const output = {
     id: 'cf-' + pick.contestId + pick.index,
@@ -141,28 +191,18 @@ async function main() {
     difficulty: getDifficulty(pick.rating),
     tags: pick.tags.map(translateTag),
     rating: pick.rating,
-    description: `[Codeforces ${pick.contestId}${pick.index}](${problemUrl}) — Rating ${pick.rating}
+    description: `[${pick.contestId}${pick.index}. ${pick.name}](${problemUrl}) — Rating ${pick.rating}
 
-${pick.tags.map(translateTag).join(' / ')}
+${pick.tags.map(translateTag).join(' / ')} · 已有 ${stats?.solvedCount || '?'} 人通过
 
-> ⚠️ 题目详情请访问原站查看。本页面仅提供判题框架。
+> 📝 输入输出格式请参考原题。以下为抓取的样例。
 
-**输入格式：** 按照 Codeforces 原题输入格式。
-
-**输出格式：** 按照 Codeforces 原题输出格式。`,
-    examples: [
-      {
-        input: '(请访问原站查看样例)',
-        output: '',
-        explanation: `[打开原题](${problemUrl})`,
-      },
+此题为爬虫自动抓取。`,
+    examples: examples.length > 0 ? examples : [
+      { input: '(访问原站查看)', output: '', explanation: `[打开原题](${problemUrl})` },
     ],
-    testCases: [
-      {
-        input: '(请在本地测试后手动添加测试用例)',
-        expected: '',
-        description: '请访问原站查看样例并手动配置测试用例',
-      },
+    testCases: testCases.length > 0 ? testCases : [
+      { input: '0', expected: '0', description: '占位用例，请手动配置' },
     ],
     template: {
       c: '#include <stdio.h>\n\nint main() {\n    // TODO: 解决 ' + pick.name + '\n    // ' + problemUrl + '\n    return 0;\n}',
