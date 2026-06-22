@@ -1,7 +1,8 @@
-// POST /api/judge — 代码判题
+// POST /api/judge — 代码判题 + 自动存数据库
 import { Hono } from 'hono';
 import { executeCodeSandbox } from '../services/sandbox';
 import type { Challenge } from '../../../src/data/challenges';
+import pool from '../db/connection';
 
 export const judgeRoute = new Hono();
 
@@ -131,12 +132,22 @@ judgeRoute.post('/', async (c) => {
 
     const total = challenge.testCases.length;
     const score = total > 0 ? Math.round((passed / total) * 100) : 0;
+    const judgeStatus = passed === total ? 'accepted' : 'wrong_answer';
+
+    // 异步保存到数据库（不阻塞响应）
+    if (body.username) {
+      pool.execute(
+        `INSERT INTO submissions (challenge_id, username, language, code, status, score, passed, total)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [body.challengeId, body.username, body.language, body.code.slice(0, 5000), judgeStatus, score, passed, total]
+      ).catch(err => console.error('DB save error:', err.message));
+    }
 
     return c.json({
       passed,
       total,
       score,
-      status: passed === total ? 'accepted' : 'wrong_answer',
+      status: judgeStatus,
       results,
       username: body.username || null,
     });

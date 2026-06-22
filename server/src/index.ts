@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
 import { challengeRoute } from './routes/challenge';
 import { judgeRoute } from './routes/judge';
+import { statsRoute } from './routes/stats';
 import { rateLimit } from './middleware/rate-limit';
 
 const app = new Hono();
@@ -35,6 +36,7 @@ app.route('/api/challenge', challengeRoute);
 // 判题路由 — 加频率限制：每分钟 10 次
 app.use('/api/judge/*', rateLimit(10, 60_000));
 app.route('/api/judge', judgeRoute);
+app.route('/api/stats', statsRoute);
 
 // 启动服务器
 const port = parseInt(process.env.PORT || '3000', 10);

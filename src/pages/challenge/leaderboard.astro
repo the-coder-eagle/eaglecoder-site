@@ -1,0 +1,82 @@
+---
+// /challenge/leaderboard — 排行榜
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="排行榜" description="每日一题排行榜">
+  <Nav />
+
+  <div class="max-w-3xl mx-auto px-4 py-12" data-pagefind-ignore>
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold mb-2">🏆 排行榜</h1>
+        <p style="color: var(--color-text-secondary);">每题最高分汇总，实时更新</p>
+      </div>
+      <a href="/challenge" class="text-sm px-4 py-2 rounded-lg border" style="border-color: var(--color-border); color: var(--color-text-secondary);">
+        ← 回题目
+      </a>
+    </div>
+
+    <!-- 排行榜表格 -->
+    <div id="leaderboard-container" class="text-center py-12" style="color: var(--color-text-secondary);">
+      ⏳ 加载中...
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
+
+<script is:inline>
+  (function() {
+    const container = document.getElementById('leaderboard-container');
+    if (!container) return;
+
+    async function load() {
+      try {
+        const res = await fetch('/api/stats/leaderboard?limit=20');
+        const data = await res.json();
+        const list = data.leaderboard || [];
+
+        if (!list.length) {
+          container.innerHTML = '<p>还没有人提交过，去做第一个打卡的人 🚀</p>';
+          return;
+        }
+
+        let html = `<div class="border rounded-lg overflow-hidden" style="border-color: var(--color-border);">
+          <table class="w-full text-sm">
+            <thead><tr style="background: var(--color-bg-secondary);">
+              <th class="text-left p-3 border-b" style="border-color: var(--color-border);">#</th>
+              <th class="text-left p-3 border-b" style="border-color: var(--color-border);">用户</th>
+              <th class="text-left p-3 border-b" style="border-color: var(--color-border);">总分</th>
+              <th class="text-left p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">通过</th>
+              <th class="text-left p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">题数</th>
+              <th class="text-left p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">最近提交</th>
+            </tr></thead><tbody>`;
+
+        const medals = ['🥇','🥈','🥉'];
+        list.forEach((r, i) => {
+          const bg = i < 3 ? '#fef3c7' : (i % 2 === 0 ? 'var(--color-bg-secondary)' : 'transparent');
+          html += `<tr style="background: ${bg};">
+            <td class="p-3 border-b font-mono" style="border-color: var(--color-border);">${medals[i] || (i+1)}</td>
+            <td class="p-3 border-b font-semibold" style="border-color: var(--color-border);">${escapeHtml(r.username)}</td>
+            <td class="p-3 border-b font-bold" style="border-color: var(--color-border); color: var(--color-primary);">${r.total_score}</td>
+            <td class="p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">${r.total_passed || 0}</td>
+            <td class="p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">${r.solutions || 0}</td>
+            <td class="p-3 border-b text-xs hidden sm:table-cell" style="border-color: var(--color-border); color: var(--color-text-secondary);">${formatDate(r.last_submit)}</td>
+          </tr>`;
+        });
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<p style="color: #ef4444;">加载失败，请稍后重试</p>';
+      }
+    }
+
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function formatDate(d) { if (!d) return '-'; const t = new Date(d); return t.toLocaleDateString('zh-CN') + ' ' + t.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}); }
+
+    load();
+  })();
+</script>

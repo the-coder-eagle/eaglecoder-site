@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^2.0.5",
-    "hono": "^4.8.5"
+    "hono": "^4.8.5",
+    "mysql2": "^3.22.5"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
