@@ -94,7 +94,7 @@ const showBackLink = !!idParam;
 
 <script is:inline define:vars={{ challengeJson, defaultLang }}>
   (function() {
-  const CHALLENGE = JSON.parse(challengeJson);
+  let CHALLENGE = JSON.parse(challengeJson);
   const USERNAME_KEY = 'oj-username';
   const USER_ID_KEY = 'oj-user-id';
 
@@ -112,6 +112,54 @@ const showBackLink = !!idParam;
   window.__challengeTemplates = CHALLENGE.template;
   window.__editorLang = defaultLang;
   window.__editorCode = CHALLENGE.template[defaultLang];
+
+  // 优先从 API 加载今日题目（爬虫每天自动更新）
+  fetch('/api/challenge/today')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.id !== CHALLENGE.id) {
+        // 替换题目数据
+        window.__challengeTemplates = data.template;
+        window.__editorLang = defaultLang;
+        window.__editorCode = data.template[defaultLang];
+        CHALLENGE = data;
+
+        // 更新页面标题和描述
+        document.title = '每日一题 - ' + data.title + ' | EagleCoder';
+        const titleEl = document.querySelector('.challenge-view h1');
+        if (titleEl) titleEl.textContent = data.title;
+
+        // 更新描述
+        const descEl = document.querySelector('.challenge-view .prose');
+        if (descEl && data.description) {
+          descEl.innerHTML = data.description.replace(/\\n/g, '<br>');
+        }
+
+        // 更新测试用例表
+        const tableBody = document.querySelector('.challenge-view table tbody');
+        if (tableBody && data.testCases) {
+          let rows = '';
+          data.testCases.forEach(function(tc, i) {
+            rows += '<tr><td>'+(i+1)+'</td><td>'+escapeHtml2(tc.input)+'</td><td>'+escapeHtml2(tc.expected)+'</td><td>'+(tc.description||'—')+'</td></tr>';
+          });
+          tableBody.innerHTML = rows;
+        }
+
+        // 更新来源
+        if (data.source) {
+          const srcEl = document.querySelector('.challenge-view p:last-of-type');
+          if (srcEl && data.source.name) {
+            srcEl.innerHTML = '来源：<a href="'+data.source.url+'" target="_blank">'+data.source.name+'</a>';
+          }
+        }
+      }
+    })
+    .catch(function() { /* API 不可用时用静态数据 */ });
+
+  function escapeHtml2(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
 
   const usernameInput = document.getElementById('username-input');
   const submitBtn = document.getElementById('submit-btn');
