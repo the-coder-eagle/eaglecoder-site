@@ -8,7 +8,10 @@
  */
 
 import { writeFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface CFProblem {
   contestId: number;
@@ -172,8 +175,9 @@ ${pick.tags.map(translateTag).join(' / ')}
     },
   };
 
-  // 6. 保存
-  const outPath = join(process.cwd(), '..', '..', 'src', 'data', 'cf-scraped.json');
+  // 6. 保存（保存到 server 目录，不受 cwd 影响）
+  const serverDir = __dirname.replace(/cron$/, '');
+  const outPath = join(serverDir, 'cf-scraped.json');
   writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf-8');
   console.log(`✅ 已保存到 ${outPath}`);
   console.log('');
