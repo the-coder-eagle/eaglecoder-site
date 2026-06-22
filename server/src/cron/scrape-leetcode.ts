@@ -126,6 +126,19 @@ query randomQuestion($categorySlug: String, $filters: QuestionListFilterInput) {
   }
 }`;
 
+// GraphQL 查询：获取题目详情（完整内容 + 代码模板）
+const DETAIL_QUERY = `
+query questionData($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    content
+    codeSnippets { lang langSlug code }
+    sampleTestCase
+    exampleTestcaseList
+    exampleTestcases
+    topicTags { name translatedName }
+  }
+}`;
+
 // GraphQL 查询：今日题目
 const DAILY_QUERY = `
 query questionOfToday {
@@ -190,35 +203,53 @@ async function leetcodeRequest(query: string, variables: Record<string, any>) {
   return res.json();
 }
 
-/** 解析样例用例为 input/expected 对 */
-function parseSampleTestCase(sample: string, question: LCQuestion) {
+/** 从 HTML 中提取 <pre> 块作为样例 */
+function extractPreFromHtml(html: string): string[] {
+  const result: string[] = [];
+  const regex = /<pre[^>]*>([\s\S]*?)<\/pre>/gi;
+  let m;
+  while ((m = regex.exec(html)) !== null) {
+    result.push(m[1].replace(/<[^>]+>/g, '').trim());
+  }
+  return result;
+}
+
+/** 解析样例：优先用 exampleTestcaseList，fallback 用 sampleTestCase */
+function parseSampleTestCase2(sample: string, list: string[], content: string) {
   const testCases: { input: string; expected: string; description: string }[] = [];
   const examples: { input: string; output: string; explanation?: string }[] = [];
 
-  if (!sample) return { testCases, examples };
-
-  // LeetCode 的 sampleTestCase 是输入参数，不是完整的 stdin
-  // 对于简单类型（字符串、数组）可以直接用
-  const lines = sample.split('\n').filter((l) => l.trim());
-  if (lines.length >= 2) {
-    // 尝试成对解析
-    for (let i = 0; i < lines.length - 1; i += 2) {
+  // 尝试从 HTML 内容中提取输入/输出对
+  const pres = extractPreFromHtml(content || '');
+  if (pres.length >= 2) {
+    for (let i = 0; i < pres.length - 1; i += 2) {
+      const inp = pres[i];
+      const out = pres[i + 1];
       testCases.push({
-        input: lines[i].trim(),
-        expected: lines[i + 1].trim(),
+        input: inp,
+        expected: out,
         description: `样例 ${Math.floor(i / 2) + 1}`,
       });
-      examples.push({
+      examples.push({ input: inp, output: out });
+    }
+  } else if (list && list.length > 0) {
+    list.forEach((item, i) => {
+      testCases.push({
+        input: item.trim(),
+        expected: '(输出需手动配置)',
+        description: `样例 ${i + 1}`,
+      });
+      examples.push({ input: item.trim(), output: '(需手动配置)' });
+    });
+  } else if (sample) {
+    const lines = sample.split('\n').filter((l) => l.trim());
+    for (let i = 0; i < lines.length; i++) {
+      testCases.push({
         input: lines[i].trim(),
-        output: lines[i + 1].trim(),
+        expected: '(输出需手动配置)',
+        description: `样例 ${i + 1}`,
       });
     }
-  } else if (lines.length === 1) {
-    testCases.push({
-      input: lines[0].trim(),
-      expected: '',
-      description: '样例输入（输出需手动配置）',
-    });
   }
 
   return { testCases, examples };
@@ -237,6 +268,12 @@ async function fetchDailyProblem(): Promise<LCQuestion> {
   const records = (data as LCDailyResponse).data.todayRecord;
   if (!records || records.length === 0) throw new Error('今日题目不可用');
   return records[0].question;
+}
+
+/** 获取题目完整详情（描述 + 代码模板 + 样例） */
+async function fetchDetail(titleSlug: string): Promise<any> {
+  const data = await leetcodeRequest(DETAIL_QUERY, { titleSlug });
+  return (data as any).data.question;
 }
 
 async function main() {
@@ -272,13 +309,28 @@ async function main() {
   console.log(`   题目: [${difficulty}] ${title} (#${question.questionFrontendId})`);
   console.log(`   标签: ${tags.join(', ')}`);
 
+  // 获取完整详情
+  console.log('   获取完整题目描述...');
+  let detail: any = null;
+  try {
+    detail = await fetchDetail(question.titleSlug);
+  } catch (err: any) {
+    console.log(`   ⚠️ 获取详情失败: ${err.message}`);
+  }
+
+  // 用详情数据覆盖
+  const content = detail?.content || question.translatedContent || question.content || '';
+  const snippets = detail?.codeSnippets || question.codeSnippets || [];
+
   // 解析样例
-  const { testCases, examples } = parseSampleTestCase(question.sampleTestCase, question);
+  const sampleInput = detail?.sampleTestCase || question.sampleTestCase || '';
+  const exampleList = detail?.exampleTestcaseList || [];
+  const { testCases, examples } = parseSampleTestCase2(sampleInput, exampleList, content);
 
   // 提取代码模板
   const template: Record<string, string> = { c: '', javascript: '', python: '' };
 
-  for (const snippet of (question.codeSnippets || [])) {
+  for (const snippet of snippets) {
     const lang = LANG_MAP[snippet.langSlug];
     if (lang && !template[lang]) {
       // 用注释包装一下
