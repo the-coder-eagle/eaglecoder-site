@@ -5,6 +5,13 @@ import pool from '../db/connection';
 
 export const challengeRoute = new Hono();
 
+// 安全 JSON 解析：mysql2 可能返回字符串或已解析对象
+function safeJson(val: any) {
+  if (!val) return null;
+  if (typeof val === 'object') return val;
+  try { return JSON.parse(val); } catch { return null; }
+}
+
 // GET /api/challenge/today — 今日题目（DB 优先）
 challengeRoute.get('/today', async (c) => {
   try {
@@ -27,11 +34,11 @@ challengeRoute.get('/today', async (c) => {
         title: row.title,
         slug: row.slug,
         difficulty: row.difficulty,
-        tags: JSON.parse(row.tags || '[]'),
+        tags: safeJson(row.tags) || [],
         description: row.description || '',
-        examples: JSON.parse(row.examples || '[]'),
-        testCases: JSON.parse(row.test_cases || '[]'),
-        template: JSON.parse(row.template || '{}'),
+        examples: safeJson(row.examples) || [],
+        testCases: safeJson(row.test_cases) || [],
+        template: safeJson(row.template) || {},
         source: row.source_name ? { name: row.source_name, url: row.source_url } : undefined,
         date: today,
       });
@@ -48,7 +55,7 @@ challengeRoute.get('/today', async (c) => {
   });
 });
 
-// GET /api/challenge/all — 题目列表（静态 + DB 合并）
+// GET /api/challenge/all
 challengeRoute.get('/all', async (c) => {
   try {
     const [dbRows] = await pool.execute(
@@ -59,7 +66,7 @@ challengeRoute.get('/all', async (c) => {
       title: r.title,
       slug: r.slug,
       difficulty: r.difficulty,
-      tags: JSON.parse(r.tags || '[]'),
+      tags: safeJson(r.tags) || [],
       date: r.scheduled_date,
     }));
 
@@ -72,7 +79,6 @@ challengeRoute.get('/all', async (c) => {
       date: null,
     }));
 
-    // 合并去重
     const seen = new Set<string>();
     const merged = [...dbList, ...staticList].filter((c) => {
       const key = String(c.id);
@@ -98,7 +104,6 @@ challengeRoute.get('/all', async (c) => {
 challengeRoute.get('/:id', async (c) => {
   const id = c.req.param('id');
 
-  // 先查数据库
   if (id.startsWith('lc-')) {
     try {
       const [rows] = await pool.execute(
@@ -116,11 +121,11 @@ challengeRoute.get('/:id', async (c) => {
           title: row.title,
           slug: row.slug,
           difficulty: row.difficulty,
-          tags: JSON.parse(row.tags || '[]'),
+          tags: safeJson(row.tags) || [],
           description: row.description || '',
-          examples: JSON.parse(row.examples || '[]'),
-          testCases: JSON.parse(row.test_cases || '[]'),
-          template: JSON.parse(row.template || '{}'),
+          examples: safeJson(row.examples) || [],
+          testCases: safeJson(row.test_cases) || [],
+          template: safeJson(row.template) || {},
           source: row.source_name ? { name: row.source_name, url: row.source_url } : undefined,
         });
       }
@@ -129,7 +134,6 @@ challengeRoute.get('/:id', async (c) => {
     }
   }
 
-  // 静态 fallback
   const numId = parseInt(id);
   const challenge = isNaN(numId) ? undefined : challenges.find((c) => c.id === numId);
   if (!challenge) return c.json({ error: '题目不存在' }, 404);

@@ -303,7 +303,7 @@ async function main() {
 
   await pool.execute(
     `INSERT INTO challenges (title, slug, difficulty, tags, test_case_count, scheduled_date, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, NOW())
+     VALUES (?, ?, ?, CAST(? AS JSON), ?, ?, NOW())
      ON DUPLICATE KEY UPDATE
        title = VALUES(title), difficulty = VALUES(difficulty),
        tags = VALUES(tags), test_case_count = VALUES(test_case_count)`,
