@@ -6,7 +6,7 @@
  */
 
 import dotenv from 'dotenv';
-import { dirname } from 'path';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createPool } from 'mysql2/promise';
 
@@ -340,15 +340,14 @@ async function main() {
 
   // 自动部署
   const { execSync } = await import('child_process');
-  const repoDir = join(__dirname, '..', '..', '..');
   try {
     console.log('');
     console.log('🚀 自动部署网站...');
-    execSync('npm run build', { cwd: repoDir, stdio: 'pipe', timeout: 60000 });
-    execSync(`rsync -avz --delete ${repoDir}/dist/ /www/wwwroot/eaglecoder.cn/`, { stdio: 'pipe', timeout: 30000 });
+    execSync('sudo bash /www/wwwroot/deploy.sh', { stdio: 'pipe', timeout: 120000 });
     console.log('✅ 部署完成！新题已上线');
   } catch (err: any) {
-    console.log(`⚠️ 自动部署失败: ${err.message}，请手动运行 sudo bash /www/wwwroot/deploy.sh`);
+    console.log(`⚠️ 自动部署失败: ${err.message}`);
+    console.log(`   请手动运行: sudo bash /www/wwwroot/deploy.sh`);
   }
 
   await pool.end();
