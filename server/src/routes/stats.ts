@@ -49,7 +49,7 @@ statsRoute.get('/leaderboard', async (c) => {
              FROM submissions
              WHERE challenge_id = ?
              GROUP BY username
-             ORDER BY best_score DESC, total_passed DESC, attempts ASC
+             ORDER BY total_score DESC, total_passed DESC, attempts ASC
              LIMIT ?`;
       params = [challengeId, limit];
     } else {
