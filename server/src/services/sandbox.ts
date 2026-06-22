@@ -28,7 +28,7 @@ async function ensureWorkDir(): Promise<string> {
   return dir;
 }
 
-/** 带超时的 spawn */
+/** 带超时的 spawn — 已解决竞态条件 */
 function spawnWithTimeout(
   cmd: string,
   args: string[],
@@ -39,18 +39,17 @@ function spawnWithTimeout(
   return new Promise((resolve) => {
     const child = spawn(cmd, args, {
       cwd: dir,
-      timeout: timeoutMs + 2000,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     let stdout = '';
     let stderr = '';
-    let killed = false;
+    let resolved = false;
 
     const timer = setTimeout(() => {
-      killed = true;
+      if (resolved) return;
       child.kill('SIGTERM');
-      setTimeout(() => child.kill('SIGKILL'), 500);
+      setTimeout(() => { if (!resolved) child.kill('SIGKILL'); }, 500);
     }, timeoutMs);
 
     child.stdin.write(stdin);
@@ -60,23 +59,17 @@ function spawnWithTimeout(
     child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
 
     child.on('close', (exitCode, signal) => {
+      if (resolved) return;
+      resolved = true;
       clearTimeout(timer);
-      resolve({
-        stdout: stdout.trim(),
-        stderr: stderr.trim(),
-        exitCode: killed ? null : exitCode,
-        signal: killed ? 'SIGTERM' : signal,
-      });
+      resolve({ stdout: stdout.trim(), stderr: stderr.trim(), exitCode, signal });
     });
 
     child.on('error', (err) => {
+      if (resolved) return;
+      resolved = true;
       clearTimeout(timer);
-      resolve({
-        stdout: '',
-        stderr: err.message,
-        exitCode: 1,
-        signal: null,
-      });
+      resolve({ stdout: '', stderr: err.message, exitCode: 1, signal: null });
     });
   });
 }

@@ -54,7 +54,13 @@ export function rateLimit(maxRequests: number, windowMs: number) {
       });
     }
 
+    // 先扣令牌，但保留到请求结束后（失败可退）
     bucket.tokens--;
-    await next();
+    try {
+      await next();
+    } catch {
+      bucket.tokens++; // 请求失败，退还令牌
+      throw new Error('Rate limit middleware: downstream error');
+    }
   };
 }

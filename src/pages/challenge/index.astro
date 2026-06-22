@@ -6,11 +6,14 @@ import Layout from '../../layouts/Layout.astro';
 import ChallengeView from '../../components/challenge/ChallengeView.astro';
 import CodeEditor from '../../components/challenge/CodeEditor.astro';
 import LanguageSelector from '../../components/challenge/LanguageSelector.astro';
-import { getTodaysChallenge, type SupportedLanguage } from '../../data/challenges';
+import { getTodaysChallenge, getChallengeById, type SupportedLanguage } from '../../data/challenges';
 
-const challenge = getTodaysChallenge();
+// 支持 ?id=N 查询参数（历史题目跳转），默认今日题目
+const idParam = Astro.url.searchParams.get('id');
+const challenge = idParam ? (getChallengeById(parseInt(idParam)) || getTodaysChallenge()) : getTodaysChallenge();
 const defaultLang: SupportedLanguage = 'c';
 const challengeJson = JSON.stringify(challenge);
+const showBackLink = !!idParam;
 ---
 
 <Layout title={`每日一题 - ${challenge.title}`} description={challenge.title}>
@@ -21,8 +24,11 @@ const challengeJson = JSON.stringify(challenge);
     <div class="flex items-center justify-between mb-8 fade-in">
       <div>
         <p class="text-sm mb-1" style="color: var(--color-text-secondary);">
-          🗓️ 每日一题 · {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+          🗓️ {idParam ? `题目 #${idParam}` : `每日一题 · ${new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}`}
         </p>
+        {showBackLink && (
+          <p class="text-xs" style="color: var(--color-text-secondary);">这是历史题目，<a href="/challenge" style="color: var(--color-primary);">← 回今日题目</a></p>
+        )}
       </div>
       <div class="flex gap-3">
         <a
@@ -91,6 +97,11 @@ const challengeJson = JSON.stringify(challenge);
   const usernameInput = document.getElementById('username-input');
   const submitBtn = document.getElementById('submit-btn');
   const resultsContainer = document.getElementById('results-container');
+
+  if (!usernameInput || !submitBtn || !resultsContainer) {
+    console.warn('Challenge page: required DOM elements missing, aborting init');
+    return;
+  }
 
   // 恢复用户名
   const saved = localStorage.getItem(USERNAME_KEY);

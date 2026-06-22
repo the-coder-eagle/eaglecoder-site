@@ -65,6 +65,7 @@ export async function executeCode(
       run_timeout: Math.floor(timeoutMs / 1000),
       compile_timeout: 10000,
     }),
+    signal: AbortSignal.timeout(timeoutMs + 10000),
   });
 
   if (!res.ok) {
