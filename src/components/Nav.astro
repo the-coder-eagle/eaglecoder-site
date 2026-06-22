@@ -22,17 +22,21 @@ const links = [
 
     <!-- 桌面端导航链接 -->
     <div class="flex items-center gap-6">
-      {links.map((link) => (
+      {links.map((link) => {
+        const isActive = Astro.url.pathname.startsWith(link.href);
+        const isChallenge = link.href === '/challenge';
+        return (
         <a
           href={link.href}
-          class="text-sm font-medium transition-colors hover:opacity-80 hidden sm:block"
+          class={`text-sm font-medium transition-colors hover:opacity-80 hidden sm:block`}
           style={{
-            color: Astro.url.pathname.startsWith(link.href) ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+            color: isActive ? 'var(--color-primary)' : isChallenge ? '#f59e0b' : 'var(--color-text-secondary)',
           }}
         >
-          {link.label}
+          {isChallenge ? '🔥 ' : ''}{link.label}
         </a>
-      ))}
+        );
+      })}
 
       <!-- 汉堡按钮 — 仅手机端可见 -->
       <button
@@ -75,17 +79,22 @@ const links = [
     style="display:none; border-color: var(--color-border); background: var(--color-bg);"
   >
     <div class="px-4 py-3 flex flex-col gap-1">
-      {links.map((link) => (
+      {links.map((link) => {
+        const isActive = Astro.url.pathname.startsWith(link.href);
+        const isChallenge = link.href === '/challenge';
+        return (
         <a
           href={link.href}
           class="mobile-menu-link text-sm font-medium py-2 px-3 rounded-md transition-colors"
           style={{
-            color: Astro.url.pathname.startsWith(link.href) ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-            background: Astro.url.pathname.startsWith(link.href) ? 'var(--color-bg-secondary)' : 'transparent',
+            color: isActive ? 'var(--color-primary)' : isChallenge ? '#f59e0b' : 'var(--color-text-secondary)',
+            background: isActive ? 'var(--color-bg-secondary)' : 'transparent',
           }}
         >
-          {link.label}
+          {isChallenge ? '🔥 ' : ''}{link.label}
         </a>
+        );
+      })}
       ))}
     </div>
   </div>
