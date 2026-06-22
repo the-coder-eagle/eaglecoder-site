@@ -118,48 +118,55 @@ const showBackLink = !!idParam;
     .then(r => r.json())
     .then(data => {
       if (data && data.title !== CHALLENGE.title) {
-        // 替换题目数据
+        // 替换题目数据和模板
         window.__challengeTemplates = data.template;
         window.__editorLang = defaultLang;
         window.__editorCode = data.template[defaultLang];
         CHALLENGE = data;
-
-        // 更新页面标题和描述
         document.title = '每日一题 - ' + data.title + ' | EagleCoder';
-        const titleEl = document.querySelector('.challenge-view h1');
-        if (titleEl) titleEl.textContent = data.title;
 
-        // 更新描述
-        const descEl = document.querySelector('.challenge-view .prose');
-        if (descEl && data.description) {
-          descEl.innerHTML = data.description.replace(/\\n/g, '<br>');
-        }
+        // 重建整个挑战视图
+        var view = document.querySelector('.challenge-view');
+        if (view) {
+          var diffClass = data.difficulty === 'easy' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                          data.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
+                          'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+          var diffLabel = data.difficulty === 'easy' ? '简单' : data.difficulty === 'medium' ? '中等' : '困难';
 
-        // 更新测试用例表
-        const tableBody = document.querySelector('.challenge-view table tbody');
-        if (tableBody && data.testCases) {
-          let rows = '';
-          data.testCases.forEach(function(tc, i) {
-            rows += '<tr><td>'+(i+1)+'</td><td>'+escapeHtml2(tc.input)+'</td><td>'+escapeHtml2(tc.expected)+'</td><td>'+(tc.description||'—')+'</td></tr>';
-          });
-          tableBody.innerHTML = rows;
-        }
+          var tagsHtml = (data.tags || []).map(function(t) {
+            return '<span class="text-xs px-2 py-0.5 rounded-full" style="background: var(--color-bg-secondary); color: var(--color-primary);">'+esc(t)+'</span>';
+          }).join('');
 
-        // 更新来源
-        if (data.source) {
-          const srcEl = document.querySelector('.challenge-view p:last-of-type');
-          if (srcEl && data.source.name) {
-            srcEl.innerHTML = '来源：<a href="'+data.source.url+'" target="_blank">'+data.source.name+'</a>';
-          }
+          var examplesHtml = (data.examples || []).map(function(ex, i) {
+            return '<div style="margin-bottom:12px; border-radius:8px; border:1px solid var(--color-border); padding:16px; background:var(--color-bg-secondary);"><div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><span style="font-size:12px; padding:2px 6px; border-radius:4px; font-family:monospace; background:var(--color-primary); color:white;">示例 '+(i+1)+'</span>'+(ex.explanation?'<span style="font-size:12px; color:var(--color-text-secondary);">'+esc(ex.explanation)+'</span>':'')+'</div><div style="font-size:14px;"><span style="font-family:monospace; font-weight:600; color:var(--color-text-secondary);">输入：</span><code style="font-family:monospace; padding:1px 6px; border-radius:4px; font-size:12px; background:var(--color-code-bg); color:#e2e8f0;">'+esc(ex.input)+'</code></div><div style="font-size:14px;"><span style="font-family:monospace; font-weight:600; color:var(--color-text-secondary);">输出：</span><code style="font-family:monospace; padding:1px 6px; border-radius:4px; font-size:12px; background:var(--color-code-bg); color:#e2e8f0;">'+esc(ex.output)+'</code></div></div>';
+          }).join('');
+
+          var tcRows = (data.testCases || []).map(function(tc, i) {
+            return '<tr style="border-bottom:1px solid var(--color-border);"><td style="padding:8px; font-family:monospace; font-size:12px; color:var(--color-text-secondary);">'+(i+1)+'</td><td style="padding:8px; font-family:monospace; font-size:12px;">'+esc(tc.input)+'</td><td style="padding:8px; font-family:monospace; font-size:12px;">'+esc(tc.expected)+'</td><td style="padding:8px; font-size:12px; color:var(--color-text-secondary);">'+(tc.description||'—')+'</td></tr>';
+          }).join('');
+
+          var sourceHtml = data.source ? '<p style="font-size:12px; color:var(--color-text-secondary);">来源：<a href="'+esc(data.source.url)+'" target="_blank" rel="noopener" style="color:var(--color-primary);">'+esc(data.source.name)+'</a></p>' : '';
+
+          view.innerHTML = '<div style="margin-bottom:24px;">' +
+            '<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">' +
+            '<h1 style="font-size:24px; font-weight:700;">'+esc(data.title)+'</h1>' +
+            '<span class="text-xs px-2.5 py-0.5 rounded-full font-medium '+diffClass+'">'+diffLabel+'</span>' +
+            '</div>' +
+            '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">'+tagsHtml+'</div>' +
+            sourceHtml +
+            '</div>' +
+            '<div class="prose" style="margin-bottom:32px;">'+(data.description||'').replace(/\\n/g,'<br>')+'</div>' +
+            '<div style="margin-bottom:32px;"><h3 style="font-size:14px; font-weight:600; margin-bottom:12px; color:var(--color-text-secondary);">📋 示例</h3>'+examplesHtml+'</div>' +
+            '<div style="margin-bottom:32px;"><h3 style="font-size:14px; font-weight:600; margin-bottom:12px; color:var(--color-text-secondary);">🧪 测试用例 ('+(data.testCases||[]).length+' 个)</h3>' +
+            '<div style="overflow-x:auto;"><table style="width:100%; font-size:14px; border-collapse:collapse;">' +
+            '<thead><tr style="background:var(--color-bg-secondary);"><th style="text-align:left; padding:8px; border:1px solid var(--color-border);">#</th><th style="text-align:left; padding:8px; border:1px solid var(--color-border);">输入</th><th style="text-align:left; padding:8px; border:1px solid var(--color-border);">期望输出</th><th style="text-align:left; padding:8px; border:1px solid var(--color-border);">说明</th></tr></thead>' +
+            '<tbody>'+tcRows+'</tbody></table></div></div>';
         }
       }
     })
-    .catch(function() { /* API 不可用时用静态数据 */ });
+    .catch(function() {});
 
-  function escapeHtml2(s) {
-    if (!s) return '';
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
+  function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   const usernameInput = document.getElementById('username-input');
   const submitBtn = document.getElementById('submit-btn');
