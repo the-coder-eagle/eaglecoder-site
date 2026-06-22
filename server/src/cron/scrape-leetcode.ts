@@ -143,7 +143,7 @@ let csrfToken = '';
 let cookies = '';
 
 async function initSession() {
-  const res = await fetch('https://leetcode.cn/', {
+  const res = await fetch('https://leetcode.com/', {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0',
     },
@@ -157,14 +157,14 @@ async function initSession() {
 }
 
 async function leetcodeRequest(query: string, variables: Record<string, any>) {
-  const res = await fetch('https://leetcode.cn/graphql/', {
+  const res = await fetch('https://leetcode.com/graphql/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0',
       'Accept': 'application/json',
-      'Origin': 'https://leetcode.cn',
-      'Referer': 'https://leetcode.cn/problemset/',
+      'Origin': 'https://leetcode.com',
+      'Referer': 'https://leetcode.com/problemset/',
       ...(csrfToken ? { 'x-csrftoken': csrfToken } : {}),
       ...(cookies ? { 'Cookie': cookies } : {}),
     },
@@ -251,7 +251,7 @@ async function main() {
   const difficulty = mapDifficulty(question.difficulty);
   const tags = question.topicTags.map((t) => t.translatedName || t.name);
   const description = stripHtml(question.translatedContent || question.title);
-  const url = `https://leetcode.cn/problems/${question.titleSlug}/`;
+  const url = `https://leetcode.com/problems/${question.titleSlug}/`;
   const id = `lc-${question.questionFrontendId}`;
 
   console.log(`   题目: [${difficulty}] ${title} (#${question.questionFrontendId})`);
