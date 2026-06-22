@@ -5,6 +5,7 @@
  * LeetCode.cn GraphQL API，无需认证，返回完整题目 + 样例测试用例
  */
 
+import 'dotenv/config';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createPool } from 'mysql2/promise';
