@@ -138,12 +138,35 @@ query questionOfToday {
   }
 }`;
 
+// 全局 Cookie 存储（先访问首页拿 csrf）
+let csrfToken = '';
+let cookies = '';
+
+async function initSession() {
+  const res = await fetch('https://leetcode.cn/', {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0',
+    },
+    signal: AbortSignal.timeout(10000),
+  });
+  const setCookie = res.headers.get('set-cookie') || '';
+  const m = setCookie.match(/csrftoken=([^;]+)/);
+  if (m) csrfToken = m[1];
+  cookies = setCookie;
+  console.log(`   CSRF: ${csrfToken ? 'ok' : 'none'}`);
+}
+
 async function leetcodeRequest(query: string, variables: Record<string, any>) {
   const res = await fetch('https://leetcode.cn/graphql/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'EagleCoder-OJ/1.0',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0',
+      'Accept': 'application/json',
+      'Origin': 'https://leetcode.cn',
+      'Referer': 'https://leetcode.cn/problemset/',
+      ...(csrfToken ? { 'x-csrftoken': csrfToken } : {}),
+      ...(cookies ? { 'Cookie': cookies } : {}),
     },
     body: JSON.stringify({ query, variables }),
     signal: AbortSignal.timeout(15000),
@@ -206,6 +229,9 @@ async function main() {
   const mode = process.argv[2] || 'random';
 
   console.log('🔍 爬取 LeetCode.cn 题目...');
+
+  // 先获取 CSRF token
+  await initSession();
 
   let question: LCQuestion;
   try {
