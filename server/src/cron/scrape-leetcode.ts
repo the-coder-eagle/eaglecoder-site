@@ -353,14 +353,16 @@ async function main() {
   const testCasesJson = JSON.stringify(testCases);
   const examplesJson = JSON.stringify(examples);
 
+  // 删除今天的旧题，插入新题
+  await pool.execute('DELETE FROM challenges WHERE scheduled_date = ?', [today]);
   await pool.execute(
     `INSERT INTO challenges (title, slug, difficulty, tags, test_case_count, scheduled_date, created_at)
-     VALUES (?, ?, ?, CAST(? AS JSON), ?, ?, NOW())
-     ON DUPLICATE KEY UPDATE
-       title = VALUES(title), difficulty = VALUES(difficulty),
-       tags = VALUES(tags), test_case_count = VALUES(test_case_count)`,
+     VALUES (?, ?, ?, CAST(? AS JSON), ?, ?, NOW())`,
     [title, question.titleSlug, difficulty, tagJson, testCases.length, today]
   );
+
+  // challenge_data 也一样
+  await pool.execute('DELETE FROM challenge_data WHERE slug = ?', [question.titleSlug]);
 
   // 存到单独的表以存储完整数据
   await pool.execute(
