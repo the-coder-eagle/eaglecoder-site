@@ -19,6 +19,12 @@ import Layout from '../../layouts/Layout.astro';
       </a>
     </div>
 
+    <!-- Tab 切换 -->
+    <div class="flex gap-2 mb-6" id="tabs">
+      <button class="tab-btn active px-4 py-2 rounded-lg text-sm font-semibold border" data-tab="total" style="background: var(--color-primary); color: white; border-color: var(--color-primary);">总分排行</button>
+      <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium border" data-tab="today" style="background: var(--color-bg); color: var(--color-text-secondary); border-color: var(--color-border);">今日题目排行</button>
+    </div>
+
     <!-- 排行榜表格 -->
     <div id="leaderboard-container" class="text-center py-12" style="color: var(--color-text-secondary);">
       ⏳ 加载中...
@@ -31,11 +37,29 @@ import Layout from '../../layouts/Layout.astro';
 <script is:inline>
   (function() {
     const container = document.getElementById('leaderboard-container');
+    const tabs = document.querySelectorAll('.tab-btn');
     if (!container) return;
 
-    async function load() {
+    let currentTab = 'total';
+
+    // 获取今日题目 ID（从 challenge 数据接口）
+    async function getTodayId() {
       try {
-        const res = await fetch('/api/stats/leaderboard?limit=20');
+        const res = await fetch('/api/challenge/today');
+        const data = await res.json();
+        return data.id;
+      } catch { return null; }
+    }
+
+    async function load(tab) {
+      container.innerHTML = '<p>⏳ 加载中...</p>';
+      try {
+        let url = '/api/stats/leaderboard?limit=20';
+        if (tab === 'today') {
+          const id = await getTodayId();
+          if (id) url += '&challenge_id=' + id;
+        }
+        const res = await fetch(url);
         const data = await res.json();
         const list = data.leaderboard || [];
 
@@ -77,6 +101,26 @@ import Layout from '../../layouts/Layout.astro';
     function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function formatDate(d) { if (!d) return '-'; const t = new Date(d); return t.toLocaleDateString('zh-CN') + ' ' + t.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}); }
 
-    load();
+    // Tab 切换
+    tabs.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var tab = btn.getAttribute('data-tab');
+        if (tab === currentTab) return;
+        currentTab = tab;
+        tabs.forEach(function(b) {
+          b.classList.remove('active');
+          b.style.background = 'var(--color-bg)';
+          b.style.color = 'var(--color-text-secondary)';
+          b.style.borderColor = 'var(--color-border)';
+        });
+        btn.classList.add('active');
+        btn.style.background = 'var(--color-primary)';
+        btn.style.color = 'white';
+        btn.style.borderColor = 'var(--color-primary)';
+        load(tab);
+      });
+    });
+
+    load(currentTab);
   })();
 </script>

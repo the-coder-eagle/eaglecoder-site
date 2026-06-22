@@ -44,7 +44,7 @@ statsRoute.get('/leaderboard', async (c) => {
 
     if (challengeId) {
       // 单题排行：每人只取最高分
-      sql = `SELECT username, MAX(score) as best_score, SUM(passed) as total_passed,
+      sql = `SELECT username, MAX(score) as total_score, SUM(passed) as total_passed,
               COUNT(*) as attempts, MAX(submitted_at) as last_submit
              FROM submissions
              WHERE challenge_id = ?

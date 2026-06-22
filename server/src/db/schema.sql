@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS submissions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   challenge_id INT NOT NULL,
   username VARCHAR(30) NOT NULL DEFAULT '',
+  user_token VARCHAR(64) NOT NULL DEFAULT '',
   language VARCHAR(20) NOT NULL,
   code TEXT NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'error',

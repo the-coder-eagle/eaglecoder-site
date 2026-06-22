@@ -7,10 +7,11 @@ import pool from '../db/connection';
 export const judgeRoute = new Hono();
 
 interface JudgeRequest {
-  language: string;     // 'c' | 'javascript' | 'python'
+  language: string;
   code: string;
   challengeId: number;
-  username?: string;    // 用户名（阶段 3 存数据库用）
+  username?: string;
+  user_token?: string;   // 用户唯一标识（localStorage UUID）
 }
 
 interface TestResult {
@@ -135,11 +136,11 @@ judgeRoute.post('/', async (c) => {
     const judgeStatus = passed === total ? 'accepted' : 'wrong_answer';
 
     // 异步保存到数据库（不阻塞响应）
-    if (body.username) {
+    if (body.username && body.user_token) {
       pool.execute(
-        `INSERT INTO submissions (challenge_id, username, language, code, status, score, passed, total)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [body.challengeId, body.username, body.language, body.code.slice(0, 5000), judgeStatus, score, passed, total]
+        `INSERT INTO submissions (challenge_id, username, user_token, language, code, status, score, passed, total)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [body.challengeId, body.username, body.user_token, body.language, body.code.slice(0, 5000), judgeStatus, score, passed, total]
       ).catch(err => console.error('DB save error:', err.message));
     }
 
