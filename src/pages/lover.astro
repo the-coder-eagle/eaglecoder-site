@@ -266,7 +266,14 @@
       }, 50);
     }
 
-    function md(text) { try { return marked.parse(text); } catch(e) { return esc(text); } }
+    function md(text) {
+      try {
+        var html = marked.parse(text);
+        // 去掉单段落多余的 <p> 包裹和尾随换行
+        html = html.replace(/^<p>/, '').replace(/<\/p>\n*$/, '');
+        return html;
+      } catch(e) { return esc(text); }
+    }
     function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     // === Send ===
