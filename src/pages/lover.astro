@@ -99,6 +99,7 @@
         <button class="lov-len-btn" data-len="long" style="padding:3px 10px; border-radius:12px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:11px; cursor:pointer;">长</button>
         <span style="color:var(--color-border);">|</span>
         <button id="lov-think-btn" style="padding:3px 10px; border-radius:12px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:11px; cursor:pointer;">🧠</button>
+        <button id="lov-search-btn" style="padding:3px 10px; border-radius:12px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:11px; cursor:pointer;">🌐</button>
       </div>
 
       <!-- 输入区 -->
@@ -149,6 +150,7 @@
 
     var currentLength = 'medium';
     var thinkingMode = false;
+    var searchMode = false;
 
     lenBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -167,6 +169,17 @@
       thinkBtn.style.color = thinkingMode ? 'white' : 'var(--color-text-secondary)';
       thinkBtn.style.borderColor = thinkingMode ? '#f59e0b' : 'var(--color-border)';
     });
+
+    // 搜索切换
+    var searchBtn = document.getElementById('lov-search-btn');
+    if (searchBtn) {
+      searchBtn.addEventListener('click', function() {
+        searchMode = !searchMode;
+        searchBtn.style.background = searchMode ? '#22c55e' : 'transparent';
+        searchBtn.style.color = searchMode ? 'white' : 'var(--color-text-secondary)';
+        searchBtn.style.borderColor = searchMode ? '#22c55e' : 'var(--color-border)';
+      });
+    }
 
     // State
     var chatHistory = [];
@@ -279,7 +292,7 @@
       fetch('/api/lover/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chatHistory.slice(0, -1), thinking: thinkingMode, length: currentLength }),
+        body: JSON.stringify({ messages: chatHistory.slice(0, -1), thinking: thinkingMode, length: currentLength, search: searchMode }),
         signal: abortController.signal,
       }).then(function(response) {
         if (!response.ok) {
