@@ -102,6 +102,11 @@ import Layout from '../layouts/Layout.astro';
       var saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
       chatHistory = saved;
       for (var i = 0; i < saved.length; i++) appendBubble(saved[i].role, saved[i].content);
+      // 恢复后注入 HTML 按钮
+      setTimeout(function() {
+        var bubbles = messagesEl.querySelectorAll('.chat-bubble-ai');
+        bubbles.forEach(function(b) { injectHtmlButtons(b); });
+      }, 200);
     } catch(e) { chatHistory = []; }
     scrollBottom();
 
@@ -127,8 +132,39 @@ import Layout from '../layouts/Layout.astro';
       var el = document.getElementById(id);
       if (!el) return;
       var aiDiv = el.querySelector('.chat-bubble-ai');
-      if (aiDiv) aiDiv.innerHTML = md(content);
+      if (aiDiv) {
+        aiDiv.innerHTML = md(content);
+        injectHtmlButtons(aiDiv);
+      }
       scrollBottom();
+    }
+
+    // 检测 HTML 代码块，注入预览/下载按钮
+    function injectHtmlButtons(container) {
+      var blocks = container.querySelectorAll('pre code.language-html');
+      blocks.forEach(function(block) {
+        if (block.parentNode.querySelector('.html-actions')) return;
+        var html = block.textContent || '';
+        var actions = document.createElement('div');
+        actions.className = 'html-actions';
+        actions.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
+        var previewBtn = document.createElement('button');
+        previewBtn.textContent = '🔍 预览';
+        previewBtn.style.cssText = 'padding:2px 10px; border-radius:10px; border:1px solid var(--color-primary); background:var(--color-primary); color:white; font-size:11px; cursor:pointer;';
+        previewBtn.onclick = function() { window.open(URL.createObjectURL(new Blob([html], {type:'text/html'})), '_blank'); };
+        var downBtn = document.createElement('button');
+        downBtn.textContent = '⬇ 下载';
+        downBtn.style.cssText = 'padding:2px 10px; border-radius:10px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:11px; cursor:pointer;';
+        downBtn.onclick = function() {
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+          a.download = 'eaglecoder-' + Date.now() + '.html';
+          a.click();
+        };
+        actions.appendChild(previewBtn);
+        actions.appendChild(downBtn);
+        block.parentNode.appendChild(actions);
+      });
     }
 
     function scrollBottom() { setTimeout(function() { messagesEl.scrollTop = messagesEl.scrollHeight; }, 50); }
