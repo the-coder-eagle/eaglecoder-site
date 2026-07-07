@@ -34,7 +34,7 @@
         color: var(--color-text);
         min-height: 100vh;
       }
-      .chat-bubble-ai p { margin: 0 !important; padding: 0 !important; line-height: 1.6; }
+      .chat-bubble-ai p, .chat-bubble-ai div, .chat-bubble-ai span { margin: 0 !important; margin-block: 0 !important; padding: 0 !important; line-height: 1.6 !important; }
       .chat-bubble-ai br + br { display: none; }
     </style>
     <script>
@@ -131,7 +131,7 @@
 <script is:inline src="/marked.min.js"></script>
 <script is:inline>
   (function() {
-    if (typeof marked !== 'undefined') marked.setOptions({ breaks: true, gfm: true });
+    if (typeof marked !== 'undefined') marked.setOptions({ breaks: false, gfm: true });
     var STORAGE_KEY = 'lover-token';
     var HISTORY_KEY = 'lover-chat-history';
     var MAX_HISTORY = 200;
