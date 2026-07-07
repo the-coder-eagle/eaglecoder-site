@@ -13,6 +13,8 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       proxy: {
+        '/api/lover': 'http://localhost:3002',
+        '/api/chat': 'http://localhost:3001',
         '/api': 'http://localhost:3000',
       },
     },

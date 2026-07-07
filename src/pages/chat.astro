@@ -1,0 +1,190 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="AI 助手" description="和 EagleCoder 聊天 — AI 驱动的个人助手">
+  <Nav />
+
+  <div class="max-w-2xl mx-auto px-4" style="min-height: calc(100vh - 200px);" data-pagefind-ignore>
+
+    <div id="chat-app" style="display:flex; flex-direction:column; height:calc(100vh - 120px);">
+
+      <div style="text-align:center; padding:14px; border-bottom:1px solid var(--color-border);">
+        <h2 style="font-size:17px; font-weight:700; color:var(--color-text);">🦅 EagleCoder AI</h2>
+        <p style="font-size:12px; color:var(--color-text-secondary);">67个聊天记录 · 301对风格示例 · 深度个性化</p>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 16px; border-bottom:1px solid var(--color-border); flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:12px; color:var(--color-text-secondary);">长度:</span>
+          <button class="len-btn active" data-len="medium" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-primary); background:var(--color-primary); color:white; font-size:12px; cursor:pointer;">中</button>
+          <button class="len-btn" data-len="short" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">短</button>
+          <button class="len-btn" data-len="long" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">长</button>
+          <span style="color:var(--color-border);">|</span>
+          <button id="think-btn" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">🧠 思考</button>
+          <button id="search-btn" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">🌐 搜索</button>
+        </div>
+        <button id="chat-clear" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">🗑 清空</button>
+      </div>
+
+      <div id="chat-messages" style="flex:1; overflow-y:auto; padding:16px;">
+        <div style="text-align:center; padding:40px 20px;">
+          <div style="font-size:48px; margin-bottom:12px;">🦅</div>
+          <p style="font-size:15px; color:var(--color-text-secondary);">你好！我是 EagleCoder 的 AI 分身</p>
+          <p style="font-size:13px; color:var(--color-text-secondary); margin-top:4px;">可以问我编程、学业、或者随便聊聊~</p>
+        </div>
+      </div>
+
+      <div style="padding:12px; border-top:1px solid var(--color-border); display:flex; gap:8px; align-items:flex-end;">
+        <textarea id="chat-input" rows="1" placeholder="输入消息..." maxlength="800"
+          style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid var(--color-border); font-size:14px; resize:none; background:var(--color-bg-secondary); color:var(--color-text); line-height:1.4; max-height:120px; outline:none;"></textarea>
+        <button id="chat-send" style="width:44px; height:44px; border-radius:50%; border:none; background:var(--color-primary); color:white; font-size:18px; cursor:pointer; flex-shrink:0;">➤</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <Footer />
+</Layout>
+
+<script is:inline src="/marked.min.js"></script>
+<script is:inline>
+  (function() {
+    var HISTORY_KEY = 'chat-history';
+    var MAX_HISTORY = 200;
+    var chatHistory = [];
+    var isLoading = false;
+
+    var messagesEl = document.getElementById('chat-messages');
+    var inputEl = document.getElementById('chat-input');
+    var sendBtn = document.getElementById('chat-send');
+    var thinkBtn = document.getElementById('think-btn');
+    var lenBtns = document.querySelectorAll('.len-btn');
+
+    var currentLength = 'medium';
+    var thinkingMode = false;
+    var searchMode = false;
+
+    // 搜索切换
+    var searchBtn = document.getElementById('search-btn');
+    if (searchBtn) {
+      searchBtn.addEventListener('click', function() {
+        searchMode = !searchMode;
+        searchBtn.style.background = searchMode ? '#22c55e' : 'transparent';
+        searchBtn.style.color = searchMode ? 'white' : 'var(--color-text-secondary)';
+        searchBtn.style.borderColor = searchMode ? '#22c55e' : 'var(--color-border)';
+      });
+    }
+
+    // 配置 marked
+    if (typeof marked !== 'undefined') {
+      marked.setOptions({ breaks: true, gfm: true });
+    }
+
+    lenBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        lenBtns.forEach(function(b) { b.classList.remove('active'); b.style.background='transparent'; b.style.color='var(--color-text-secondary)'; b.style.borderColor='var(--color-border)'; });
+        btn.classList.add('active'); btn.style.background='var(--color-primary)'; btn.style.color='white'; btn.style.borderColor='var(--color-primary)';
+        currentLength = btn.getAttribute('data-len') || 'medium';
+      });
+    });
+
+    thinkBtn.addEventListener('click', function() {
+      thinkingMode = !thinkingMode;
+      if (thinkingMode) { thinkBtn.style.background='#f59e0b'; thinkBtn.style.color='white'; thinkBtn.style.borderColor='#f59e0b'; thinkBtn.textContent='🧠 思考中'; }
+      else { thinkBtn.style.background='transparent'; thinkBtn.style.color='var(--color-text-secondary)'; thinkBtn.style.borderColor='var(--color-border)'; thinkBtn.textContent='🧠 思考'; }
+    });
+
+    try {
+      var saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      chatHistory = saved;
+      for (var i = 0; i < saved.length; i++) appendBubble(saved[i].role, saved[i].content);
+    } catch(e) { chatHistory = []; }
+    scrollBottom();
+
+    function md(text) {
+      try { return marked.parse(text); } catch(e) { return esc(text); }
+    }
+
+    function appendBubble(role, content, id) {
+      var d = document.createElement('div');
+      if (id) d.id = id;
+      var isUser = role === 'user';
+      d.style.cssText = 'display:flex; ' + (isUser ? 'justify-content:flex-end;' : 'gap:8px; align-items:flex-start;') + ' margin-bottom:12px;';
+      if (isUser) {
+        d.innerHTML = '<div class="chat-bubble-user" style="max-width:70%; padding:10px 14px; border-radius:16px 16px 4px 16px; background:var(--color-primary); color:white; font-size:14px; line-height:1.6; word-break:break-word;">' + esc(content) + '</div>';
+      } else {
+        d.innerHTML = '<div style="width:32px; height:32px; border-radius:50%; background:var(--color-bg-secondary); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;">🦅</div><div style="max-width:70%;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;"><span style="font-size:12px; font-weight:600; color:var(--color-primary);">EagleCoder</span><span style="font-size:10px; color:var(--color-text-secondary);">' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '</span></div><div class="chat-bubble-ai" style="padding:10px 14px; border-radius:4px 16px 16px 16px; background:var(--color-bg-secondary); color:var(--color-text); font-size:14px; line-height:1.6; word-break:break-word;">' + md(content) + '</div></div>';
+      }
+      messagesEl.appendChild(d);
+      scrollBottom();
+    }
+
+    function updateBubble(id, content) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var aiDiv = el.querySelector('.chat-bubble-ai');
+      if (aiDiv) aiDiv.innerHTML = md(content);
+      scrollBottom();
+    }
+
+    function scrollBottom() { setTimeout(function() { messagesEl.scrollTop = messagesEl.scrollHeight; }, 50); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function sendMessage() {
+      var text = inputEl.value.trim();
+      if (!text || isLoading) return;
+      inputEl.value = ''; inputEl.style.height = 'auto';
+
+      chatHistory.push({ role: 'user', content: text });
+      appendBubble('user', text);
+
+      var aiId = 'ai-' + Date.now();
+      chatHistory.push({ role: 'assistant', content: '' });
+      appendBubble('assistant', '...', aiId);
+      saveHistory();
+
+      isLoading = true; sendBtn.textContent = '⏳';
+
+      fetch('/api/chat/message', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory.slice(0, -1), thinking: thinkingMode, length: currentLength, search: searchMode }),
+      }).then(function(res) {
+        if (!res.ok) throw new Error('error');
+        var reader = res.body.getReader(); var decoder = new TextDecoder(); var full = '', buf = '';
+        function read() {
+          reader.read().then(function(r) {
+            if (r.done) { chatHistory[chatHistory.length-1].content = full; updateBubble(aiId, full); saveHistory(); isLoading = false; sendBtn.textContent = '➤'; return; }
+            buf += decoder.decode(r.value, {stream:true}); var lines = buf.split('\n'); buf = lines.pop() || '';
+            for (var i=0; i<lines.length; i++) {
+              if (lines[i].indexOf('data: ')===0) { var d=lines[i].slice(6).trim(); if (d==='[DONE]') continue; try { full += JSON.parse(d).choices[0].delta.content||''; } catch(e){} updateBubble(aiId, full); }
+            }
+            read();
+          }).catch(function(){});
+        }
+        read();
+      }).catch(function() { updateBubble(aiId, '网络出问题了~ 稍后再试 🐱'); isLoading = false; sendBtn.textContent = '➤'; });
+    }
+
+    function saveHistory() {
+      try { var arr = chatHistory.filter(function(m){ return m.content&&m.content.length>0; }).slice(-MAX_HISTORY); localStorage.setItem(HISTORY_KEY, JSON.stringify(arr)); } catch(e) {}
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', function(e) { if (e.key==='Enter'&&!e.shiftKey) { e.preventDefault(); sendMessage(); } });
+    inputEl.addEventListener('input', function() { inputEl.style.height='auto'; inputEl.style.height=Math.min(inputEl.scrollHeight,120)+'px'; });
+
+    // 清空对话
+    var clearBtn = document.getElementById('chat-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        chatHistory = [];
+        localStorage.removeItem(HISTORY_KEY);
+        messagesEl.innerHTML = '<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:12px;">🦅</div><p style="font-size:15px; color:var(--color-text-secondary);">对话已清空，重新开始吧~</p></div>';
+      });
+    }
+  })();
+</script>
