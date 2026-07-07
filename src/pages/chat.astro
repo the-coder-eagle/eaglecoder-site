@@ -7,6 +7,27 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="AI 助手" description="和 EagleCoder 聊天 — AI 驱动的个人助手">
   <Nav />
 
+  <style is:global>
+    .chat-bubble-ai pre {
+      max-width: 100%;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      padding: 12px;
+      border-radius: 8px;
+      background: #0d1117;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .chat-bubble-ai code {
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+    }
+    .chat-bubble-ai pre code {
+      white-space: pre-wrap;
+    }
+  </style>
+
   <div class="max-w-2xl mx-auto px-4" style="min-height: calc(100vh - 200px);" data-pagefind-ignore>
 
     <div id="chat-app" style="display:flex; flex-direction:column; height:calc(100vh - 120px);">
