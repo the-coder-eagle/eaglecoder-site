@@ -139,32 +139,51 @@ import Layout from '../layouts/Layout.astro';
       scrollBottom();
     }
 
-    // 检测 HTML 代码块，注入预览/下载按钮
+    // 创建预览/下载按钮
+    function makeHtmlButtons(html) {
+      var actions = document.createElement('div');
+      actions.className = 'html-actions';
+      actions.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
+      var previewBtn = document.createElement('button');
+      previewBtn.textContent = '🔍 预览';
+      previewBtn.style.cssText = 'padding:2px 10px; border-radius:10px; border:1px solid var(--color-primary); background:var(--color-primary); color:white; font-size:11px; cursor:pointer;';
+      previewBtn.onclick = function() { window.open(URL.createObjectURL(new Blob([html], {type:'text/html'})), '_blank'); };
+      var downBtn = document.createElement('button');
+      downBtn.textContent = '⬇ 下载';
+      downBtn.style.cssText = 'padding:2px 10px; border-radius:10px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:11px; cursor:pointer;';
+      downBtn.onclick = function() {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+        a.download = 'eaglecoder-' + Date.now() + '.html';
+        a.click();
+      };
+      actions.appendChild(previewBtn);
+      actions.appendChild(downBtn);
+      return actions;
+    }
+
+    // 提取纯文本（从可能的HTML中）
+    function extractText(el) {
+      return el.textContent || el.innerText || '';
+    }
+
+    // 检测并注入按钮
     function injectHtmlButtons(container) {
+      // 方式1：```html 代码块
       var blocks = container.querySelectorAll('pre code.language-html');
       blocks.forEach(function(block) {
         if (block.parentNode.querySelector('.html-actions')) return;
-        var html = block.textContent || '';
-        var actions = document.createElement('div');
-        actions.className = 'html-actions';
-        actions.style.cssText = 'display:flex; gap:6px; margin-top:6px;';
-        var previewBtn = document.createElement('button');
-        previewBtn.textContent = '🔍 预览';
-        previewBtn.style.cssText = 'padding:2px 10px; border-radius:10px; border:1px solid var(--color-primary); background:var(--color-primary); color:white; font-size:11px; cursor:pointer;';
-        previewBtn.onclick = function() { window.open(URL.createObjectURL(new Blob([html], {type:'text/html'})), '_blank'); };
-        var downBtn = document.createElement('button');
-        downBtn.textContent = '⬇ 下载';
-        downBtn.style.cssText = 'padding:2px 10px; border-radius:10px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:11px; cursor:pointer;';
-        downBtn.onclick = function() {
-          var a = document.createElement('a');
-          a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
-          a.download = 'eaglecoder-' + Date.now() + '.html';
-          a.click();
-        };
-        actions.appendChild(previewBtn);
-        actions.appendChild(downBtn);
-        block.parentNode.appendChild(actions);
+        block.parentNode.appendChild(makeHtmlButtons(extractText(block)));
       });
+      // 方式2：裸 HTML（AI 没用代码块直接输出）
+      var text = container.innerHTML || '';
+      if (text.indexOf('<!DOCTYPE html>') !== -1 && container.querySelectorAll('.html-actions').length === 0) {
+        // 从渲染后的内容中提取 HTML（marked 可能转义了）
+        var rawText = container.textContent || '';
+        if (rawText.indexOf('<!DOCTYPE html>') !== -1) {
+          container.appendChild(makeHtmlButtons(rawText));
+        }
+      }
     }
 
     function scrollBottom() { setTimeout(function() { messagesEl.scrollTop = messagesEl.scrollHeight; }, 50); }
