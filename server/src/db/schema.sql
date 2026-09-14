@@ -1,5 +1,5 @@
 -- EagleCoder OJ 数据库建表语句
--- 运行：sudo mysql -uroot -p'84a974ca2c85aea1' eaglecoder_oj < schema.sql
+-- 运行前请通过安全方式登录 MySQL，再选择 eaglecoder_oj 数据库执行本文件。
 
 CREATE TABLE IF NOT EXISTS challenges (
   id INT AUTO_INCREMENT PRIMARY KEY,
