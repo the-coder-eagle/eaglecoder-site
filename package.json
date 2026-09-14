@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
+    "audit:critical": "npm audit --audit-level=critical",
     "check": "astro check",
     "test": "vitest run",
     "verify": "npm run check && npm run test && npm run build",
