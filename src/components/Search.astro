@@ -18,10 +18,12 @@
 <script is:inline src="/pagefind/pagefind-ui.js"></script>
 <script>
   (function() {
-    var dialog = document.getElementById('search-dialog');
-    var backdrop = document.getElementById('search-backdrop');
-    var closeBtn = document.getElementById('search-close');
-    var container = document.getElementById('pagefind-search');
+    const dialog = document.getElementById('search-dialog')!;
+    const backdrop = document.getElementById('search-backdrop')!;
+    const closeBtn = document.getElementById('search-close')!;
+    const container = document.getElementById('pagefind-search')!;
+
+    if (!dialog || !backdrop || !closeBtn || !container) return;
     var initialized = false;
 
     function initUI() {

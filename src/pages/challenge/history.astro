@@ -28,6 +28,8 @@ const counts = {
   medium: challenges.filter((c) => c.difficulty === 'medium').length,
   hard: challenges.filter((c) => c.difficulty === 'hard').length,
 };
+
+const difficulties = ['easy', 'medium', 'hard'] as const;
 ---
 
 <Layout title="历史题目" description="每日一题历史存档">
@@ -50,7 +52,7 @@ const counts = {
 
     <!-- 难度统计 -->
     <div class="flex gap-4 mb-8">
-      {(['easy', 'medium', 'hard']).map((diff) => {
+      {difficulties.map((diff) => {
         const label = difficultyLabel[diff];
         const color = difficultyColor[diff];
         const count = counts[diff];
@@ -65,7 +67,7 @@ const counts = {
 
     <!-- 题目网格 -->
     <div class="grid sm:grid-cols-2 gap-4">
-      {challenges.map((challenge, i) => (
+      {challenges.map((challenge) => (
         <a
           href={`/challenge?id=${challenge.id}`}
           class="flex rounded-lg border overflow-hidden transition-all hover:shadow-md"

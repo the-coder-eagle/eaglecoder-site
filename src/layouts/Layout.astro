@@ -121,7 +121,7 @@ const hardJson = JSON.stringify(hardQuestions);
   </body>
 </html>
 
-<script define:vars={{ easyJson, hardJson }}>
+<script is:inline define:vars={{ easyJson, hardJson }}>
   (function() {
     var EASY = JSON.parse(easyJson);
     var HARD = JSON.parse(hardJson);
