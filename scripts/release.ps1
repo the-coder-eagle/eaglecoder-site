@@ -76,7 +76,19 @@ function Restore-ReleaseEnvironment {
 
 try {
   Write-Host 'Fetching origin/master...' -ForegroundColor Cyan
-  Invoke-Native $git @('fetch', 'origin', 'master')
+  $fetchUrl = if ($env:EAGLECODER_GIT_REMOTE_URL) { $env:EAGLECODER_GIT_REMOTE_URL } else { (& $git remote get-url origin).Trim() }
+  $githubSshMatch = [regex]::Match($fetchUrl, '^git@github\.com:(.+)$')
+  if (-not $githubSshMatch.Success) {
+    $githubSshMatch = [regex]::Match($fetchUrl, '^ssh://git@github\.com/(.+)$')
+  }
+  if ($githubSshMatch.Success) {
+    $fetchUrl = "https://github.com/$($githubSshMatch.Groups[1].Value)"
+  }
+  if ($fetchUrl -match '^https://') {
+    Invoke-Native $git @('-c', 'http.sslBackend=openssl', 'fetch', $fetchUrl, 'master:refs/remotes/origin/master')
+  } else {
+    Invoke-Native $git @('fetch', 'origin', 'master')
+  }
   $localHead = (& $git rev-parse HEAD).Trim()
   $remoteHead = (& $git rev-parse origin/master).Trim()
   if ($localHead -ne $remoteHead) {
