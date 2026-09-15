@@ -203,7 +203,9 @@ html.dark .theme-light { display: inline; }
 .mobile-menu-link.active, .mobile-menu-link.accent { color: var(--color-primary); }
 
 /* ===== 首页 ===== */
-.home-hero { overflow: hidden; border-bottom: 1px solid var(--color-border); }
+.home-hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--color-border); }
+.home-hero-backdrop { position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg, rgb(245 242 234 / 96%), rgb(245 242 234 / 62%) 52%, rgb(245 242 234 / 20%)), url('/paper-wash-botanical-v1.png') center / cover; pointer-events: none; }
+.home-hero > .site-container { position: relative; z-index: 1; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.72fr); gap: clamp(3rem, 8vw, 7rem); padding-block: clamp(4.5rem, 10vw, 8.5rem) 3.5rem; }
 .eyebrow { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; margin: 0 0 1.6rem; color: var(--color-primary); font: 0.68rem/1.4 var(--font-mono); letter-spacing: 0.13em; text-transform: uppercase; }
 .eyebrow span { display: inline-flex; align-items: center; gap: 0.5rem; }
@@ -252,7 +254,9 @@ html.dark .theme-light { display: inline; }
 .article-copy p { max-width: 760px; margin: 0; color: var(--color-text-secondary); font-size: 0.88rem; line-height: 1.7; }
 .article-arrow { color: var(--color-primary); font-size: 1.2rem; }
 
-.project-band { background: var(--color-primary-hover); color: #f9f5ff; }
+.project-band { position: relative; isolation: isolate; overflow: hidden; background: var(--color-primary-hover); color: #f9f5ff; }
+.project-band::before { content: ""; position: absolute; z-index: 0; inset: 0; background: linear-gradient(112deg, rgb(63 23 108 / 96%), rgb(63 23 108 / 82%) 55%, rgb(63 23 108 / 66%)), url('/mint-wreath-paper-v1.png') center / cover; background-blend-mode: multiply; pointer-events: none; }
+.project-band > .site-container { position: relative; z-index: 1; }
 .section-heading.light span, .section-heading.light > a { color: #d8b7f5; }
 .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgb(255 255 255 / 35%); border-left: 1px solid rgb(255 255 255 / 35%); }
 .project-card { display: flex; min-height: 310px; flex-direction: column; padding: 1.5rem; border-right: 1px solid rgb(255 255 255 / 35%); border-bottom: 1px solid rgb(255 255 255 / 35%); transition: background 0.2s ease; }
@@ -262,7 +266,9 @@ html.dark .theme-light { display: inline; }
 .project-card p { margin: 0 0 1.5rem; color: #d9d0df; font-size: 0.85rem; line-height: 1.75; }
 .project-card > a { display: flex; justify-content: space-between; padding-top: 0.8rem; border-top: 1px solid rgb(255 255 255 / 35%); font-size: 0.75rem; font-weight: 700; }
 
-.start-section { display: grid; grid-template-columns: 0.7fr 1fr 1.25fr; gap: 3rem; padding-block: clamp(5rem, 10vw, 9rem); }
+.start-section { position: relative; isolation: isolate; display: grid; grid-template-columns: 0.7fr 1fr 1.25fr; gap: 3rem; overflow: hidden; padding-block: clamp(5rem, 10vw, 9rem); }
+.start-section::before { content: ""; position: absolute; z-index: 0; inset: 1.5rem 0; border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent); background: linear-gradient(115deg, color-mix(in srgb, var(--color-bg) 86%, transparent), color-mix(in srgb, var(--color-bg) 62%, transparent)), url('/mint-wreath-paper-v1.png') right center / cover; opacity: 0.78; pointer-events: none; }
+.start-section > * { position: relative; z-index: 1; }
 .start-section h2 { margin: 0; font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.12; }
 .start-section > div > p { color: var(--color-text-secondary); line-height: 1.8; }
 .start-links { border-top: 1px solid var(--color-ink); }
@@ -273,6 +279,10 @@ html.dark .theme-light { display: inline; }
 
 .empty-state { padding: 2rem; border: 1px dashed var(--color-border); color: var(--color-text-secondary); }
 .empty-state.dark { color: #d9d0df; }
+
+html.dark .home-hero-backdrop { background: linear-gradient(90deg, rgb(20 17 25 / 97%), rgb(20 17 25 / 83%) 55%, rgb(20 17 25 / 60%)), url('/paper-wash-botanical-v1.png') center / cover; filter: saturate(0.72) brightness(0.48); }
+html.dark .project-band::before { background: linear-gradient(112deg, rgb(38 17 62 / 97%), rgb(38 17 62 / 91%) 55%, rgb(38 17 62 / 82%)), url('/mint-wreath-paper-v1.png') center / cover; }
+html.dark .start-section::before { background: linear-gradient(115deg, color-mix(in srgb, var(--color-bg) 93%, transparent), color-mix(in srgb, var(--color-bg) 82%, transparent)), url('/mint-wreath-paper-v1.png') right center / cover; opacity: 0.45; }
 
 /* ===== 内容目录页 ===== */
 .archive-page { min-height: 70vh; }
