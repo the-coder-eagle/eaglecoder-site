@@ -7,71 +7,64 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="AI 助手" description="和 EagleCoder 聊天 — AI 驱动的个人助手">
   <Nav />
 
-  <style is:global>
-    .chat-bubble-ai p, .chat-bubble-ai div, .chat-bubble-ai span { margin: 0 !important; margin-block: 0 !important; padding: 0 !important; line-height: 1.6 !important; }
-    .chat-bubble-ai br + br { display: none; }
-    .chat-bubble-ai pre {
-      max-width: 100%;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      padding: 14px;
-      border-radius: 8px;
-      background: #252540;
-      color: #e0e0f0;
-      font-size: 12px;
-      line-height: 1.6;
-      border: 1px solid #3a3a5c;
-    }
-    .chat-bubble-ai code {
-      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-      font-size: 12px;
-      color: #d4d4e8;
-    }
-    .chat-bubble-ai pre code {
-      white-space: pre-wrap;
-    }
-  </style>
-
-  <div class="max-w-2xl mx-auto px-4" style="min-height: calc(100vh - 200px);" data-pagefind-ignore>
-
-    <div id="chat-app" style="display:flex; flex-direction:column; height:calc(100vh - 120px);">
-
-      <div style="text-align:center; padding:14px; border-bottom:1px solid var(--color-border);">
-        <h2 style="font-size:17px; font-weight:700; color:var(--color-text);"><img src="/avatar-128.png" width="22" height="22" style="vertical-align:middle;border-radius:50%;" alt=""> EagleCoder AI</h2>
-        <p style="font-size:12px; color:var(--color-text-secondary);">67个聊天记录 · 301对风格示例 · 深度个性化</p>
+  <main id="main-content" class="interactive-page chat-page" data-pagefind-ignore>
+    <header class="site-container interactive-header">
+      <p class="eyebrow"><span>05 / AI COMPANION</span><span>ONLINE WORKSPACE</span></p>
+      <div>
+        <h1>把问题带来，<br /><em>把思路带走。</em></h1>
+        <p>这是一个了解本站内容与表达习惯的 AI 助手。它可以讨论代码、学习和项目，但重要结论仍值得你亲自验证。</p>
       </div>
+    </header>
 
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 16px; border-bottom:1px solid var(--color-border); flex-wrap:wrap;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:12px; color:var(--color-text-secondary);">长度:</span>
-          <button class="len-btn active" data-len="medium" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-primary); background:var(--color-primary); color:white; font-size:12px; cursor:pointer;">中</button>
-          <button class="len-btn" data-len="short" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">短</button>
-          <button class="len-btn" data-len="long" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">长</button>
-          <span style="color:var(--color-border);">|</span>
-          <button id="think-btn" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">🧠 思考</button>
-          <button id="search-btn" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">🌐 搜索</button>
+    <section class="site-container chat-stage" aria-label="AI 助手工作台">
+      <aside class="chat-sidebar">
+        <div class="chat-mascot"><img src="/eagle-mascot-v2-512.png" width="240" height="240" alt="EagleCoder 像素鹰" /></div>
+        <p class="chat-sidebar-label">CONVERSATION NOTES</p>
+        <ul>
+          <li><span>01</span>描述你已经尝试过什么</li>
+          <li><span>02</span>贴出最小的错误信息</li>
+          <li><span>03</span>对关键答案保持验证</li>
+        </ul>
+      </aside>
+
+      <div id="chat-app" class="chat-app">
+        <div class="chat-app-header">
+          <div>
+            <span class="chat-presence" aria-hidden="true"></span>
+            <strong>EagleCoder AI</strong>
+          </div>
+          <p>本地保存对话 · 支持流式回答</p>
         </div>
-        <button id="chat-clear" style="padding:4px 12px; border-radius:14px; border:1px solid var(--color-border); background:transparent; color:var(--color-text-secondary); font-size:12px; cursor:pointer;">🗑 清空</button>
-      </div>
 
-      <div id="chat-messages" style="flex:1; overflow-y:auto; padding:16px;">
-        <div style="text-align:center; padding:40px 20px;">
-          <div style="margin-bottom:12px;"><img src="/avatar-128.png" width="64" height="64" style="border-radius:50%;" alt="EagleCoder"></div>
-          <p style="font-size:15px; color:var(--color-text-secondary);">你好！我是 EagleCoder 的 AI 分身</p>
-          <p style="font-size:13px; color:var(--color-text-secondary); margin-top:4px;">可以问我编程、学业、或者随便聊聊~</p>
+        <div class="chat-toolbar">
+          <div class="chat-options" aria-label="回答设置">
+            <span>回答长度</span>
+            <button class="chat-option len-btn active" type="button" data-len="medium">中</button>
+            <button class="chat-option len-btn" type="button" data-len="short">短</button>
+            <button class="chat-option len-btn" type="button" data-len="long">长</button>
+            <button id="think-btn" class="chat-option" type="button">思考</button>
+            <button id="search-btn" class="chat-option" type="button">联网</button>
+          </div>
+          <button id="chat-clear" class="chat-clear" type="button">清空对话</button>
+        </div>
+
+        <div id="chat-messages" class="chat-messages" aria-live="polite">
+          <div class="chat-empty">
+            <img src="/eagle-mascot-v2-128.png" width="72" height="72" alt="" />
+            <span>READY / 你好</span>
+            <h2>从一个具体问题开始</h2>
+            <p>编程、学业、项目，或者只是梳理一个没想明白的念头。</p>
+          </div>
+        </div>
+
+        <div class="chat-composer">
+          <label class="sr-only" for="chat-input">输入消息</label>
+          <textarea id="chat-input" rows="1" placeholder="输入消息，Enter 发送，Shift + Enter 换行" maxlength="800"></textarea>
+          <button id="chat-send" type="button" aria-label="发送消息">↗</button>
         </div>
       </div>
-
-      <div style="padding:12px; border-top:1px solid var(--color-border); display:flex; gap:8px; align-items:flex-end;">
-        <textarea id="chat-input" rows="1" placeholder="输入消息..." maxlength="800"
-          style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid var(--color-border); font-size:14px; resize:none; background:var(--color-bg-secondary); color:var(--color-text); line-height:1.4; max-height:120px; outline:none;"></textarea>
-        <button id="chat-send" style="width:44px; height:44px; border-radius:50%; border:none; background:var(--color-primary); color:white; font-size:18px; cursor:pointer; flex-shrink:0;">➤</button>
-      </div>
-
-    </div>
-
-  </div>
+    </section>
+  </main>
 
   <Footer />
 </Layout>
@@ -99,9 +92,7 @@ import Layout from '../layouts/Layout.astro';
     if (searchBtn) {
       searchBtn.addEventListener('click', function() {
         searchMode = !searchMode;
-        searchBtn.style.background = searchMode ? '#22c55e' : 'transparent';
-        searchBtn.style.color = searchMode ? 'white' : 'var(--color-text-secondary)';
-        searchBtn.style.borderColor = searchMode ? '#22c55e' : 'var(--color-border)';
+        searchBtn.classList.toggle('active', searchMode);
       });
     }
 
@@ -112,16 +103,16 @@ import Layout from '../layouts/Layout.astro';
 
     lenBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
-        lenBtns.forEach(function(b) { b.classList.remove('active'); b.style.background='transparent'; b.style.color='var(--color-text-secondary)'; b.style.borderColor='var(--color-border)'; });
-        btn.classList.add('active'); btn.style.background='var(--color-primary)'; btn.style.color='white'; btn.style.borderColor='var(--color-primary)';
+        lenBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
         currentLength = btn.getAttribute('data-len') || 'medium';
       });
     });
 
     thinkBtn.addEventListener('click', function() {
       thinkingMode = !thinkingMode;
-      if (thinkingMode) { thinkBtn.style.background='#f59e0b'; thinkBtn.style.color='white'; thinkBtn.style.borderColor='#f59e0b'; thinkBtn.textContent='🧠 思考中'; }
-      else { thinkBtn.style.background='transparent'; thinkBtn.style.color='var(--color-text-secondary)'; thinkBtn.style.borderColor='var(--color-border)'; thinkBtn.textContent='🧠 思考'; }
+      thinkBtn.classList.toggle('active', thinkingMode);
+      thinkBtn.textContent = thinkingMode ? '思考中' : '思考';
     });
 
     try {
@@ -148,7 +139,7 @@ import Layout from '../layouts/Layout.astro';
       if (isUser) {
         d.innerHTML = '<div class="chat-bubble-user" style="max-width:70%; padding:10px 14px; border-radius:16px 16px 4px 16px; background:var(--color-primary); color:white; font-size:14px; line-height:1.6; word-break:break-word;">' + esc(content) + '</div>';
       } else {
-        d.innerHTML = '<div style="width:32px; height:32px; border-radius:50%; overflow:hidden; flex-shrink:0;"><img src="/avatar-128.png" width="32" height="32" style="object-fit:cover;" alt="EagleCoder"></div><div style="max-width:70%;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;"><span style="font-size:12px; font-weight:600; color:var(--color-primary);">EagleCoder</span><span style="font-size:10px; color:var(--color-text-secondary);">' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '</span></div><div class="chat-bubble-ai" style="padding:10px 14px; border-radius:4px 16px 16px 16px; background:var(--color-bg-secondary); color:var(--color-text); font-size:14px; line-height:1.6; word-break:break-word;">' + md(content) + '</div></div>';
+        d.innerHTML = '<div style="width:32px; height:32px; flex-shrink:0;"><img src="/eagle-mascot-v2-128.png" width="32" height="32" style="object-fit:contain;" alt="EagleCoder"></div><div style="max-width:78%;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;"><span style="font-size:12px; font-weight:600; color:var(--color-primary);">EagleCoder</span><span style="font-size:10px; color:var(--color-text-secondary);">' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '</span></div><div class="chat-bubble-ai">' + md(content) + '</div></div>';
       }
       messagesEl.appendChild(d);
       scrollBottom();
@@ -264,7 +255,7 @@ import Layout from '../layouts/Layout.astro';
       clearBtn.addEventListener('click', function() {
         chatHistory = [];
         localStorage.removeItem(HISTORY_KEY);
-        messagesEl.innerHTML = '<div style="text-align:center; padding:40px 20px;"><div style="margin-bottom:12px;"><img src="/avatar-128.png" width="64" height="64" style="border-radius:50%;" alt="EagleCoder"></div><p style="font-size:15px; color:var(--color-text-secondary);">对话已清空，重新开始吧~</p></div>';
+        messagesEl.innerHTML = '<div class="chat-empty"><img src="/eagle-mascot-v2-128.png" width="72" height="72" alt=""><span>READY / 已清空</span><h2>重新开始吧</h2><p>从一个具体问题开始，会更容易得到有用的回答。</p></div>';
       });
     }
   })();
