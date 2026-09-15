@@ -9,21 +9,14 @@ export interface Props {
 const { active } = Astro.props;
 ---
 
-<div class="flex items-center gap-2 mb-4">
-  <span class="text-xs font-semibold mr-1" style="color: var(--color-text-secondary);">语言：</span>
+<div class="language-selector" aria-label="选择编程语言">
+  <span>语言</span>
   {LANGUAGES.map((lang) => (
     <button
       type="button"
-      class={`lang-btn text-xs px-3 py-1.5 rounded-md font-medium transition-all border ${
-        lang.value === active
-          ? 'active'
-          : ''
-      }`}
+      class:list={['lang-btn', { active: lang.value === active }]}
       data-lang={lang.value}
-      style={lang.value === active
-        ? `background: var(--color-primary); color: white; border-color: var(--color-primary);`
-        : `background: var(--color-bg); color: var(--color-text-secondary); border-color: var(--color-border);`
-      }
+      aria-pressed={lang.value === active}
     >
       {lang.label}
     </button>
@@ -38,12 +31,12 @@ const { active } = Astro.props;
       const lang = btn.getAttribute('data-lang');
       if (!lang) return;
 
-      // 更新按钮样式
       buttons.forEach((b) => {
-        b.setAttribute('style', '');
         b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
       });
-      btn.setAttribute('style', 'background: var(--color-primary); color: white; border-color: var(--color-primary);');
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
 
       // 切换编辑器语言
       (window as any).__editorSwitchLang?.(lang);

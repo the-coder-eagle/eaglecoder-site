@@ -12,89 +12,65 @@ import { getTodaysChallenge, getChallengeById, type SupportedLanguage } from '..
 const idParam = Astro.url.searchParams.get('id');
 const challenge = idParam ? (getChallengeById(parseInt(idParam)) || getTodaysChallenge()) : getTodaysChallenge();
 const defaultLang: SupportedLanguage = 'c';
-const challengeJson = JSON.stringify(challenge);
+const challengeJson = JSON.stringify(challenge).replace(/</g, '\\u003c');
 const showBackLink = !!idParam;
 ---
 
 <Layout title={`每日一题 - ${challenge.title}`} description={challenge.title}>
   <Nav />
 
-  <div class="max-w-7xl mx-auto px-4 py-8" data-pagefind-ignore>
-    <!-- 顶部通栏 -->
-    <div class="flex items-center justify-between mb-8 fade-in">
+  <main id="main-content" class="interactive-page challenge-page" data-pagefind-ignore>
+    <header class="site-container interactive-header challenge-header">
+      <p class="eyebrow">
+        <span>04 / DAILY CHALLENGE</span>
+        <span>{idParam ? `ARCHIVE #${idParam}` : new Date().toISOString().slice(0, 10)}</span>
+      </p>
       <div>
-        <p class="text-sm mb-1" style="color: var(--color-text-secondary);">
-          🗓️ {idParam ? `题目 #${idParam}` : `每日一题 · ${new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}`}
-        </p>
-        {showBackLink && (
-          <p class="text-xs" style="color: var(--color-text-secondary);">这是历史题目，<a href="/challenge" style="color: var(--color-primary);">← 回今日题目</a></p>
-        )}
+        <h1>让思考<br /><em>保持手感。</em></h1>
+        <div class="challenge-header-side">
+          <p>读懂约束，写下代码，再让测试用例说话。支持 C、JavaScript 与 Python。</p>
+          <nav aria-label="每日一题辅助导航">
+            {showBackLink && <a href="/challenge">今日题目</a>}
+            <a href="/challenge/history">历史题目</a>
+            <a href="/challenge/leaderboard">排行榜</a>
+          </nav>
+        </div>
       </div>
-      <div class="flex gap-3">
-        <a
-          href="/challenge/history"
-          class="text-sm px-4 py-2 rounded-lg border transition-all hover:shadow-sm"
-          style="border-color: var(--color-border); color: var(--color-text-secondary);"
-        >
-          📚 历史题目
-        </a>
-        <a
-          href="/challenge/leaderboard"
-          class="text-sm px-4 py-2 rounded-lg border transition-all hover:shadow-sm"
-          style="border-color: var(--color-border); color: var(--color-text-secondary);"
-        >
-          🏆 排行榜
-        </a>
-      </div>
-    </div>
+    </header>
 
-    <!-- 两栏布局 -->
-    <div class="grid lg:grid-cols-2 gap-8">
-      <div class="fade-in">
+    <section class="site-container challenge-workbench">
+      <div class="challenge-problem fade-in">
         <ChallengeView challenge={challenge} />
       </div>
 
-      <div>
-        <div class="sticky top-20">
+      <div class="challenge-editor-panel">
+        <div class="challenge-editor-sticky">
+          <div class="challenge-editor-label"><span>CODE / SOLUTION</span><span>AUTO SAVE: LOCAL</span></div>
           <LanguageSelector active={defaultLang} />
 
           <CodeEditor language={defaultLang} initialCode={challenge.template[defaultLang]} />
 
-          <!-- 用户名 + 提交按钮 -->
-          <div class="mt-4 flex items-center gap-3">
-            <div class="flex-1">
-              <input
-                id="username-input"
-                type="text"
-                placeholder="输入你的用户名"
-                maxlength="30"
-                autocomplete="off"
-                class="w-full px-3 py-2 rounded-lg border text-sm transition-colors"
-                style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-text);"
-              />
-            </div>
-            <button
-              id="submit-btn"
-              class="px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              style="background: var(--color-primary);"
-            >
-              🚀 提交判题
-            </button>
+          <div class="challenge-submit-row">
+            <label class="sr-only" for="username-input">用户名</label>
+            <input id="username-input" type="text" placeholder="输入用户名" maxlength="30" autocomplete="off" />
+            <button id="submit-btn" type="button">提交判题 <span aria-hidden="true">↗</span></button>
           </div>
 
-          <!-- 判题结果显示 -->
-          <div id="results-container" class="mt-4"></div>
+          <div id="results-container"></div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <Footer />
 </Layout>
 
-<script is:inline define:vars={{ challengeJson, defaultLang }}>
+<script is:inline id="challenge-data" type="application/json" set:html={challengeJson}></script>
+<script is:inline define:vars={{ defaultLang }}>
   (function() {
-  let CHALLENGE = JSON.parse(challengeJson);
+  var challengeData = document.getElementById('challenge-data');
+  if (!challengeData) return;
+  var CHALLENGE = JSON.parse(challengeData.textContent || '{}');
   const USERNAME_KEY = 'oj-username';
   const USER_ID_KEY = 'oj-user-id';
 
