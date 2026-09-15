@@ -1,8 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import Footer from '../components/Footer.astro';
+import EagleGallery from '../components/EagleGallery.astro';
 import Nav from '../components/Nav.astro';
 import Layout from '../layouts/Layout.astro';
+import { eagleGallery } from '../data/eagle-gallery';
 
 const allPosts = (await getCollection('posts'))
   .filter((post) => !post.data.draft)
@@ -94,6 +96,8 @@ const stats = [
         <p class="empty-state">第一篇文章正在路上。</p>
       )}
     </section>
+
+    <EagleGallery items={eagleGallery} />
 
     <section class="project-band project-band--botanical">
       <img class="project-band-sprig" src="/golden-sprig-v1.png" width="1024" height="1536" alt="" aria-hidden="true" />
