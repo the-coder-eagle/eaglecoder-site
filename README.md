@@ -1,46 +1,38 @@
-# Astro Starter Kit: Basics
+# EagleCoder
 
-```sh
-npm create astro@latest -- --template basics
-```
+EagleCoder 是一个基于 Astro 的个人技术花园，收纳文章、项目记录、C 语言学习文档和每日一题。
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## 项目结构
 
 ```text
 /
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+├── public/                 静态资源
+├── src/content/            文章、项目和学习文档
+├── src/components/         页面组件
+├── src/pages/              页面路由
+├── src/styles/             全局样式
+├── server/                 每日一题后端服务
+├── scripts/                本地发布脚本
+├── tests/                  Vitest 测试
+└── RELEASE_WORKFLOW.md     开发、合并与部署流程
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 常用命令
 
-## 🧞 Commands
+所有命令都在项目根目录执行：
 
-All commands are run from the root of the project, from a terminal:
+| 命令 | 作用 |
+| :--- | :--- |
+| `npm install` | 安装依赖 |
+| `npm run dev` | 启动本地开发服务器 |
+| `npm run check` | 检查 Astro / TypeScript 类型 |
+| `npm test` | 执行 Vitest 测试 |
+| `npm run build` | 构建生产站点和 Pagefind 索引 |
+| `npm run verify` | 完整检查、测试和构建 |
+| `npm run preview` | 预览生产构建 |
+| `npm run deploy:check` | 检查发布条件，不上传 |
+| `npm run deploy` | 验证并发布到服务器 |
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## 发布流程
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+完整流程见 [RELEASE_WORKFLOW.md](./RELEASE_WORKFLOW.md)。核心原则是：功能分支开发、Pull Request 合并到 `master`、CI 通过后再发布。
