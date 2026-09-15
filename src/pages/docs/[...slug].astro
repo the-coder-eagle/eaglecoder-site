@@ -1,35 +1,23 @@
 ---
-import Nav from '../../components/Nav.astro';
-import Footer from '../../components/Footer.astro';
-import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
+import ContentLayout from '../../layouts/ContentLayout.astro';
 
 export async function getStaticPaths() {
   const docs = await getCollection('docs');
-  return docs.map((d) => ({ params: { slug: d.id } }));
+  return docs.map((doc) => ({ params: { slug: doc.id } }));
 }
 
-const { slug } = Astro.params;
-const docs = await getCollection('docs');
-const doc = docs.find((d) => d.id === slug)!;
+const doc = (await getCollection('docs')).find((entry) => entry.id === Astro.params.slug)!;
 const { Content } = await render(doc);
 ---
 
-<Layout title={doc.data.title} description={doc.data.description}>
-  <Nav />
-
-  <article class="max-w-3xl mx-auto px-4 py-12">
-    <header class="mb-8 fade-in">
-      <h1 class="text-3xl font-bold">{doc.data.title}</h1>
-      {doc.data.description && (
-        <p class="mt-2" style="color: var(--color-text-secondary);">{doc.data.description}</p>
-      )}
-    </header>
-
-    <div class="prose fade-in">
-      <Content />
-    </div>
-  </article>
-
-  <Footer />
-</Layout>
+<ContentLayout
+  title={doc.data.title}
+  description={doc.data.description}
+  eyebrow="DOCUMENT / REFERENCE"
+  backHref="/docs"
+  backLabel="返回文档目录"
+  meta={[doc.data.category]}
+>
+  <div class="prose fade-in"><Content /></div>
+</ContentLayout>

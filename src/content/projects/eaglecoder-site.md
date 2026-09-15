@@ -2,7 +2,7 @@
 title: "EagleCoder 个人网站"
 description: "基于 Astro 的个人博客+项目展示+文档存档站"
 tech: ["Astro", "Tailwind CSS", "GitHub Actions", "Nginx"]
-github: "https://github.com"
+github: "https://github.com/the-coder-eagle/eaglecoder-site"
 featured: true
 order: 1
 ---

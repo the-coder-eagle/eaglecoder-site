@@ -1,0 +1,68 @@
+---
+import Footer from '../components/Footer.astro';
+import Nav from '../components/Nav.astro';
+import Layout from './Layout.astro';
+
+export interface Props {
+  title: string;
+  description?: string;
+  eyebrow: string;
+  backHref: string;
+  backLabel: string;
+  meta?: string[];
+  tags?: string[];
+  tagBase?: string;
+  type?: 'article' | 'website';
+}
+
+const {
+  title,
+  description,
+  eyebrow,
+  backHref,
+  backLabel,
+  meta = [],
+  tags = [],
+  tagBase,
+  type = 'website',
+} = Astro.props;
+---
+
+<Layout title={title} description={description} type={type}>
+  <Nav />
+
+  <main id="main-content" class="reading-page">
+    <header class="site-container reading-header fade-in">
+      <a class="reading-back" href={backHref}>← {backLabel}</a>
+      <p class="eyebrow"><span>{eyebrow}</span></p>
+      <h1>{title}</h1>
+      {description && <p class="reading-description">{description}</p>}
+
+      {(meta.length > 0 || tags.length > 0) && (
+        <div class="reading-meta">
+          <div>{meta.map((item) => <span>{item}</span>)}</div>
+          <div>
+            {tags.map((tag) => tagBase ? (
+              <a href={`${tagBase}?tag=${encodeURIComponent(tag)}`}>{tag}</a>
+            ) : <span>{tag}</span>)}
+          </div>
+        </div>
+      )}
+
+      {Astro.slots.has('actions') && <div class="reading-actions"><slot name="actions" /></div>}
+    </header>
+
+    <article class="site-container reading-shell">
+      <div class="reading-rail" aria-hidden="true">
+        <span>READ</span>
+        <i></i>
+        <span>↓</span>
+      </div>
+      <div class="reading-content">
+        <slot />
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
