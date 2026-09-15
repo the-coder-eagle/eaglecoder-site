@@ -96,6 +96,7 @@ try {
   }
 
   $sshOptions = @('-p', "$remotePort", '-i', $deployKey, '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=accept-new', '-o', "UserKnownHostsFile=$knownHostsPath")
+  $scpOptions = @('-P', "$remotePort", '-i', $deployKey, '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=accept-new', '-o', "UserKnownHostsFile=$knownHostsPath")
   $remoteLogin = "${remoteUser}@${remoteHost}"
   Write-Host 'Testing server connection...' -ForegroundColor Cyan
   Invoke-Native $ssh ($sshOptions + @($remoteLogin, 'echo ok'))
@@ -134,7 +135,7 @@ try {
     Invoke-Native $tar @('-czf', $artifact, '-C', (Join-Path $repoRoot 'dist'), '.')
 
     Write-Host 'Uploading and atomically replacing the online static directory...' -ForegroundColor Cyan
-    Invoke-Native $scp ($sshOptions + @($artifact, "${remoteLogin}:$remoteArchive"))
+    Invoke-Native $scp ($scpOptions + @($artifact, "${remoteLogin}:$remoteArchive"))
     $remoteCommand = "set -eu; rm -rf -- $remoteStage; mkdir -p $remoteStage; tar -xzf $remoteArchive -C $remoteStage; mkdir -p $remotePath; find $remotePath -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +; cp -a $remoteStage/. $remotePath/; test -s $remotePath/index.html; rm -rf -- $remoteStage $remoteArchive"
     Invoke-Native $ssh ($sshOptions + @($remoteLogin, $remoteCommand))
   } finally {
