@@ -72,4 +72,6 @@
 - 答案支持 `|` 分隔多值（如 `安徽|安徽省`）
 
 ### 部署
-- `git push origin master` → 服务器 cron 自动 `git pull` + `npm run build` + `rsync`
+- 发布流程已统一为：功能分支 → Pull Request → CI → 合并 `master` → `npm run deploy`
+- `npm run deploy` 会执行完整验证、SSH 临时归档上传、静态目录替换和线上 HTTP 冒烟检查
+- 详细步骤见 `RELEASE_WORKFLOW.md`

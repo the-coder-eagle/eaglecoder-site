@@ -14,7 +14,8 @@
     "verify": "npm run check && npm run test && npm run build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/release.ps1",
+    "deploy:check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/release.ps1 -CheckOnly"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.5",
