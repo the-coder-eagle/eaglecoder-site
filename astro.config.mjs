@@ -1,14 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import rehypeSlug from 'rehype-slug';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://eaglecoder.cn',
-  integrations: [sitemap()],
+  integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
     server: {
@@ -20,10 +19,6 @@ export default defineConfig({
     },
   },
   markdown: {
-    rehypePlugins: [
-      rehypeSlug,
-      [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-    ],
     shikiConfig: {
       theme: 'github-dark',
       wrap: true,

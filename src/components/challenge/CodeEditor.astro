@@ -6,13 +6,11 @@ export interface Props {
   initialCode?: string;
 }
 
-const { language, initialCode = '' } = Astro.props;
 ---
 
 <div
   id="code-editor"
-  class="rounded-lg overflow-hidden border"
-  style="border-color: var(--color-border);"
+  class="code-editor-shell"
 >
   <div id="cm-editor"></div>
 </div>
@@ -37,7 +35,7 @@ const { language, initialCode = '' } = Astro.props;
 
 <script>
   import { EditorView, keymap, lineNumbers, highlightActiveLine } from '@codemirror/view';
-  import { EditorState, Compartment } from '@codemirror/state';
+  import { Compartment } from '@codemirror/state';
   import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
   import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
   import { autocompletion, closeBrackets } from '@codemirror/autocomplete';
@@ -62,10 +60,6 @@ const { language, initialCode = '' } = Astro.props;
   // 暗色模式 theme compartment
   const themeCompartment = new Compartment();
 
-  function getTheme(isDark: boolean) {
-    return isDark ? oneDark : defaultHighlightStyle;
-  }
-
   // 初始值
   const initialLang = (window as any).__editorLang || 'python';
   const initialCode = (window as any).__editorCode || '';
@@ -82,7 +76,7 @@ const { language, initialCode = '' } = Astro.props;
       history(),
       keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
       languageCompartment.of(getLanguageExtension(initialLang)),
-      themeCompartment.of(isDark ? [syntaxHighlighting(oneDark)] : [syntaxHighlighting(defaultHighlightStyle)]),
+      themeCompartment.of(isDark ? [oneDark] : [syntaxHighlighting(defaultHighlightStyle)]),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           (window as any).__editorGetCode = () => view.state.doc.toString();
@@ -110,7 +104,7 @@ const { language, initialCode = '' } = Astro.props;
   (window as any).__editorToggleTheme = (dark: boolean) => {
     view.dispatch({
       effects: themeCompartment.reconfigure(
-        dark ? [syntaxHighlighting(oneDark)] : [syntaxHighlighting(defaultHighlightStyle)]
+        dark ? [oneDark] : [syntaxHighlighting(defaultHighlightStyle)]
       ),
     });
   };

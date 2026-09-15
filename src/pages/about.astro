@@ -1,40 +1,36 @@
 ---
-import Nav from '../components/Nav.astro';
-import Footer from '../components/Footer.astro';
-import Layout from '../layouts/Layout.astro';
+import ContentLayout from '../layouts/ContentLayout.astro';
 ---
 
-<Layout title="关于" description="关于 EagleCoder">
-  <Nav />
+<ContentLayout
+  title="你好，我是 EagleCoder"
+  description="一名软件工程学生，也是一名把学习过程持续公开的人。"
+  eyebrow="ABOUT / NOW"
+  backHref="/"
+  backLabel="返回首页"
+  tags={['软件工程', 'C', 'Java', 'Python', 'Web']}
+>
+  <div class="prose fade-in">
+    <p>
+      这个网站不是完成品陈列柜，更像一座持续维护的技术花园。我会把课程之外真正动手做过的东西写下来：问题、取舍、错误，以及最后留下的方法。
+    </p>
 
-  <div class="max-w-3xl mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold mb-6">关于我</h1>
+    <h2>这里有什么</h2>
+    <ul>
+      <li><strong>文章</strong>：学习过程中的思考、实验与复盘。</li>
+      <li><strong>项目</strong>：从需求到落地的构建记录。</li>
+      <li><strong>文档</strong>：可以回来查阅的笔记与参考。</li>
+      <li><strong>每日一题</strong>：用小问题保持代码手感。</li>
+    </ul>
 
-    <div class="prose">
-      <p>
-        你好，我是 <strong>EagleCoder</strong>，软件工程大一学生。热爱编程与开源 🚀
-      </p>
+    <h2>这个网站</h2>
+    <p>
+      网站使用 <strong>Astro</strong> 构建，并在需要复杂交互的区域逐步使用 React。代码公开托管在 GitHub；每次改动先通过自动检查，再进入部署流程。
+    </p>
 
-      <h2>这个网站</h2>
-      <ul>
-        <li>📝 <strong>文章</strong> — 记录学习过程中的思考和总结</li>
-        <li>🚀 <strong>项目</strong> — 展示我做的小项目，每个都是成长的脚印</li>
-        <li>📚 <strong>文档</strong> — 学习笔记和参考资料的存档</li>
-      </ul>
-
-      <h2>技术栈</h2>
-      <p>
-        这个网站本身也是我的学习项目之一，使用 <strong>Astro</strong> 构建，部署在腾讯云香港服务器上。
-        源码托管在 GitHub，通过 GitHub Actions 自动部署。
-      </p>
-
-      <h2>联系我</h2>
-      <p>
-        欢迎通过 <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> 找到我。
-        这个网站还在不断完善中 🚧
-      </p>
-    </div>
+    <h2>找到我</h2>
+    <p>
+      你可以在 <a href="https://github.com/the-coder-eagle" target="_blank" rel="noopener noreferrer">GitHub</a> 查看我的公开项目。
+    </p>
   </div>
-
-  <Footer />
-</Layout>
+</ContentLayout>

@@ -8,28 +8,38 @@ import Layout from '../../layouts/Layout.astro';
 <Layout title="排行榜" description="每日一题排行榜">
   <Nav />
 
-  <div class="max-w-3xl mx-auto px-4 py-12" data-pagefind-ignore>
-    <div class="flex items-center justify-between mb-8">
+  <main id="main-content" class="interactive-page challenge-archive-page" data-pagefind-ignore>
+    <header class="site-container interactive-header">
+      <p class="eyebrow"><span>04 / DAILY CHALLENGE</span><span>SCOREBOARD</span></p>
       <div>
-        <h1 class="text-3xl font-bold mb-2">🏆 排行榜</h1>
-        <p style="color: var(--color-text-secondary);">每题最高分汇总，实时更新</p>
+        <h1>让每次提交，<br /><em>留下刻度。</em></h1>
+        <div class="challenge-header-side">
+          <p>汇总每位挑战者的最高成绩。排名是阶段性的，更重要的是下一次提交比上一次更清楚。</p>
+          <nav aria-label="排行榜辅助导航">
+            <a href="/challenge">今日题目</a>
+            <a href="/challenge/history">历史题目</a>
+          </nav>
+        </div>
       </div>
-      <a href="/challenge" class="text-sm px-4 py-2 rounded-lg border" style="border-color: var(--color-border); color: var(--color-text-secondary);">
-        ← 回题目
-      </a>
-    </div>
+    </header>
 
-    <!-- Tab 切换 -->
-    <div class="flex gap-2 mb-6" id="tabs">
-      <button class="tab-btn active px-4 py-2 rounded-lg text-sm font-semibold border" data-tab="total" style="background: var(--color-primary); color: white; border-color: var(--color-primary);">总分排行</button>
-      <button class="tab-btn px-4 py-2 rounded-lg text-sm font-medium border" data-tab="today" style="background: var(--color-bg); color: var(--color-text-secondary); border-color: var(--color-border);">今日题目排行</button>
-    </div>
+    <section class="site-container leaderboard-stage" aria-labelledby="leaderboard-title">
+      <div class="leaderboard-toolbar">
+        <div>
+          <span>LIVE RANKING</span>
+          <h2 id="leaderboard-title">成绩榜</h2>
+        </div>
+        <div class="leaderboard-tabs" id="tabs" role="tablist" aria-label="排行榜范围">
+          <button class="tab-btn active" data-tab="total" type="button" role="tab" aria-selected="true">总分排行</button>
+          <button class="tab-btn" data-tab="today" type="button" role="tab" aria-selected="false">今日题目</button>
+        </div>
+      </div>
 
-    <!-- 排行榜表格 -->
-    <div id="leaderboard-container" class="text-center py-12" style="color: var(--color-text-secondary);">
-      ⏳ 加载中...
-    </div>
-  </div>
+      <div id="leaderboard-container" class="leaderboard-container" aria-live="polite">
+        <p class="leaderboard-state">正在读取成绩…</p>
+      </div>
+    </section>
+  </main>
 
   <Footer />
 </Layout>
@@ -52,7 +62,7 @@ import Layout from '../../layouts/Layout.astro';
     }
 
     async function load(tab) {
-      container.innerHTML = '<p>⏳ 加载中...</p>';
+      container.innerHTML = '<p class="leaderboard-state">正在读取成绩…</p>';
       try {
         let url = '/api/stats/leaderboard?limit=20';
         if (tab === 'today') {
@@ -64,37 +74,37 @@ import Layout from '../../layouts/Layout.astro';
         const list = data.leaderboard || [];
 
         if (!list.length) {
-          container.innerHTML = '<p>还没有人提交过，去做第一个打卡的人 🚀</p>';
+          container.innerHTML = '<p class="leaderboard-state">还没有提交记录。去完成第一次打卡吧。</p>';
           return;
         }
 
-        let html = `<div class="border rounded-lg overflow-hidden" style="border-color: var(--color-border);">
-          <table class="w-full text-sm">
-            <thead><tr style="background: var(--color-bg-secondary);">
-              <th class="text-left p-3 border-b" style="border-color: var(--color-border);">#</th>
-              <th class="text-left p-3 border-b" style="border-color: var(--color-border);">用户</th>
-              <th class="text-left p-3 border-b" style="border-color: var(--color-border);">总分</th>
-              <th class="text-left p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">通过</th>
-              <th class="text-left p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">题数</th>
-              <th class="text-left p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">最近提交</th>
+        let html = `<div class="leaderboard-table-wrap">
+          <table class="leaderboard-table">
+            <thead><tr>
+              <th>#</th>
+              <th>用户</th>
+              <th>总分</th>
+              <th>通过</th>
+              <th>题数</th>
+              <th>最近提交</th>
             </tr></thead><tbody>`;
 
         const medals = ['🥇','🥈','🥉'];
         list.forEach((r, i) => {
-          const bg = i < 3 ? '#fef3c7' : (i % 2 === 0 ? 'var(--color-bg-secondary)' : 'transparent');
-          html += `<tr style="background: ${bg};">
-            <td class="p-3 border-b font-mono" style="border-color: var(--color-border);">${medals[i] || (i+1)}</td>
-            <td class="p-3 border-b font-semibold" style="border-color: var(--color-border);">${escapeHtml(r.username)}</td>
-            <td class="p-3 border-b font-bold" style="border-color: var(--color-border); color: var(--color-primary);">${r.total_score}</td>
-            <td class="p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">${r.total_passed || 0}</td>
-            <td class="p-3 border-b hidden sm:table-cell" style="border-color: var(--color-border);">${r.solutions || 0}</td>
-            <td class="p-3 border-b text-xs hidden sm:table-cell" style="border-color: var(--color-border); color: var(--color-text-secondary);">${formatDate(r.last_submit)}</td>
+          const rowClass = i < 3 ? 'rank-top' : (i % 2 === 0 ? 'rank-alt' : '');
+          html += `<tr class="${rowClass}">
+            <td>${medals[i] || String(i + 1).padStart(2, '0')}</td>
+            <td><strong>${escapeHtml(r.username)}</strong></td>
+            <td><b>${r.total_score}</b></td>
+            <td>${r.total_passed || 0}</td>
+            <td>${r.solutions || 0}</td>
+            <td><time>${formatDate(r.last_submit)}</time></td>
           </tr>`;
         });
         html += '</tbody></table></div>';
         container.innerHTML = html;
       } catch (e) {
-        container.innerHTML = '<p style="color: #ef4444;">加载失败，请稍后重试</p>';
+        container.innerHTML = '<p class="leaderboard-state is-error">加载失败，请稍后重试。</p>';
       }
     }
 
@@ -109,14 +119,10 @@ import Layout from '../../layouts/Layout.astro';
         currentTab = tab;
         tabs.forEach(function(b) {
           b.classList.remove('active');
-          b.style.background = 'var(--color-bg)';
-          b.style.color = 'var(--color-text-secondary)';
-          b.style.borderColor = 'var(--color-border)';
+          b.setAttribute('aria-selected', 'false');
         });
         btn.classList.add('active');
-        btn.style.background = 'var(--color-primary)';
-        btn.style.color = 'white';
-        btn.style.borderColor = 'var(--color-primary)';
+        btn.setAttribute('aria-selected', 'true');
         load(tab);
       });
     });

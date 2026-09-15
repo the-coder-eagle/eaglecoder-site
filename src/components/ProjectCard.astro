@@ -1,5 +1,7 @@
 ---
 export interface Props {
+  index?: string;
+  href?: string;
   title: string;
   description: string;
   tech?: string[];
@@ -8,47 +10,25 @@ export interface Props {
   image?: string;
 }
 
-const { title, description, tech = [], github, demo, image } = Astro.props;
+const { index = '01', href, title, description, tech = [], github, demo, image } = Astro.props;
 ---
 
-<div class="flex rounded-lg border overflow-hidden transition-all hover:shadow-md fade-in" style="border-color: var(--color-border); background: var(--color-bg);">
-  <!-- 左侧紫色竖条 -->
-  <div class="w-1 flex-shrink-0" style="background: var(--color-primary);"></div>
-
-  <div class="p-5 flex-1">
-    {image && (
-      <img src={image} alt={title} class="w-full h-40 object-cover rounded-md mb-4" loading="lazy" />
-    )}
-
-    <h3 class="font-semibold text-lg mb-2">{title}</h3>
-    <p class="text-sm mb-3" style="color: var(--color-text-secondary);">{description}</p>
-
-    {tech.length > 0 && (
-      <div class="flex flex-wrap gap-1.5 mb-3">
-        {tech.map((t) => (
-          <span
-            class="text-xs px-2 py-0.5 rounded-full font-medium"
-            style="background: var(--color-bg-secondary); color: var(--color-primary);"
-          >
-            {t}
-          </span>
-        ))}
-      </div>
-    )}
-
-    {(github || demo) && (
-      <div class="flex gap-3 text-sm mt-auto">
-        {github && (
-          <a href={github} target="_blank" rel="noopener" class="hover:underline" style="color: var(--color-primary);">
-            GitHub →
-          </a>
-        )}
-        {demo && (
-          <a href={demo} target="_blank" rel="noopener" class="hover:underline" style="color: var(--color-primary);">
-            在线演示 →
-          </a>
-        )}
-      </div>
-    )}
+<article class="archive-project-card fade-in">
+  <div class="archive-project-meta">
+    <span>{index}</span>
+    {tech.length > 0 && <span>{tech.slice(0, 3).join(' / ')}</span>}
   </div>
-</div>
+
+  {image && <img src={image} alt="" loading="lazy" />}
+
+  <div class="archive-project-copy">
+    <h3>{title}</h3>
+    <p>{description}</p>
+  </div>
+
+  <div class="archive-project-links">
+    {href && <a class="primary" href={href}>项目记录 <span aria-hidden="true">↗</span></a>}
+    {github && <a href={github} target="_blank" rel="noopener noreferrer">GitHub</a>}
+    {demo && <a href={demo} target="_blank" rel="noopener noreferrer">演示</a>}
+  </div>
+</article>

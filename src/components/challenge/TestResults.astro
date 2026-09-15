@@ -21,6 +21,24 @@ export interface Props {
 }
 
 const { results, passed, total, score, status, loading = false, username } = Astro.props;
+
+const statusIcon: Record<TestResultItem['status'], string> = {
+  accepted: '✅',
+  wrong_answer: '❌',
+  time_limit_exceeded: '⏱️',
+  runtime_error: '💥',
+  compile_error: '🔧',
+  error: '⚠️',
+};
+
+const statusLabel: Record<TestResultItem['status'], string> = {
+  accepted: '通过',
+  wrong_answer: '答案错误',
+  time_limit_exceeded: '超时',
+  runtime_error: '运行错误',
+  compile_error: '编译错误',
+  error: '系统错误',
+};
 ---
 
 <div id="test-results" class="mt-4 fade-in" style={`display: ${results.length > 0 || loading ? 'block' : 'none'};`}>
@@ -67,23 +85,13 @@ const { results, passed, total, score, status, loading = false, username } = Ast
             </tr>
           </thead>
           <tbody>
-            {results.map((r) => {
-              const statusIcon: Record<string, string> = {
-                accepted: '✅',
-                wrong_answer: '❌',
-                time_limit_exceeded: '⏱️',
-                runtime_error: '💥',
-                compile_error: '🔧',
-                error: '⚠️',
-              };
-              const rowBg = r.status === 'accepted' ? 'transparent' : '#fef2f2';
-              return (
-                <tr style={`background: ${r.status !== 'accepted' ? rowBg : 'transparent'};`}>
+            {results.map((r) => (
+                <tr style={`background: ${r.status === 'accepted' ? 'transparent' : '#fef2f2'};`}>
                   <td class="p-2.5 border-b font-mono text-xs" style="border-color: var(--color-border); color: var(--color-text-secondary);">
                     {r.caseIndex}
                   </td>
                   <td class="p-2.5 border-b text-xs" style="border-color: var(--color-border);">
-                    {statusIcon[r.status] || '❓'} {r.status === 'accepted' ? '通过' : r.status === 'wrong_answer' ? '答案错误' : r.status === 'time_limit_exceeded' ? '超时' : r.status === 'runtime_error' ? '运行错误' : r.status === 'compile_error' ? '编译错误' : '系统错误'}
+                    {statusIcon[r.status]} {statusLabel[r.status]}
                   </td>
                   <td class="p-2.5 border-b font-mono text-xs hidden sm:table-cell" style="border-color: var(--color-border);">{r.input.replace(/\n/g, ' ⏎ ')}</td>
                   <td class="p-2.5 border-b font-mono text-xs" style="border-color: var(--color-border);">{r.expected}</td>
@@ -92,8 +100,7 @@ const { results, passed, total, score, status, loading = false, username } = Ast
                   </td>
                   <td class="p-2.5 border-b font-mono text-xs hidden sm:table-cell" style="border-color: var(--color-border); color: var(--color-text-secondary);">{r.time}</td>
                 </tr>
-              );
-            })}
+            ))}
           </tbody>
         </table>
       </div>

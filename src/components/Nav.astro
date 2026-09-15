@@ -1,146 +1,111 @@
 ---
-const isHome = Astro.url.pathname === '/';
+import { isNavigationItemActive, primaryNavigation } from '../config/navigation';
 
-const links = [
-  { href: '/posts', label: '文章' },
-  { href: '/projects', label: '项目' },
-  { href: '/docs', label: '文档' },
-  { href: '/challenge', label: '每日一题' },
-  { href: '/chat', label: 'AI助手' },
-  { href: '/about', label: '关于' },
-];
+const pathname = Astro.url.pathname;
 ---
 
-<header class="sticky top-0 z-50 backdrop-blur border-b" style="background: color-mix(in srgb, var(--color-bg) 85%, transparent); border-color: var(--color-border);">
-  <nav class="max-w-5xl mx-auto flex items-center justify-between px-4 h-14">
-    <a
-      href="/"
-      class="text-lg font-bold tracking-tight hover:opacity-80 transition-opacity"
-      style="color: var(--color-text); white-space: nowrap;"
-    >
-      <img src="/avatar-128.png" width="24" height="24" style="vertical-align:middle;border-radius:50%;margin-right:4px;display:inline;" alt="">EagleCoder
+<a class="skip-link" href="#main-content">跳到正文</a>
+
+<header class="site-header">
+  <nav class="site-container nav-shell" aria-label="主导航">
+    <a class="brand" href="/" aria-label="EagleCoder 首页">
+      <span class="brand-mark" aria-hidden="true">
+        <img src="/eagle-mascot-v2-128.png" width="42" height="42" alt="" />
+      </span>
+      <span>
+        <strong>EagleCoder</strong>
+        <small>LEARN · BUILD · WRITE</small>
+      </span>
     </a>
 
-    <!-- 桌面端导航链接 -->
-    <div class="flex items-center gap-6">
-      {links.map((link) => {
-        const isActive = Astro.url.pathname.startsWith(link.href);
-        const isChallenge = link.href === '/challenge';
+    <div class="desktop-navigation" aria-label="站点栏目">
+      {primaryNavigation.map((item) => {
+        const isActive = isNavigationItemActive(pathname, item.href);
         return (
-        <a
-          href={link.href}
-          class={`text-sm font-medium transition-colors hover:opacity-80 hidden sm:block`}
-          style={{
-            color: isActive ? 'var(--color-primary)' : isChallenge ? '#f59e0b' : 'var(--color-text-secondary)',
-          }}
-        >
-          {isChallenge ? '🔥 ' : ''}{link.label}
-        </a>
+          <a
+            href={item.href}
+            class:list={['nav-link', { active: isActive, accent: item.accent }]}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            <span>{item.index}</span>{item.label}
+          </a>
         );
       })}
+    </div>
 
-      <!-- 汉堡按钮 — 仅手机端可见 -->
+    <div class="nav-actions">
+      <button id="search-toggle" class="icon-button" type="button" aria-label="搜索站内内容">
+        <span aria-hidden="true">⌕</span>
+      </button>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="切换明暗主题">
+        <span class="theme-light" aria-hidden="true">☀</span>
+        <span class="theme-dark" aria-hidden="true">◐</span>
+      </button>
       <button
         id="menu-toggle"
-        class="sm:hidden p-1.5 rounded-md transition-colors cursor-pointer"
-        style="background: var(--color-bg-secondary);"
-        aria-label="打开菜单"
+        class="icon-button menu-toggle"
+        type="button"
+        aria-label="打开导航菜单"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
       >
-        <span id="menu-icon-open" class="text-sm">☰</span>
-        <span id="menu-icon-close" class="text-sm" style="display:none;">✕</span>
-      </button>
-
-      <!-- 搜索按钮 -->
-      <button
-        id="search-toggle"
-        class="p-1.5 rounded-md transition-colors cursor-pointer"
-        style="background: var(--color-bg-secondary);"
-        aria-label="搜索"
-      >
-        <span class="text-sm">🔍</span>
-      </button>
-
-      <!-- 主题切换按钮 -->
-      <button
-        id="theme-toggle"
-        class="p-1.5 rounded-md transition-colors cursor-pointer"
-        style="background: var(--color-bg-secondary);"
-        aria-label="切换暗色模式"
-      >
-        <span id="theme-icon-sun" class="hidden dark:block text-sm">☀️</span>
-        <span id="theme-icon-moon" class="block dark:hidden text-sm">🌙</span>
+        <span class="menu-open" aria-hidden="true">☰</span>
+        <span class="menu-close" aria-hidden="true">×</span>
       </button>
     </div>
   </nav>
 
-  <!-- 手机端下拉菜单 -->
-  <div
-    id="mobile-menu"
-    class="sm:hidden border-t"
-    style="display:none; border-color: var(--color-border); background: var(--color-bg);"
-  >
-    <div class="px-4 py-3 flex flex-col gap-1">
-      {links.map((link) => {
-        const isActive = Astro.url.pathname.startsWith(link.href);
-        const isChallenge = link.href === '/challenge';
+  <div id="mobile-menu" class="mobile-navigation" hidden>
+    <div class="site-container mobile-navigation-inner">
+      {primaryNavigation.map((item) => {
+        const isActive = isNavigationItemActive(pathname, item.href);
         return (
-        <a
-          href={link.href}
-          class="mobile-menu-link text-sm font-medium py-2 px-3 rounded-md transition-colors"
-          style={{
-            color: isActive ? 'var(--color-primary)' : isChallenge ? '#f59e0b' : 'var(--color-text-secondary)',
-            background: isActive ? 'var(--color-bg-secondary)' : 'transparent',
-          }}
-        >
-          {isChallenge ? '🔥 ' : ''}{link.label}
-        </a>
+          <a
+            href={item.href}
+            class:list={['mobile-menu-link', { active: isActive, accent: item.accent }]}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            <span>{item.index}</span>
+            <strong>{item.label}</strong>
+          </a>
         );
       })}
-      ))}
     </div>
   </div>
 </header>
 
 <script>
-  function setupMenu() {
-    const toggle = document.getElementById('menu-toggle');
-    const menu = document.getElementById('mobile-menu');
-    const iconOpen = document.getElementById('menu-icon-open');
-    const iconClose = document.getElementById('menu-icon-close');
-    const links = menu?.querySelectorAll('.mobile-menu-link');
+  function setupNavigation() {
+    const toggle = document.querySelector<HTMLButtonElement>('#menu-toggle');
+    const menu = document.querySelector<HTMLElement>('#mobile-menu');
 
     if (!toggle || !menu) return;
 
+    const closeMenu = () => {
+      menu.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', '打开导航菜单');
+    };
+
     toggle.addEventListener('click', () => {
-      const isOpen = menu.style.display !== 'none';
-      menu.style.display = isOpen ? 'none' : 'block';
-      if (iconOpen) iconOpen.style.display = isOpen ? 'inline' : 'none';
-      if (iconClose) iconClose.style.display = isOpen ? 'none' : 'inline';
+      const willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      toggle.setAttribute('aria-expanded', String(willOpen));
+      toggle.setAttribute('aria-label', willOpen ? '关闭导航菜单' : '打开导航菜单');
     });
 
-    // 点击菜单链接后自动关闭
-    links?.forEach((link) => {
-      link.addEventListener('click', () => {
-        menu.style.display = 'none';
-        if (iconOpen) iconOpen.style.display = 'inline';
-        if (iconClose) iconClose.style.display = 'none';
-      });
+    menu.querySelectorAll('.mobile-menu-link').forEach((link) => {
+      link.addEventListener('click', closeMenu);
     });
   }
 
-  setupMenu();
+  setupNavigation();
 
-  // 搜索
-  const searchBtn = document.getElementById('search-toggle');
-  if (searchBtn) {
-    searchBtn.addEventListener('click', () => {
-      (window as any).__openSearch?.();
-    });
-  }
+  document.querySelector('#search-toggle')?.addEventListener('click', () => {
+    (window as Window & { __openSearch?: () => void }).__openSearch?.();
+  });
 
-  // 主题切换
-  const btn = document.getElementById('theme-toggle')!;
-  btn.addEventListener('click', () => {
+  document.querySelector('#theme-toggle')?.addEventListener('click', () => {
     const html = document.documentElement;
     html.classList.toggle('dark');
     localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
