@@ -79,6 +79,60 @@ img { max-width: 100%; }
   transform: translateY(-150%);
 }
 .skip-link:focus { transform: translateY(0); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+
+/* ===== 访客问答门 ===== */
+body.gate-open { overflow: hidden; }
+html.gate-passed .gate-overlay { display: none; }
+.gate-overlay {
+  position: fixed;
+  z-index: 99999;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  place-items: center;
+  padding: 1.25rem;
+  background:
+    linear-gradient(90deg, transparent 49.9%, rgb(91 45 142 / 8%) 50%, transparent 50.1%),
+    var(--color-bg);
+  background-size: 32px 100%, auto;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.gate-overlay[hidden] { display: none; }
+.gate-overlay.leaving { opacity: 0; visibility: hidden; }
+.gate-frame { width: min(920px, 100%); border: 1px solid var(--color-ink); background: var(--color-surface); box-shadow: 14px 14px 0 var(--color-primary); }
+.gate-topline { display: flex; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-border); color: var(--color-primary); font: 0.6rem var(--font-mono); letter-spacing: 0.1em; }
+.gate-grid { display: grid; grid-template-columns: 0.72fr 1.28fr; }
+.gate-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(1.5rem, 4vw, 3.2rem); border-right: 1px solid var(--color-border); background: var(--color-primary-hover); color: #f8f2ff; }
+.gate-emblem { display: grid; width: 112px; height: 112px; overflow: hidden; place-items: center; border: 1px solid rgb(255 255 255 / 45%); border-radius: 50%; background: #fff; }
+.gate-emblem img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); }
+.gate-intro p { margin: 3rem 0 0; font-family: var(--font-serif); font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; line-height: 1.18; }
+.gate-panel { padding: clamp(1.8rem, 5vw, 4rem); }
+.gate-kicker { margin: 0 0 0.8rem; color: var(--color-primary); font: 0.62rem var(--font-mono); letter-spacing: 0.13em; }
+.gate-panel h1 { margin: 0; font-family: var(--font-serif); font-size: clamp(2rem, 4.5vw, 3.3rem); line-height: 1.1; }
+.gate-panel > p:not(.gate-kicker) { margin: 0.8rem 0 0; color: var(--color-text-secondary); font-size: 0.86rem; }
+.gate-panel form { margin-top: 2rem; }
+.gate-question-card { min-height: 116px; padding: 1rem; border: 1px solid var(--color-border); background: var(--color-bg-secondary); }
+.gate-question-card span { color: var(--color-primary); font: 0.58rem var(--font-mono); letter-spacing: 0.12em; }
+.gate-question-card p { margin: 1rem 0 0; font-family: var(--font-serif); font-size: 1.08rem; font-weight: 700; line-height: 1.6; }
+#gate-answer { width: 100%; margin-top: 0.8rem; padding: 0.95rem 1rem; border: 1px solid var(--color-border); border-radius: 0; background: var(--color-surface-strong); color: var(--color-text); font-size: 0.9rem; }
+#gate-answer::placeholder { color: var(--color-text-secondary); }
+.gate-feedback { min-height: 1.3rem; margin: 0.65rem 0 0; color: var(--color-text-secondary); font-size: 0.75rem; }
+.gate-feedback[data-tone="success"] { color: #17834f; }
+.gate-feedback[data-tone="warning"] { color: #b06b00; }
+.gate-feedback[data-tone="error"] { color: #c33c45; }
+.gate-actions { display: flex; gap: 0.65rem; margin-top: 0.2rem; }
+.gate-actions button { display: flex; justify-content: space-between; padding: 0.9rem 1rem; border-radius: 0; font-size: 0.8rem; font-weight: 750; cursor: pointer; }
+.gate-actions button[hidden] { display: none; }
+.gate-submit { flex: 1; border: 1px solid var(--color-primary); background: var(--color-primary); color: #fff; }
+.gate-submit:hover { background: var(--color-primary-hover); }
+.gate-skip { min-width: 110px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text); }
+.gate-attempts { display: flex; align-items: center; justify-content: space-between; margin-top: 1.1rem; color: var(--color-text-secondary); font: 0.62rem var(--font-mono); }
+.gate-attempts[hidden] { display: none; }
+.gate-attempts > div { display: flex; gap: 0.3rem; }
+.gate-attempts i { width: 28px; border-top: 2px solid var(--color-primary); }
+.gate-attempts i.used { border-color: var(--color-border); }
+.gate-footnote { margin: 0; padding: 0.65rem 1rem; border-top: 1px solid var(--color-border); color: var(--color-text-secondary); font: 0.52rem var(--font-mono); letter-spacing: 0.08em; text-align: right; }
 
 /* ===== 公共导航 ===== */
 .site-header {
@@ -359,6 +413,14 @@ html.dark .theme-light { display: inline; }
   .footer-grid { display: block; }
   .footer-meta { margin-top: 2rem; text-align: left; }
   .footer-links { justify-content: flex-start; }
+  .gate-overlay { align-items: start; padding: 0.75rem; }
+  .gate-frame { margin-block: 0.75rem; box-shadow: 7px 7px 0 var(--color-primary); }
+  .gate-grid { grid-template-columns: 1fr; }
+  .gate-intro { display: none; }
+  .gate-panel { padding: 1.4rem; }
+  .gate-panel form { margin-top: 1.4rem; }
+  .gate-question-card { min-height: 100px; }
+  .gate-footnote { text-align: left; }
   .archive-title-row { grid-template-columns: 1fr; gap: 2rem; }
   .archive-title-row h1 { font-size: clamp(2.8rem, 13vw, 4rem); }
   .filter-bar { display: block; padding-block: 1rem; }

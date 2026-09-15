@@ -1,0 +1,258 @@
+<div
+  id="gate-overlay"
+  class="gate-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="gate-title"
+  aria-describedby="gate-subtitle"
+  data-pagefind-ignore
+>
+  <div class="gate-frame">
+    <div class="gate-topline">
+      <span>EAGLECODER / VISITOR CHECK</span>
+      <span id="gate-step">01 — 03</span>
+    </div>
+
+    <div class="gate-grid">
+      <aside class="gate-intro" aria-hidden="true">
+        <div class="gate-emblem">
+          <img src="/avatar-128.png" width="112" height="112" alt="" />
+        </div>
+        <p>一扇小门，<br />不是一道高墙。</p>
+      </aside>
+
+      <section class="gate-panel">
+        <p class="gate-kicker">BEFORE YOU ENTER</p>
+        <h1 id="gate-title">回答一个小问题</h1>
+        <p id="gate-subtitle">答对后，本次浏览期间不再打扰。</p>
+
+        <form id="gate-form">
+          <div class="gate-question-card">
+            <span>QUESTION</span>
+            <p id="gate-question"></p>
+          </div>
+
+          <label class="sr-only" for="gate-answer">你的答案</label>
+          <input id="gate-answer" type="text" placeholder="在这里输入答案" autocomplete="off" />
+
+          <p id="gate-feedback" class="gate-feedback" role="status" aria-live="polite"></p>
+
+          <div class="gate-actions">
+            <button id="gate-submit" class="gate-submit" type="submit">确认答案 <span aria-hidden="true">↗</span></button>
+            <button id="gate-skip" class="gate-skip" type="button" hidden>换一题 <span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+
+        <div class="gate-attempts">
+          <span id="gate-attempts">剩余 3 次机会</span>
+          <div aria-hidden="true"><i></i><i></i><i></i></div>
+        </div>
+      </section>
+    </div>
+
+    <p class="gate-footnote">CLIENT-SIDE RITUAL · NOT SECURITY AUTHENTICATION</p>
+  </div>
+</div>
+
+<script>
+  import { easyQuestions, hardQuestions } from '../assets/gate-questions';
+  import { GATE_LOCK_MINUTES, isGateAnswerCorrect, MAX_GATE_ATTEMPTS } from '../utils/gate';
+
+  const STORAGE_PASSED = 'gate-passed';
+  const STORAGE_LOCK = 'gate-locked-until';
+  const STORAGE_ATTEMPTS = 'gate-attempts';
+
+  const overlay = document.querySelector<HTMLElement>('#gate-overlay');
+  const form = document.querySelector<HTMLFormElement>('#gate-form');
+  const questionElement = document.querySelector<HTMLElement>('#gate-question');
+  const answerInput = document.querySelector<HTMLInputElement>('#gate-answer');
+  const submitButton = document.querySelector<HTMLButtonElement>('#gate-submit');
+  const skipButton = document.querySelector<HTMLButtonElement>('#gate-skip');
+  const feedbackElement = document.querySelector<HTMLElement>('#gate-feedback');
+  const attemptsElement = document.querySelector<HTMLElement>('#gate-attempts');
+  const titleElement = document.querySelector<HTMLElement>('#gate-title');
+  const subtitleElement = document.querySelector<HTMLElement>('#gate-subtitle');
+  const stepElement = document.querySelector<HTMLElement>('#gate-step');
+
+  if (overlay && form && questionElement && answerInput && submitButton && skipButton && feedbackElement && attemptsElement && titleElement && subtitleElement && stepElement) {
+    const requiredElements = { overlay, form, questionElement, answerInput, submitButton, skipButton, feedbackElement, attemptsElement, titleElement, subtitleElement, stepElement };
+    let currentQuestion = pickQuestion();
+    let lockTimer: number | undefined;
+
+    function getAttempts() {
+      return Number.parseInt(sessionStorage.getItem(STORAGE_ATTEMPTS) ?? '0', 10);
+    }
+
+    function getLockUntil() {
+      return Number.parseInt(localStorage.getItem(STORAGE_LOCK) ?? '0', 10);
+    }
+
+    function getQuestionPool() {
+      return getAttempts() >= MAX_GATE_ATTEMPTS - 1 ? hardQuestions : easyQuestions;
+    }
+
+    function pickQuestion() {
+      const pool = getQuestionPool();
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function setPageInert(isInert: boolean) {
+      [...document.body.children].forEach((child) => {
+        if (child !== requiredElements.overlay && child.tagName !== 'SCRIPT') {
+          (child as HTMLElement).inert = isInert;
+        }
+      });
+      document.body.classList.toggle('gate-open', isInert);
+    }
+
+    function updateAttempts() {
+      const used = getAttempts();
+      const remaining = Math.max(0, MAX_GATE_ATTEMPTS - used);
+      requiredElements.attemptsElement.textContent = `剩余 ${remaining} 次机会`;
+      requiredElements.stepElement.textContent = `${String(Math.min(used + 1, MAX_GATE_ATTEMPTS)).padStart(2, '0')} — ${String(MAX_GATE_ATTEMPTS).padStart(2, '0')}`;
+      requiredElements.overlay.querySelectorAll('.gate-attempts i').forEach((mark, index) => {
+        mark.classList.toggle('used', index < used);
+      });
+    }
+
+    function showQuestion() {
+      requiredElements.questionElement.textContent = currentQuestion.q;
+      requiredElements.answerInput.value = '';
+      requiredElements.feedbackElement.textContent = '';
+      requiredElements.feedbackElement.removeAttribute('data-tone');
+      requiredElements.skipButton.hidden = true;
+      updateAttempts();
+      requiredElements.answerInput.focus();
+    }
+
+    function showNormal() {
+      if (lockTimer) window.clearInterval(lockTimer);
+      requiredElements.overlay.hidden = false;
+      document.documentElement.classList.remove('gate-passed');
+      setPageInert(true);
+      requiredElements.titleElement.textContent = '回答一个小问题';
+      requiredElements.subtitleElement.textContent = getAttempts() >= MAX_GATE_ATTEMPTS - 1
+        ? '最后一次机会，试试更有挑战的问题。'
+        : '答对后，本次浏览期间不再打扰。';
+      requiredElements.answerInput.hidden = false;
+      requiredElements.submitButton.hidden = false;
+      requiredElements.attemptsElement.parentElement!.hidden = false;
+      currentQuestion = pickQuestion();
+      showQuestion();
+    }
+
+    function showLocked() {
+      const lockUntil = getLockUntil();
+      requiredElements.overlay.hidden = false;
+      document.documentElement.classList.remove('gate-passed');
+      setPageInert(true);
+      requiredElements.titleElement.textContent = '先休息一会儿';
+      requiredElements.subtitleElement.textContent = `${GATE_LOCK_MINUTES} 分钟后可以再次尝试。`;
+      requiredElements.questionElement.textContent = '机会暂时用完，倒计时结束后会自动恢复。';
+      requiredElements.answerInput.hidden = true;
+      requiredElements.submitButton.hidden = true;
+      requiredElements.skipButton.hidden = true;
+      requiredElements.attemptsElement.parentElement!.hidden = true;
+
+      const updateCountdown = () => {
+        const remainingSeconds = Math.max(0, Math.ceil((lockUntil - Date.now()) / 1000));
+        if (remainingSeconds <= 0) {
+          if (lockTimer) window.clearInterval(lockTimer);
+          localStorage.removeItem(STORAGE_LOCK);
+          sessionStorage.removeItem(STORAGE_ATTEMPTS);
+          showNormal();
+          return;
+        }
+
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = String(remainingSeconds % 60).padStart(2, '0');
+        requiredElements.feedbackElement.textContent = `剩余等待时间：${minutes} 分 ${seconds} 秒`;
+      };
+
+      updateCountdown();
+      lockTimer = window.setInterval(updateCountdown, 1000);
+    }
+
+    function passGate() {
+      sessionStorage.setItem(STORAGE_PASSED, 'true');
+      sessionStorage.removeItem(STORAGE_ATTEMPTS);
+      requiredElements.feedbackElement.textContent = '回答正确，欢迎进入。';
+      requiredElements.feedbackElement.dataset.tone = 'success';
+      requiredElements.overlay.classList.add('leaving');
+
+      window.setTimeout(() => {
+        requiredElements.overlay.hidden = true;
+        requiredElements.overlay.classList.remove('leaving');
+        document.documentElement.classList.add('gate-passed');
+        setPageInert(false);
+      }, 420);
+    }
+
+    function checkAnswer() {
+      const input = requiredElements.answerInput.value;
+      if (!input.trim()) {
+        requiredElements.feedbackElement.textContent = '请先输入答案。';
+        requiredElements.feedbackElement.dataset.tone = 'warning';
+        return;
+      }
+
+      if (isGateAnswerCorrect(input, currentQuestion.a)) {
+        passGate();
+        return;
+      }
+
+      const used = getAttempts() + 1;
+      sessionStorage.setItem(STORAGE_ATTEMPTS, String(used));
+      updateAttempts();
+
+      if (used >= MAX_GATE_ATTEMPTS) {
+        localStorage.setItem(STORAGE_LOCK, String(Date.now() + GATE_LOCK_MINUTES * 60 * 1000));
+        requiredElements.feedbackElement.textContent = '三次机会已用完。';
+        requiredElements.feedbackElement.dataset.tone = 'error';
+        window.setTimeout(showLocked, 500);
+        return;
+      }
+
+      requiredElements.feedbackElement.textContent = `答案不对，还剩 ${MAX_GATE_ATTEMPTS - used} 次机会。`;
+      requiredElements.feedbackElement.dataset.tone = 'error';
+      requiredElements.skipButton.hidden = false;
+      requiredElements.answerInput.select();
+    }
+
+    requiredElements.form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      checkAnswer();
+    });
+
+    requiredElements.skipButton.addEventListener('click', () => {
+      const previousQuestion = currentQuestion.q;
+      do currentQuestion = pickQuestion();
+      while (getQuestionPool().length > 1 && currentQuestion.q === previousQuestion);
+      showQuestion();
+    });
+
+    requiredElements.overlay.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const controls = [...requiredElements.overlay.querySelectorAll<HTMLElement>('input:not([hidden]), button:not([hidden])')];
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    });
+
+    if (sessionStorage.getItem(STORAGE_PASSED) === 'true') {
+      requiredElements.overlay.hidden = true;
+      setPageInert(false);
+    } else if (getLockUntil() > Date.now()) {
+      showLocked();
+    } else {
+      if (getLockUntil()) localStorage.removeItem(STORAGE_LOCK);
+      showNormal();
+    }
+  }
+</script>
