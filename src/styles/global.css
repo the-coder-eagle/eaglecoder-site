@@ -206,7 +206,8 @@ html.dark .theme-light { display: inline; }
 /* ===== 首页 ===== */
 .home-hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--color-border); }
 .home-hero-backdrop { position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg, rgb(245 242 234 / 96%), rgb(245 242 234 / 62%) 52%, rgb(245 242 234 / 20%)), url('/paper-wash-botanical-v1.png') center / cover; pointer-events: none; }
-.home-hero > .site-container { position: relative; z-index: 1; }
+.home-hero-corner { position: absolute; z-index: 1; top: -4.5rem; right: -2rem; width: clamp(220px, 30vw, 430px); height: auto; opacity: 0.32; pointer-events: none; user-select: none; transform: rotate(-4deg); }
+.home-hero > .site-container { position: relative; z-index: 2; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.72fr); gap: clamp(3rem, 8vw, 7rem); padding-block: clamp(4rem, 8vw, 7rem) 3.5rem; }
 .hero-copy { max-width: 760px; padding: clamp(1.25rem, 3.5vw, 2.75rem); border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border)); border-radius: 28px; background: color-mix(in srgb, var(--color-surface) 74%, transparent); box-shadow: 0 24px 60px rgb(47 35 57 / 10%); backdrop-filter: blur(12px); }
 .eyebrow { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; margin: 0 0 1.6rem; color: var(--color-primary); font: 0.68rem/1.4 var(--font-mono); letter-spacing: 0.13em; text-transform: uppercase; }
@@ -250,6 +251,9 @@ html.dark .theme-light { display: inline; }
 .section-heading h2 { margin: 0.45rem 0 0; font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1; }
 .section-heading > a { padding-bottom: 0.25rem; border-bottom: 1px solid currentColor; color: var(--color-primary); font-size: 0.78rem; font-weight: 700; }
 
+.notes-section { position: relative; isolation: isolate; overflow: hidden; }
+.notes-flourish { position: absolute; z-index: 0; top: 1.25rem; right: -2.5rem; width: clamp(180px, 24vw, 330px); height: auto; opacity: 0.16; pointer-events: none; transform: rotate(-6deg); }
+.notes-section > *:not(.notes-flourish) { position: relative; z-index: 1; }
 .article-list { display: grid; gap: 0.75rem; }
 .article-row { display: grid; grid-template-columns: 60px 1fr auto; gap: 1.5rem; align-items: center; padding: 1.25rem 1.5rem; border: 1px solid var(--color-border); border-radius: 18px; background: color-mix(in srgb, var(--color-surface) 68%, transparent); box-shadow: 0 10px 30px rgb(47 35 57 / 4%); transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
 .article-row:hover { padding-inline: 1.5rem; border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border)); background: var(--color-surface); box-shadow: var(--shadow-soft); transform: translateY(-3px); }
@@ -262,7 +266,8 @@ html.dark .theme-light { display: inline; }
 
 .project-band { position: relative; isolation: isolate; overflow: hidden; background: var(--color-primary-hover); color: #f9f5ff; }
 .project-band::before { content: ""; position: absolute; z-index: 0; inset: 0; background: linear-gradient(112deg, rgb(63 23 108 / 96%), rgb(63 23 108 / 82%) 55%, rgb(63 23 108 / 66%)), url('/mint-wreath-paper-v1.png') center / cover; background-blend-mode: multiply; pointer-events: none; }
-.project-band > .site-container { position: relative; z-index: 1; }
+.project-band-sprig { position: absolute; z-index: 1; right: clamp(1rem, 7vw, 7rem); bottom: -3.5rem; width: clamp(110px, 14vw, 190px); height: auto; opacity: 0.26; pointer-events: none; transform: rotate(7deg); }
+.project-band > .site-container { position: relative; z-index: 2; }
 .section-heading.light span, .section-heading.light > a { color: #d8b7f5; }
 .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); border: 1px solid rgb(255 255 255 / 35%); border-radius: 24px; overflow: hidden; background: rgb(35 16 58 / 16%); }
 .project-card { display: flex; min-height: 280px; flex-direction: column; padding: clamp(1.4rem, 3vw, 2.15rem); border-right: 1px solid rgb(255 255 255 / 35%); border-bottom: 1px solid rgb(255 255 255 / 35%); transition: background 0.2s ease, transform 0.2s ease; }
@@ -290,9 +295,12 @@ html.dark .theme-light { display: inline; }
 .empty-state.dark { color: #d9d0df; }
 
 html.dark .home-hero-backdrop { background: linear-gradient(90deg, rgb(20 17 25 / 97%), rgb(20 17 25 / 83%) 55%, rgb(20 17 25 / 60%)), url('/paper-wash-botanical-v1.png') center / cover; filter: saturate(0.72) brightness(0.48); }
+html.dark .home-hero-corner { opacity: 0.17; filter: saturate(0.65) brightness(0.7); }
 html.dark .hero-copy { background: color-mix(in srgb, var(--color-surface) 78%, transparent); box-shadow: 0 24px 60px rgb(0 0 0 / 18%); }
 html.dark .hero-tags span { background: rgb(255 255 255 / 4%); }
 html.dark .project-band::before { background: linear-gradient(112deg, rgb(38 17 62 / 97%), rgb(38 17 62 / 91%) 55%, rgb(38 17 62 / 82%)), url('/mint-wreath-paper-v1.png') center / cover; }
+html.dark .notes-flourish { opacity: 0.08; filter: saturate(0.6) brightness(0.65); }
+html.dark .project-band-sprig { opacity: 0.12; filter: saturate(0.7) brightness(0.6); }
 html.dark .start-section::before { background: linear-gradient(115deg, color-mix(in srgb, var(--color-bg) 93%, transparent), color-mix(in srgb, var(--color-bg) 82%, transparent)), url('/mint-wreath-paper-v1.png') right center / cover; opacity: 0.45; }
 
 /* ===== 内容目录页 ===== */
@@ -561,6 +569,7 @@ body.search-open { overflow: hidden; }
   .hero-grid { grid-template-columns: 1fr; padding-top: 3.5rem; }
   .hero-copy { padding: 1.25rem; border-radius: 22px; }
   .hero-copy h1 { font-size: clamp(2.55rem, 11vw, 3.4rem); }
+  .home-hero-corner { top: 0; right: -4rem; width: 230px; opacity: 0.22; }
   .hero-tags { gap: 0.4rem; }
   .hero-tags span { padding: 0.36rem 0.58rem; font-size: 0.58rem; }
   .hero-aside { width: min(82%, 330px); margin-inline: auto; }
@@ -572,10 +581,13 @@ body.search-open { overflow: hidden; }
   .section-heading { align-items: start; }
   .article-row { grid-template-columns: 34px 1fr auto; gap: 0.65rem; padding: 1rem; border-radius: 15px; }
   .article-row:hover { padding-inline: 1rem; }
+  .notes-flourish { top: 4.5rem; right: -4rem; width: 220px; opacity: 0.11; }
   .article-copy p { display: none; }
   .project-grid { grid-template-columns: 1fr; }
   .project-grid { border-radius: 18px; }
   .project-card { min-height: 250px; }
+  .project-card { border-right: 0; }
+  .project-band-sprig { right: -1rem; bottom: -2.5rem; width: 130px; opacity: 0.16; }
   .start-section { grid-template-columns: 1fr; gap: 1.5rem; }
   .start-section > .eyebrow { grid-column: auto; }
   .start-section::before { inset: 0.5rem 0; border-radius: 18px; }
