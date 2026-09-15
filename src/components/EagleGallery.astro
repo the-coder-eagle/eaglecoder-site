@@ -1,0 +1,41 @@
+---
+import type { EagleGalleryItem } from '../data/eagle-gallery';
+
+interface Props {
+  items: EagleGalleryItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="site-container home-section eagle-gallery-section" aria-labelledby="eagle-gallery-title">
+  <div class="section-heading eagle-gallery-heading">
+    <div>
+      <span>04 / EAGLE MOMENTS</span>
+      <h2 id="eagle-gallery-title">把学习放进生活里</h2>
+    </div>
+    <p>二十个小场景，记录一只小鹰如何读、写、调试，也如何在答案之间好好生活。</p>
+  </div>
+
+  <div class="eagle-gallery-grid">
+    {items.map((item, index) => (
+      <figure class:list={['eagle-gallery-card', `eagle-gallery-card--${(index % 4) + 1}`]}>
+        <div class="eagle-gallery-media">
+          <img
+            src={item.src}
+            width="960"
+            height="960"
+            alt={item.alt}
+            loading={index < 4 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </div>
+        <figcaption>
+          <span>{item.scene}</span>
+          <strong>{item.title}</strong>
+          <p>{item.note}</p>
+        </figcaption>
+      </figure>
+    ))}
+  </div>
+</section>
