@@ -58,22 +58,44 @@ if ($dirtyFiles.Count -gt 0) {
   throw "Working tree is not clean. Commit or stash these changes first:`n$($dirtyFiles -join "`n")"
 }
 
-Write-Host 'Fetching origin/master...' -ForegroundColor Cyan
-Invoke-Native $git @('fetch', 'origin', 'master')
-$localHead = (& $git rev-parse HEAD).Trim()
-$remoteHead = (& $git rev-parse origin/master).Trim()
-if ($localHead -ne $remoteHead) {
-  throw "Local master is not synchronized with origin/master. Run: git pull --ff-only origin master"
+$knownHostsPath = Join-Path ([IO.Path]::GetTempPath()) "eaglecoder-known-hosts-$PID"
+New-Item -ItemType File -Path $knownHostsPath -Force | Out-Null
+$previousGitSshCommand = $env:GIT_SSH_COMMAND
+$env:GIT_SSH_COMMAND = "ssh -o UserKnownHostsFile=`"$knownHostsPath`" -o StrictHostKeyChecking=accept-new"
+
+function Restore-ReleaseEnvironment {
+  if ($null -eq $previousGitSshCommand) {
+    Remove-Item Env:GIT_SSH_COMMAND -ErrorAction SilentlyContinue
+  } else {
+    $env:GIT_SSH_COMMAND = $previousGitSshCommand
+  }
+  if (Test-Path -LiteralPath $knownHostsPath) {
+    Remove-Item -LiteralPath $knownHostsPath -Force -ErrorAction SilentlyContinue
+  }
 }
 
-$sshOptions = @('-p', "$remotePort", '-i', $deployKey, '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=accept-new')
-$remoteLogin = "${remoteUser}@${remoteHost}"
-Write-Host 'Testing server connection...' -ForegroundColor Cyan
-Invoke-Native $ssh ($sshOptions + @($remoteLogin, 'echo ok'))
+try {
+  Write-Host 'Fetching origin/master...' -ForegroundColor Cyan
+  Invoke-Native $git @('fetch', 'origin', 'master')
+  $localHead = (& $git rev-parse HEAD).Trim()
+  $remoteHead = (& $git rev-parse origin/master).Trim()
+  if ($localHead -ne $remoteHead) {
+    throw "Local master is not synchronized with origin/master. Run: git pull --ff-only origin master"
+  }
 
-if ($CheckOnly) {
-  Write-Host 'Pre-release checks passed (no build or upload performed).' -ForegroundColor Green
-  exit 0
+  $sshOptions = @('-p', "$remotePort", '-i', $deployKey, '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=accept-new', '-o', "UserKnownHostsFile=$knownHostsPath")
+  $remoteLogin = "${remoteUser}@${remoteHost}"
+  Write-Host 'Testing server connection...' -ForegroundColor Cyan
+  Invoke-Native $ssh ($sshOptions + @($remoteLogin, 'echo ok'))
+
+  if ($CheckOnly) {
+    Write-Host 'Pre-release checks passed (no build or upload performed).' -ForegroundColor Green
+    Restore-ReleaseEnvironment
+    exit 0
+  }
+} catch {
+  Restore-ReleaseEnvironment
+  throw
 }
 
 try {
@@ -116,7 +138,9 @@ try {
   }
 
   Write-Host "Deployment completed: https://$domain/" -ForegroundColor Green
+  Restore-ReleaseEnvironment
 } catch {
+  Restore-ReleaseEnvironment
   Write-Error $_
   exit 1
 }
