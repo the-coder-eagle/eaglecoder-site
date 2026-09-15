@@ -386,6 +386,32 @@ html.dark .theme-light { display: inline; }
 .challenge-view table { border-color: var(--color-border); }
 .challenge-view details { padding: 1rem; border: 1px solid var(--color-border); background: var(--color-bg-secondary); }
 
+/* ===== 全站搜索 ===== */
+body.search-open { overflow: hidden; }
+.search-overlay { position: fixed; z-index: 100000; inset: 0; display: grid; place-items: start center; padding: min(12vh, 110px) 1rem 1rem; }
+.search-overlay[hidden] { display: none; }
+.search-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: rgb(11 8 14 / 76%); backdrop-filter: blur(8px); cursor: default; }
+.search-panel { position: relative; width: min(720px, 100%); max-height: min(76vh, 760px); overflow-y: auto; border: 1px solid var(--color-ink); background: var(--color-surface); box-shadow: 12px 12px 0 var(--color-primary); }
+.search-panel-header { display: flex; align-items: start; justify-content: space-between; gap: 2rem; padding: 1.4rem 1.5rem; border-bottom: 1px solid var(--color-border); }
+.search-panel-header span { color: var(--color-primary); font: 0.58rem var(--font-mono); letter-spacing: 0.11em; }
+.search-panel-header h2 { margin: 0.6rem 0 0; font-family: var(--font-serif); font-size: clamp(1.5rem, 4vw, 2.3rem); }
+.search-panel-header button { display: grid; width: 38px; height: 38px; flex-shrink: 0; place-items: center; border: 1px solid var(--color-border); border-radius: 0; background: transparent; color: var(--color-text); font-size: 1.3rem; cursor: pointer; }
+.search-panel-header button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.search-intro { margin: 0; padding: 1rem 1.5rem 0; color: var(--color-text-secondary); font-size: 0.76rem; line-height: 1.6; }
+.search-results { padding: 0.8rem 1.5rem 1.5rem; }
+.search-error { padding: 1rem; border: 1px solid #c33c45; color: #c33c45; }
+.search-panel > footer { display: flex; justify-content: space-between; padding: 0.7rem 1.5rem; border-top: 1px solid var(--color-border); color: var(--color-text-secondary); font: 0.58rem var(--font-mono); }
+.search-panel .pagefind-ui__search-input { height: auto !important; padding: 0.9rem 1rem 0.9rem 2.8rem !important; border: 1px solid var(--color-ink) !important; border-radius: 0 !important; background: var(--color-bg) !important; color: var(--color-text) !important; font-family: var(--font-sans) !important; font-size: 0.9rem !important; }
+.search-panel .pagefind-ui__search-clear { padding: 0.5rem !important; color: var(--color-text-secondary) !important; }
+.search-panel .pagefind-ui__drawer { margin-top: 1rem !important; }
+.search-panel .pagefind-ui__message { color: var(--color-text-secondary) !important; font: 0.68rem var(--font-mono) !important; }
+.search-panel .pagefind-ui__result { padding-block: 1.1rem !important; border-top: 1px solid var(--color-border) !important; }
+.search-panel .pagefind-ui__result-title { font-family: var(--font-serif) !important; font-size: 1.05rem !important; }
+.search-panel .pagefind-ui__result-link { color: var(--color-text) !important; }
+.search-panel .pagefind-ui__result-link:hover { color: var(--color-primary) !important; }
+.search-panel .pagefind-ui__result-excerpt { color: var(--color-text-secondary) !important; font-size: 0.78rem !important; }
+.search-panel mark { background: color-mix(in srgb, var(--color-accent) 55%, transparent) !important; color: var(--color-text) !important; }
+
 /* ===== 正文与详情页 ===== */
 .reading-page { min-height: 70vh; }
 .reading-header { max-width: 960px; padding-block: clamp(3.5rem, 8vw, 7rem) clamp(3rem, 6vw, 5rem); }
@@ -526,6 +552,10 @@ html.dark .theme-light { display: inline; }
   .challenge-editor-sticky { position: static; }
   .challenge-editor-label span:last-child { display: none; }
   .challenge-submit-row { grid-template-columns: 1fr; }
+  .search-overlay { padding: 0.75rem; }
+  .search-panel { max-height: calc(100vh - 1.5rem); box-shadow: 7px 7px 0 var(--color-primary); }
+  .search-panel-header, .search-results { padding-inline: 1rem; }
+  .search-intro { padding-inline: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

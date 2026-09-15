@@ -1,69 +1,82 @@
-<!-- 搜索弹窗 -->
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
 
-<div id="search-dialog" style="display:none; position:fixed; inset:0; z-index:100000; display:none; align-items:flex-start; justify-content:center; padding-top:15vh;">
-  <!-- 半透明背景遮罩 -->
-  <div id="search-backdrop" style="position:absolute; inset:0; background:rgba(0,0,0,0.4);"></div>
+<div
+  id="search-dialog"
+  class="search-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-title"
+  hidden
+>
+  <button id="search-backdrop" class="search-backdrop" type="button" aria-label="关闭搜索"></button>
 
-  <!-- 搜索面板 -->
-  <div style="position:relative; width:90%; max-width:560px; max-height:70vh; overflow-y:auto; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.15); background:var(--color-bg); color:var(--color-text);">
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--color-border);">
-      <span style="font-weight:600; font-size:14px;">🔍 搜索全站</span>
-      <button id="search-close" style="background:none; border:none; color:var(--color-text-secondary); cursor:pointer; font-size:18px;" aria-label="关闭搜索">✕</button>
-    </div>
-    <div id="pagefind-search" style="padding:16px;"></div>
-  </div>
+  <section class="search-panel">
+    <header class="search-panel-header">
+      <div>
+        <span>GLOBAL SEARCH / CTRL K</span>
+        <h2 id="search-title">搜索这座技术花园</h2>
+      </div>
+      <button id="search-close" type="button" aria-label="关闭搜索">×</button>
+    </header>
+
+    <p class="search-intro">输入标题、标签或正文关键词，结果会在本地索引中即时出现。</p>
+    <div id="pagefind-search" class="search-results"></div>
+    <footer><span>↑↓ 浏览结果</span><span>ESC 关闭</span></footer>
+  </section>
 </div>
 
 <script is:inline src="/pagefind/pagefind-ui.js"></script>
 <script>
-  (function() {
-    const dialog = document.getElementById('search-dialog')!;
-    const backdrop = document.getElementById('search-backdrop')!;
-    const closeBtn = document.getElementById('search-close')!;
-    const container = document.getElementById('pagefind-search')!;
+  const dialog = document.querySelector<HTMLElement>('#search-dialog');
+  const backdrop = document.querySelector<HTMLButtonElement>('#search-backdrop');
+  const closeButton = document.querySelector<HTMLButtonElement>('#search-close');
+  const container = document.querySelector<HTMLElement>('#pagefind-search');
 
-    if (!dialog || !backdrop || !closeBtn || !container) return;
-    var initialized = false;
+  if (dialog && backdrop && closeButton && container) {
+    let initialized = false;
+    let previousFocus: HTMLElement | null = null;
 
-    function initUI() {
-      if (initialized || !container) return;
+    const initSearch = () => {
+      if (initialized) return;
       initialized = true;
       try {
-        new (window as any).PagefindUI({
+        const PagefindUI = (window as Window & { PagefindUI?: new (options: object) => object }).PagefindUI;
+        if (!PagefindUI) throw new Error('PagefindUI 尚未加载');
+        new PagefindUI({
           element: '#pagefind-search',
-          baseUrl: '/pagefind/',
+          baseUrl: '/',
           showImages: false,
           showSubResults: true,
         });
-      } catch (e) {
-        container.innerHTML = '<p style="color:var(--color-text-secondary);font-size:14px;text-align:center;padding:20px;">搜索加载失败，请稍后重试</p>';
+      } catch {
+        container.innerHTML = '<p class="search-error">搜索加载失败，请稍后重试。</p>';
       }
-    }
+    };
 
-    function openSearch() {
-      dialog.style.display = 'flex';
-      initUI();
-      setTimeout(function() {
-        var input = container.querySelector('input');
-        if (input) input.focus();
-      }, 300);
-    }
+    const openSearch = () => {
+      previousFocus = document.activeElement as HTMLElement | null;
+      dialog.hidden = false;
+      document.body.classList.add('search-open');
+      initSearch();
+      window.setTimeout(() => container.querySelector<HTMLInputElement>('input')?.focus(), 100);
+    };
 
-    function closeSearch() {
-      dialog.style.display = 'none';
-    }
+    const closeSearch = () => {
+      dialog.hidden = true;
+      document.body.classList.remove('search-open');
+      previousFocus?.focus();
+    };
 
     backdrop.addEventListener('click', closeSearch);
-    closeBtn.addEventListener('click', closeSearch);
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeSearch();
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        openSearch();
+    closeButton.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !dialog.hidden) closeSearch();
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        dialog.hidden ? openSearch() : closeSearch();
       }
     });
 
-    (window as any).__openSearch = openSearch;
-  })();
+    (window as Window & { __openSearch?: () => void }).__openSearch = openSearch;
+  }
 </script>
