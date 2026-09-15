@@ -1,125 +1,131 @@
 ---
-import Nav from '../components/Nav.astro';
-import Footer from '../components/Footer.astro';
-import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import Footer from '../components/Footer.astro';
+import Nav from '../components/Nav.astro';
+import Layout from '../layouts/Layout.astro';
 
-const posts = (await getCollection('posts'))
-  .filter((p) => !p.data.draft)
-  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-  .slice(0, 3);
+const allPosts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const posts = allPosts.slice(0, 3);
 
-const projects = (await getCollection('projects'))
-  .filter((p) => p.data.featured)
-  .sort((a, b) => b.data.order - a.data.order)
-  .slice(0, 3);
+const allProjects = (await getCollection('projects')).sort((a, b) => b.data.order - a.data.order);
+const projects = allProjects.filter((project) => project.data.featured).slice(0, 3);
+const docs = await getCollection('docs');
 
-import ProjectCard from '../components/ProjectCard.astro';
+const stats = [
+  { value: String(allPosts.length).padStart(2, '0'), label: '篇公开文章' },
+  { value: String(allProjects.length).padStart(2, '0'), label: '个项目记录' },
+  { value: String(docs.length).padStart(2, '0'), label: '份学习文档' },
+];
 ---
 
-<Layout title="首页" description="EagleCoder 个人技术博客">
+<Layout title="首页" description="EagleCoder 的个人技术花园：记录软件工程学习、项目实践与方法沉淀。">
   <Nav />
 
-  <!-- Hero -->
-  <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 40%, #F3E8FF 100%);">
-    <!-- 装饰：右上角模糊光斑 -->
-    <div aria-hidden="true" class="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-30" style="background: radial-gradient(circle, var(--color-primary), transparent 70%);"></div>
-    <!-- 装饰：左下角模糊光斑 -->
-    <div aria-hidden="true" class="absolute -bottom-10 -left-10 w-60 h-60 rounded-full opacity-20" style="background: radial-gradient(circle, #7B4FBF, transparent 70%);"></div>
+  <main id="main-content">
+    <section class="home-hero">
+      <div class="site-container hero-grid">
+        <div class="hero-copy fade-in">
+          <p class="eyebrow"><span>南京大学 · 软件工程</span><span>个人技术花园</span></p>
+          <h1>把学习变成<br /><em>可以检索的作品。</em></h1>
+          <p class="hero-intro">
+            我是 EagleCoder。这里收纳代码实践、项目复盘与仍在生长的想法——先把问题讲清楚，再把答案做出来。
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="/posts">开始阅读 <span aria-hidden="true">↗</span></a>
+            <a class="button button-secondary" href="/projects">浏览项目 <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
 
-    <div class="max-w-5xl mx-auto px-4 pt-24 pb-16 relative z-10 fade-in">
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4" style="color: #0C4A6E;">
-        Hi，我是 <span style="color: var(--color-primary);">EagleCoder</span> 👋
-      </h1>
-      <p class="text-lg max-w-xl mb-6" style="color: #374151;">
-        软件工程大一学生，热爱写代码、捣鼓项目。这里记录我的学习经验、项目作品和拾掇的文档。
-      </p>
-      <div class="flex gap-3">
-        <a
-          href="/posts"
-          class="inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:shadow-lg"
-          style="background: var(--color-primary);"
-        >
-          看文章 →
-        </a>
-        <a
-          href="/projects"
-          class="inline-flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold transition-all border-2 hover:shadow-md"
-          style="border-color: var(--color-primary); color: var(--color-primary);"
-        >
-          看项目 →
-        </a>
+        <aside class="hero-aside fade-in" aria-label="站点简介">
+          <div class="hero-portrait">
+            <span class="portrait-index">EC / 001</span>
+            <img src="/avatar-512.png" width="320" height="320" alt="EagleCoder 的像素鹰头像" />
+            <span class="portrait-caption">CURIOUS BY DEFAULT</span>
+          </div>
+          <p><span>当前坐标</span>南京</p>
+          <p><span>关注主题</span>软件工程 / AI / Web</p>
+        </aside>
       </div>
-    </div>
-  </section>
 
-  <!-- 最新文章 -->
-  <section class="max-w-5xl mx-auto px-4 py-10">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold">最新文章</h2>
-      <a href="/posts" class="text-sm hover:underline" style="color: var(--color-primary);">查看全部 →</a>
-    </div>
+      <div class="site-container hero-stats" aria-label="站点内容统计">
+        {stats.map((stat) => (
+          <div><strong>{stat.value}</strong><span>{stat.label}</span></div>
+        ))}
+        <p>最后更新由内容本身决定，<br />不为日更而日更。</p>
+      </div>
+    </section>
 
-    {posts.length === 0 ? (
-      <p style="color: var(--color-text-secondary);">还没有文章，马上开始写第一篇 ✍️</p>
-    ) : (
-      <div class="grid gap-4">
-        {posts.map((post, i) => (
-          <a
-            href={`/posts/${post.id}`}
-            class="flex rounded-lg border overflow-hidden transition-all hover:shadow-md fade-in"
-            style="border-color: var(--color-border); background: var(--color-bg);"
-          >
-            <!-- 左侧紫色竖条 -->
-            <div class="w-1 flex-shrink-0" style="background: var(--color-primary);"></div>
-            <!-- 内容 -->
-            <div class="p-5 flex-1">
-              <div class="flex items-center gap-3 mb-2 flex-wrap">
-                {i === 0 && (
-                  <span class="text-xs px-2 py-0.5 rounded-full font-medium" style="background: var(--color-primary); color: white;">最新</span>
-                )}
-                <time class="text-xs font-mono" style="color: var(--color-text-secondary);">
-                  {post.data.publishedAt.toISOString().slice(0, 10)}
-                </time>
-                {post.data.tags?.map((tag) => (
-                  <span class="text-xs px-2 py-0.5 rounded-full" style="background: var(--color-bg-secondary); color: var(--color-primary);">
-                    {tag}
-                  </span>
-                ))}
+    <section class="site-container home-section">
+      <div class="section-heading">
+        <div><span>01 / NOTES</span><h2>最近写下</h2></div>
+        <a href="/posts">全部文章 <span aria-hidden="true">→</span></a>
+      </div>
+
+      {posts.length > 0 ? (
+        <div class="article-list">
+          {posts.map((post, index) => (
+            <a class="article-row" href={`/posts/${post.id}`}>
+              <span class="article-number">{String(index + 1).padStart(2, '0')}</span>
+              <div class="article-copy">
+                <div class="article-meta">
+                  <time datetime={post.data.publishedAt.toISOString()}>
+                    {post.data.publishedAt.toISOString().slice(0, 10)}
+                  </time>
+                  {post.data.tags?.slice(0, 2).map((tag) => <span>{tag}</span>)}
+                </div>
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
               </div>
-              <h3 class="font-semibold text-lg">{post.data.title}</h3>
-              <p class="text-sm mt-1" style="color: var(--color-text-secondary);">{post.data.description}</p>
-            </div>
-          </a>
-        ))}
-      </div>
-    )}
-  </section>
+              <span class="article-arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">第一篇文章正在路上。</p>
+      )}
+    </section>
 
-  <!-- 精选项目 -->
-  <section class="max-w-5xl mx-auto px-4 py-10">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold">精选项目</h2>
-      <a href="/projects" class="text-sm hover:underline" style="color: var(--color-primary);">查看全部 →</a>
-    </div>
+    <section class="project-band">
+      <div class="site-container home-section">
+        <div class="section-heading light">
+          <div><span>02 / BUILDS</span><h2>选择、构建、复盘</h2></div>
+          <a href="/projects">项目档案 <span aria-hidden="true">→</span></a>
+        </div>
 
-    {projects.length === 0 ? (
-      <p style="color: var(--color-text-secondary);">还没有项目展示，去写点东西吧 👨‍💻</p>
-    ) : (
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((project) => (
-          <ProjectCard
-            title={project.data.title}
-            description={project.data.description}
-            tech={project.data.tech}
-            github={project.data.github}
-            demo={project.data.demo}
-            image={project.data.image}
-          />
-        ))}
+        {projects.length > 0 ? (
+          <div class="project-grid">
+            {projects.map((project, index) => (
+              <article class="project-card">
+                <div class="project-card-top">
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <span>{project.data.tech.slice(0, 2).join(' + ')}</span>
+                </div>
+                <h3>{project.data.title}</h3>
+                <p>{project.data.description}</p>
+                <a href={`/projects/${project.id}`}>阅读项目记录 <span aria-hidden="true">↗</span></a>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p class="empty-state dark">项目记录正在整理。</p>
+        )}
       </div>
-    )}
-  </section>
+    </section>
+
+    <section class="site-container start-section">
+      <p class="eyebrow"><span>03 / START HERE</span></p>
+      <div>
+        <h2>从一份文档，<br />或一道题开始。</h2>
+        <p>知识不必一次学完。选一个足够小的问题，留下能复用的答案。</p>
+      </div>
+      <div class="start-links">
+        <a href="/docs"><span>学习文档</span><strong>整理过的方法与参考</strong><b aria-hidden="true">→</b></a>
+        <a href="/challenge"><span>每日一题</span><strong>用代码保持手感</strong><b aria-hidden="true">→</b></a>
+      </div>
+    </section>
+  </main>
 
   <Footer />
 </Layout>
