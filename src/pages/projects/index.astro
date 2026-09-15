@@ -1,41 +1,51 @@
 ---
-import Nav from '../../components/Nav.astro';
-import Footer from '../../components/Footer.astro';
-import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import Footer from '../../components/Footer.astro';
+import Nav from '../../components/Nav.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import Layout from '../../layouts/Layout.astro';
 
-const projects = (await getCollection('projects'))
-  .sort((a, b) => b.data.order - a.data.order);
+const projects = (await getCollection('projects')).sort((a, b) => b.data.order - a.data.order);
 ---
 
-<Layout title="项目" description="EagleCoder 的项目作品集">
+<Layout title="项目" description="EagleCoder 的项目作品与构建记录">
   <Nav />
 
-  <div class="max-w-5xl mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold mb-2">项目</h1>
-    <p class="mb-8" style="color: var(--color-text-secondary);">我在学习过程中做的小项目，每一个都是成长的脚印。</p>
+  <main id="main-content" class="archive-page">
+    <header class="site-container archive-header">
+      <p class="eyebrow"><span>02 / BUILDS</span><span>{projects.length} PROJECTS</span></p>
+      <div class="archive-title-row">
+        <h1>项目与<br /><em>构建记录</em></h1>
+        <p>每个项目都是一次选择：解决什么问题，接受哪些约束，又从失败里带走什么。</p>
+      </div>
+    </header>
 
-    {projects.length === 0 ? (
-      <div class="text-center py-20">
-        <p class="text-lg mb-2">🚧 还没有项目</p>
-        <p class="text-sm" style="color: var(--color-text-secondary);">正在敲代码中，敬请期待...</p>
+    <section class="site-container archive-content" aria-labelledby="project-list-title">
+      <div class="filter-bar">
+        <h2 id="project-list-title">项目档案</h2>
+        <p>按最近整理顺序</p>
       </div>
-    ) : (
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((project) => (
-          <ProjectCard
-            title={project.data.title}
-            description={project.data.description}
-            tech={project.data.tech}
-            github={project.data.github}
-            demo={project.data.demo}
-            image={project.data.image}
-          />
-        ))}
-      </div>
-    )}
-  </div>
+
+      {projects.length > 0 ? (
+        <div class="archive-project-grid">
+          {projects.map((project, index) => (
+            <ProjectCard
+              index={String(index + 1).padStart(2, '0')}
+              href={`/projects/${project.id}`}
+              title={project.data.title}
+              description={project.data.description}
+              tech={project.data.tech}
+              github={project.data.github}
+              demo={project.data.demo}
+              image={project.data.image}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">项目记录正在整理。</p>
+      )}
+    </section>
+  </main>
 
   <Footer />
 </Layout>

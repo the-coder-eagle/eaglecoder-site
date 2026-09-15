@@ -1,137 +1,108 @@
 ---
-import Nav from '../../components/Nav.astro';
-import Footer from '../../components/Footer.astro';
-import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import Footer from '../../components/Footer.astro';
+import Nav from '../../components/Nav.astro';
+import Layout from '../../layouts/Layout.astro';
 
-const allPosts = await getCollection('posts');
-const posts = allPosts
-  .filter((p) => !p.data.draft)
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 
-// 收集所有标签
 const tagCounts = new Map<string, number>();
-posts.forEach((p) => {
-  p.data.tags?.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1));
+posts.forEach((post) => {
+  post.data.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));
 });
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 ---
 
-<Layout title="文章" description="EagleCoder 的技术文章">
+<Layout title="文章" description="EagleCoder 的技术文章与学习复盘">
   <Nav />
 
-  <div class="max-w-5xl mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold mb-2">文章</h1>
-    <p class="mb-8" style="color: var(--color-text-secondary);">记录学习经验和技术分享。</p>
-
-    <!-- 标签过滤 -->
-    {tagCounts.size > 0 && (
-      <div id="tag-filters" class="flex flex-wrap gap-2 mb-8">
-        <button
-          data-tag=""
-          class="tag-filter-btn text-xs px-2.5 py-1 rounded-full border transition-colors cursor-pointer"
-          style="background: var(--color-primary); color: white; border-color: var(--color-primary);"
-        >
-          全部 ({posts.length})
-        </button>
-        {[...tagCounts.entries()].sort((a, b) => b[1] - a[1]).map(([tag, count]) => (
-          <button
-            data-tag={tag}
-            class="tag-filter-btn text-xs px-2.5 py-1 rounded-full border transition-colors cursor-pointer"
-            style="background: transparent; color: var(--color-text-secondary); border-color: var(--color-border);"
-          >
-            {tag} ({count})
-          </button>
-        ))}
+  <main id="main-content" class="archive-page">
+    <header class="site-container archive-header">
+      <p class="eyebrow"><span>01 / NOTES</span><span>{posts.length} ENTRIES</span></p>
+      <div class="archive-title-row">
+        <h1>文章与<br /><em>学习复盘</em></h1>
+        <p>记录为什么这样做、哪里出了错，以及下次可以复用的方法。</p>
       </div>
-    )}
+    </header>
 
-    <!-- 文章列表 -->
-    <div id="posts-grid" class="grid gap-4">
-      {posts.map((post) => (
-        <a
-          href={`/posts/${post.id}`}
-          data-tags={post.data.tags?.join(',') || ''}
-          class="post-card block p-5 rounded-lg border transition-all hover:shadow-md fade-in"
-          style="border-color: var(--color-border); background: var(--color-bg-secondary);"
-        >
-          <div class="flex items-baseline gap-3 mb-1 flex-wrap">
-            <time class="text-xs font-mono" style="color: var(--color-text-secondary);">
-              {post.data.publishedAt.toISOString().slice(0, 10)}
-            </time>
-            {post.data.tags?.map((tag) => (
-              <span
-                class="text-xs px-2 py-0.5 rounded-full"
-                style="background: var(--color-bg); color: var(--color-primary);"
-              >
-                {tag}
-              </span>
+    <section class="site-container archive-content" aria-labelledby="post-list-title">
+      <div class="filter-bar">
+        <h2 id="post-list-title">全部文章</h2>
+        {tags.length > 0 && (
+          <div id="tag-filters" class="tag-filters" aria-label="按标签筛选文章">
+            <button class="tag-filter active" type="button" data-tag="" aria-pressed="true">
+              全部 <span>{posts.length}</span>
+            </button>
+            {tags.map(([tag, count]) => (
+              <button class="tag-filter" type="button" data-tag={tag} aria-pressed="false">
+                {tag} <span>{count}</span>
+              </button>
             ))}
           </div>
-          <h2 class="font-semibold text-lg">{post.data.title}</h2>
-          <p class="text-sm mt-1" style="color: var(--color-text-secondary);">{post.data.description}</p>
-        </a>
-      ))}
-    </div>
+        )}
+      </div>
 
-    <p id="no-posts-msg" style="display:none; color: var(--color-text-secondary);">这个分类下还没有文章。</p>
-  </div>
+      <div id="posts-grid" class="article-list">
+        {posts.map((post, index) => (
+          <a class="article-row post-card" href={`/posts/${post.id}`} data-tags={post.data.tags.join(',')}>
+            <span class="article-number">{String(index + 1).padStart(2, '0')}</span>
+            <div class="article-copy">
+              <div class="article-meta">
+                <time datetime={post.data.publishedAt.toISOString()}>{post.data.publishedAt.toISOString().slice(0, 10)}</time>
+                {post.data.tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+              </div>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+            </div>
+            <span class="article-arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+
+      <p id="no-posts-msg" class="empty-state" hidden>这个标签下还没有文章。</p>
+    </section>
+  </main>
 
   <Footer />
 </Layout>
 
 <script>
   function setupTagFilter() {
-    const buttons = document.querySelectorAll('.tag-filter-btn');
-    const cards = document.querySelectorAll('.post-card');
-    const noMsg = document.getElementById('no-posts-msg');
-
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.tag-filter');
+    const cards = document.querySelectorAll<HTMLElement>('.post-card');
+    const emptyMessage = document.querySelector<HTMLElement>('#no-posts-msg');
     if (!buttons.length || !cards.length) return;
 
-    // 读取 URL 参数，初始化选中状态
-    const params = new URLSearchParams(window.location.search);
-    const initialTag = params.get('tag') || '';
-
-    function applyFilter(tag: string) {
+    const applyFilter = (tag: string) => {
       let visibleCount = 0;
+
       cards.forEach((card) => {
-        const tags = (card.getAttribute('data-tags') || '').split(',');
-        const match = !tag || tags.includes(tag);
-        (card as HTMLElement).style.display = match ? '' : 'none';
-        if (match) visibleCount++;
+        const tags = (card.dataset.tags ?? '').split(',').filter(Boolean);
+        const matches = !tag || tags.includes(tag);
+        card.hidden = !matches;
+        if (matches) visibleCount += 1;
       });
 
-      if (noMsg) {
-        (noMsg as HTMLElement).style.display = visibleCount === 0 ? '' : 'none';
-      }
-
-      // 更新按钮样式
-      buttons.forEach((btn) => {
-        const btnTag = btn.getAttribute('data-tag') || '';
-        const isActive = btnTag === tag;
-        (btn as HTMLElement).style.background = isActive ? 'var(--color-primary)' : 'transparent';
-        (btn as HTMLElement).style.color = isActive ? 'white' : 'var(--color-text-secondary)';
-        (btn as HTMLElement).style.borderColor = isActive ? 'var(--color-primary)' : 'var(--color-border)';
+      buttons.forEach((button) => {
+        const isActive = (button.dataset.tag ?? '') === tag;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
       });
 
-      // 更新 URL
+      if (emptyMessage) emptyMessage.hidden = visibleCount > 0;
+
       const url = new URL(window.location.href);
-      if (tag) {
-        url.searchParams.set('tag', tag);
-      } else {
-        url.searchParams.delete('tag');
-      }
-      window.history.replaceState({}, '', url.toString());
-    }
+      tag ? url.searchParams.set('tag', tag) : url.searchParams.delete('tag');
+      window.history.replaceState({}, '', url);
+    };
 
-    buttons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const tag = btn.getAttribute('data-tag') || '';
-        applyFilter(tag);
-      });
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => applyFilter(button.dataset.tag ?? ''));
     });
 
-    // 初始应用
-    applyFilter(initialTag);
+    applyFilter(new URLSearchParams(window.location.search).get('tag') ?? '');
   }
 
   setupTagFilter();

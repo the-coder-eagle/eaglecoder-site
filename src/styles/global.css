@@ -219,6 +219,50 @@ html.dark .theme-light { display: inline; }
 .empty-state { padding: 2rem; border: 1px dashed var(--color-border); color: var(--color-text-secondary); }
 .empty-state.dark { color: #d9d0df; }
 
+/* ===== 内容目录页 ===== */
+.archive-page { min-height: 70vh; }
+.archive-header { padding-block: clamp(4rem, 9vw, 7.5rem) clamp(3rem, 7vw, 5.5rem); }
+.archive-title-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.7fr); gap: 4rem; align-items: end; }
+.archive-title-row h1 { margin: 0; font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 6.3rem); font-weight: 800; line-height: 0.98; letter-spacing: -0.065em; }
+.archive-title-row h1 em { color: var(--color-primary); font-style: normal; }
+.archive-title-row > p { margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--color-ink); color: var(--color-text-secondary); font-family: var(--font-serif); line-height: 1.85; }
+.archive-content { padding-bottom: clamp(5rem, 10vw, 8rem); }
+.filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 2rem; min-height: 76px; border-top: 1px solid var(--color-ink); border-bottom: 1px solid var(--color-border); }
+.filter-bar h2 { margin: 0; font-family: var(--font-serif); font-size: 1.25rem; }
+.filter-bar > p { color: var(--color-text-secondary); font: 0.68rem var(--font-mono); text-transform: uppercase; }
+.tag-filters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.45rem; padding-block: 0.75rem; }
+.tag-filter { padding: 0.5rem 0.7rem; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-secondary); font-size: 0.72rem; cursor: pointer; }
+.tag-filter span { margin-left: 0.3rem; color: inherit; font: 0.6rem var(--font-mono); }
+.tag-filter:hover, .tag-filter.active { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+.post-card[hidden], #no-posts-msg[hidden] { display: none; }
+
+.archive-project-grid { display: grid; grid-template-columns: repeat(2, 1fr); border-left: 1px solid var(--color-border); }
+.archive-project-card { display: flex; min-height: 380px; flex-direction: column; padding: clamp(1.4rem, 3vw, 2.1rem); border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: var(--color-surface); transition: background 0.2s ease, transform 0.2s ease; }
+.archive-project-card:hover { position: relative; z-index: 1; background: var(--color-surface-strong); box-shadow: var(--shadow-soft); transform: translateY(-3px); }
+.archive-project-meta { display: flex; justify-content: space-between; gap: 1rem; color: var(--color-primary); font: 0.62rem var(--font-mono); text-transform: uppercase; }
+.archive-project-card > img { width: 100%; height: 160px; margin-top: 1.5rem; border: 1px solid var(--color-border); object-fit: cover; }
+.archive-project-copy { margin-block: auto 1.8rem; padding-top: 3rem; }
+.archive-project-copy h3 { margin: 0 0 0.75rem; font-family: var(--font-serif); font-size: clamp(1.4rem, 3vw, 2rem); }
+.archive-project-copy p { margin: 0; color: var(--color-text-secondary); font-size: 0.88rem; line-height: 1.8; }
+.archive-project-links { display: flex; align-items: center; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border); font-size: 0.72rem; font-weight: 700; }
+.archive-project-links a:hover { color: var(--color-primary); }
+.archive-project-links .primary { display: flex; justify-content: space-between; flex: 1; color: var(--color-primary); }
+
+.docs-catalog { border-top: 1px solid var(--color-border); }
+.doc-category { display: grid; grid-template-columns: minmax(190px, 0.55fr) 1.45fr; border-bottom: 1px solid var(--color-border); }
+.doc-category > header { padding: 1.7rem 1rem 1.7rem 0; border-right: 1px solid var(--color-border); }
+.doc-category > header span { color: var(--color-primary); font: 0.65rem var(--font-mono); }
+.doc-category > header h3 { margin: 0.8rem 0 0.4rem; font-family: var(--font-serif); font-size: 1.35rem; }
+.doc-category > header small { color: var(--color-text-secondary); font: 0.65rem var(--font-mono); }
+.doc-category > div { padding-left: 1.5rem; }
+.doc-category > div > a { display: grid; grid-template-columns: 36px minmax(150px, 0.8fr) 1.2fr auto; gap: 1rem; align-items: center; min-height: 82px; padding: 0.9rem 0; border-bottom: 1px solid var(--color-border); }
+.doc-category > div > a:last-child { border-bottom: 0; }
+.doc-category > div > a > span { color: var(--color-primary); font: 0.62rem var(--font-mono); }
+.doc-category > div > a > strong { font-family: var(--font-serif); font-size: 1rem; }
+.doc-category > div > a > p { margin: 0; color: var(--color-text-secondary); font-size: 0.78rem; line-height: 1.55; }
+.doc-category > div > a > b { color: var(--color-primary); }
+.doc-category > div > a:hover strong { color: var(--color-primary); }
+
 /* ===== 页脚 ===== */
 .site-footer { margin-top: auto; border-top: 1px solid var(--color-border); background: var(--color-surface); }
 .footer-grid { display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding-block: 2.5rem; }
@@ -266,6 +310,9 @@ html.dark .theme-light { display: inline; }
   .project-grid { grid-template-columns: 1fr 1fr; }
   .start-section { grid-template-columns: 1fr 1.5fr; }
   .start-section > .eyebrow { grid-column: 1 / -1; }
+  .archive-title-row { grid-template-columns: 1fr 0.7fr; gap: 2.5rem; }
+  .doc-category > div > a { grid-template-columns: 36px 1fr auto; }
+  .doc-category > div > a > p { display: none; }
 }
 
 @media (max-width: 680px) {
@@ -292,6 +339,16 @@ html.dark .theme-light { display: inline; }
   .footer-grid { display: block; }
   .footer-meta { margin-top: 2rem; text-align: left; }
   .footer-links { justify-content: flex-start; }
+  .archive-title-row { grid-template-columns: 1fr; gap: 2rem; }
+  .archive-title-row h1 { font-size: clamp(2.8rem, 13vw, 4rem); }
+  .filter-bar { display: block; padding-block: 1rem; }
+  .tag-filters { justify-content: flex-start; }
+  .archive-project-grid { grid-template-columns: 1fr; }
+  .archive-project-card { min-height: 320px; }
+  .doc-category { grid-template-columns: 1fr; }
+  .doc-category > header { padding-right: 0; border-right: 0; }
+  .doc-category > div { padding-left: 0; }
+  .doc-category > div > a { grid-template-columns: 30px 1fr auto; min-height: 68px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
