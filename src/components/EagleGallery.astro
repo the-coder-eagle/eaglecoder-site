@@ -1,85 +1,20 @@
 ---
 import type { EagleGalleryItem } from '../data/eagle-gallery';
 
-interface Props {
-  items: EagleGalleryItem[];
-}
-
+interface Props { items: EagleGalleryItem[]; }
 const { items } = Astro.props;
-const [feature, tall, miniOne, miniTwo, ...rest] = items;
-const lower = rest.slice(0, 4);
-const rail = rest.slice(4);
 ---
-
-<section class="site-container home-section eagle-gallery-section" aria-labelledby="eagle-gallery-title">
-  <div class="section-heading eagle-gallery-heading">
-    <div>
-      <span>04 / EAGLE MOMENTS</span>
-      <h2 id="eagle-gallery-title">把学习放进生活里</h2>
-    </div>
-    <p>二十个小场景，记录一只小鹰如何读、写、调试，也如何在答案之间好好生活。</p>
-  </div>
-
-  <div class="eagle-collage-top">
-    <figure class="eagle-gallery-card eagle-gallery-card--feature">
-      <div class="eagle-gallery-media">
-        <img src={feature.src} width="960" height="960" alt={feature.alt} loading="eager" decoding="async" />
-      </div>
-      <figcaption>
-        <span>{feature.scene}</span>
-        <strong>{feature.title}</strong>
-        <p>{feature.note}</p>
-      </figcaption>
-    </figure>
-
-    <figure class="eagle-gallery-card eagle-gallery-card--tall">
-      <div class="eagle-gallery-media">
-        <img src={tall.src} width="960" height="960" alt={tall.alt} loading="eager" decoding="async" />
-      </div>
-      <figcaption>
-        <span>{tall.scene}</span>
-        <strong>{tall.title}</strong>
-      </figcaption>
-    </figure>
-
-    <div class="eagle-gallery-manifesto">
-      <span>FIELD NOTE / 001</span>
-      <p>每一次折返、调试和重新开始，都会让羽毛更有方向。</p>
-      <b aria-hidden="true">✦</b>
-    </div>
-
-    {[miniOne, miniTwo].map((item, index) => (
-      <figure class:list={['eagle-gallery-card', 'eagle-gallery-card--mini', `eagle-gallery-card--mini-${index + 1}`]}>
-        <div class="eagle-gallery-media">
-          <img src={item.src} width="960" height="960" alt={item.alt} loading="eager" decoding="async" />
-        </div>
-        <figcaption><span>{item.scene}</span><strong>{item.title}</strong></figcaption>
-      </figure>
-    ))}
-  </div>
-
-  <div class="eagle-collage-lower" aria-label="更多学习生活场景">
-    {lower.map((item, index) => (
-      <figure class:list={['eagle-gallery-card', `eagle-gallery-card--lower-${index + 1}`]}>
-        <div class="eagle-gallery-media">
-          <img src={item.src} width="960" height="960" alt={item.alt} loading="lazy" decoding="async" />
-        </div>
-        <figcaption><span>{item.scene}</span><strong>{item.title}</strong><p>{item.note}</p></figcaption>
-      </figure>
-    ))}
-  </div>
-
-  <div class="eagle-gallery-rail" aria-label="继续浏览鹰羽片段">
-    <div class="eagle-gallery-rail-label"><span>ON THE WAY</span><b>继续向下浏览 →</b></div>
-    <div class="eagle-gallery-rail-track">
-      {rail.map((item) => (
-        <figure class="eagle-gallery-card eagle-gallery-card--rail">
-          <div class="eagle-gallery-media">
-            <img src={item.src} width="960" height="960" alt={item.alt} loading="lazy" decoding="async" />
-          </div>
-          <figcaption><span>{item.scene}</span><strong>{item.title}</strong></figcaption>
-        </figure>
-      ))}
+<section class="site-container journal-album" aria-labelledby="album-title" data-pagefind-ignore>
+  <div class="journal-album-head">
+    <div><h2 id="album-title">代码之外的小相册</h2><p>小鹰也会出门、喝茶、看星星。<br />这些水彩插画，是这个网站的小小陪伴。</p></div>
+    <div class="journal-album-preview" aria-hidden="true">
+      {items.slice(15, 18).map(item => <img src={item.src} width="960" height="960" alt="" loading="lazy" decoding="async" />)}
     </div>
   </div>
+  <details>
+    <summary>翻开全部 {items.length} 张插画</summary>
+    <div class="journal-album-grid">
+      {items.map(item => <figure><img src={item.src} width="960" height="960" alt={item.alt} loading="lazy" decoding="async" /><figcaption>{item.title}</figcaption></figure>)}
+    </div>
+  </details>
 </section>

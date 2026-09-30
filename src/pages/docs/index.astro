@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Footer from '../../components/Footer.astro';
 import Nav from '../../components/Nav.astro';
 import Layout from '../../layouts/Layout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 
 const allDocs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
 const categories = new Map<string, typeof allDocs>();
@@ -17,13 +18,7 @@ allDocs.forEach((doc) => {
   <Nav />
 
   <main id="main-content" class="archive-page">
-    <header class="site-container archive-header">
-      <p class="eyebrow"><span>03 / LIBRARY</span><span>{allDocs.length} DOCUMENTS</span></p>
-      <div class="archive-title-row">
-        <h1>学习文档与<br /><em>参考手册</em></h1>
-        <p>把零散笔记整理成能再次使用的知识：短、清楚，并保留足够的上下文。</p>
-      </div>
-    </header>
+    <PageIntro title="学习文档" description="C 语言课程和项目参考，按章节收在这里。需要的时候，回来翻一翻。" label="书架 · 文档" scene={13}></PageIntro>
 
     <section class="site-container archive-content" aria-labelledby="docs-list-title">
       <div class="filter-bar">

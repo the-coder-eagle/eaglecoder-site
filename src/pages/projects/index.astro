@@ -4,6 +4,7 @@ import Footer from '../../components/Footer.astro';
 import Nav from '../../components/Nav.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import Layout from '../../layouts/Layout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 
 const projects = (await getCollection('projects')).sort((a, b) => b.data.order - a.data.order);
 ---
@@ -12,13 +13,7 @@ const projects = (await getCollection('projects')).sort((a, b) => b.data.order -
   <Nav />
 
   <main id="main-content" class="archive-page">
-    <header class="site-container archive-header">
-      <p class="eyebrow"><span>02 / BUILDS</span><span>{projects.length} PROJECTS</span></p>
-      <div class="archive-title-row">
-        <h1>项目与<br /><em>构建记录</em></h1>
-        <p>每个项目都是一次选择：解决什么问题，接受哪些约束，又从失败里带走什么。</p>
-      </div>
-    </header>
+    <PageIntro title="项目" description="放在这里的，都是动手做过的东西。点进去看看代码、过程和遇到的问题。" label="工作台 · 项目" scene={3}></PageIntro>
 
     <section class="site-container archive-content" aria-labelledby="project-list-title">
       <div class="filter-bar">

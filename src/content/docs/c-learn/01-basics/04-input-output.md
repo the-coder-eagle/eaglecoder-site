@@ -712,10 +712,10 @@ fgets(buffer, sizeof(buffer), stdin);  // fgets 最多读 sizeof(buffer)-1 个�
 
 ## 🔗 相关主题
 
-- 上一课：[运算符 — 加减乘除与比较](/learn/operators) — 用运算符处理输入的数据
-- 继续学习：[条件判断 if-else](/learn/if-else) — 根据输入决定程序走向
-- 继续学习：[字符串操作](/learn/strings) — fgets、gets 的替代方案详解
-- 继续学习：[文件操作](/learn/file-io) — 从文件读取输入，向文件写入输出
-- 继续学习：[新手避坑指南](/learn/common-mistakes) — scanf 的坑只是冰山一角
+- 上一课：[运算符 — 加减乘除与比较](/docs/operators) — 用运算符处理输入的数据
+- 继续学习：[条件判断 if-else](/docs/if-else) — 根据输入决定程序走向
+- 继续学习：[字符串操作](/docs/strings-intro) — fgets、gets 的替代方案详解
+- 继续学习：[文件操作](/docs/file-io-intro) — 从文件读取输入，向文件写入输出
+- 继续学习：[新手避坑指南](/docs/common-mistakes) — scanf 的坑只是冰山一角
 - 参考：[printf 完整文档](https://en.cppreference.com/w/c/io/fprintf)
 - 参考：[scanf 完整文档](https://en.cppreference.com/w/c/io/fscanf)

@@ -597,8 +597,8 @@ double e = 2.71828;    // double 不需要后缀
 
 ## 🔗 相关主题
 
-- 上一课：[第一个C程序 — Hello World 详解](/learn/hello-world)
-- 继续学习：[运算符 — 加减乘除与比较](/learn/operators) — 用运算符操作变量
-- 继续学习：[输入输出](/learn/input-output) — 用 scanf 读取用户输入到变量
-- 继续学习：[常量与const](/learn/constants) — 有些"变量"不应该变
+- 上一课：[第一个C程序 — Hello World 详解](/docs/hello-world)
+- 继续学习：[运算符 — 加减乘除与比较](/docs/operators) — 用运算符操作变量
+- 继续学习：[输入输出](/docs/input-output) — 用 scanf 读取用户输入到变量
+- 继续学习：常量与const（本站暂未收录） — 有些"变量"不应该变
 - 参考：[C语言基本数据类型详解](https://en.cppreference.com/w/c/language/type)

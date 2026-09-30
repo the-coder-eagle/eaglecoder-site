@@ -815,11 +815,11 @@ printf("年龄：%d\n", age);
 
 ## 🔗 相关主题
 
-- 回到基础：[第一个C程序 — Hello World详解](/learn/hello-world)
-- 回到基础：[变量与数据类型](/learn/variables-and-types)
-- 回到基础：[运算符](/learn/operators)
-- 回到基础：[输入输出](/learn/input-output)
-- 继续学习：[条件判断 if-else](/learn/if-else) — 更多 = 和 == 的实战场景
-- 继续学习：[循环 while / for](/learn/loops) — 避免死循环的更多技巧
-- 继续学习：[数组详解](/learn/arrays) — 彻底搞懂索引和越界
-- 继续学习：[字符串操作](/learn/strings) — strcmp 和其他字符串函数详解
+- 回到基础：[第一个C程序 — Hello World详解](/docs/hello-world)
+- 回到基础：[变量与数据类型](/docs/variables-and-types)
+- 回到基础：[运算符](/docs/operators)
+- 回到基础：[输入输出](/docs/input-output)
+- 继续学习：[条件判断 if-else](/docs/if-else) — 更多 = 和 == 的实战场景
+- 继续学习：[循环 while / for](/docs/loops) — 避免死循环的更多技巧
+- 继续学习：[数组详解](/docs/arrays-intro) — 彻底搞懂索引和越界
+- 继续学习：[字符串操作](/docs/strings-intro) — strcmp 和其他字符串函数详解
