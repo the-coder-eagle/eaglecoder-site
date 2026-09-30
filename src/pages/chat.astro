@@ -2,24 +2,19 @@
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Layout from '../layouts/Layout.astro';
+import PageIntro from '../components/PageIntro.astro';
 ---
 
 <Layout title="AI 助手" description="和 EagleCoder 聊天 — AI 驱动的个人助手">
   <Nav />
 
   <main id="main-content" class="interactive-page chat-page" data-pagefind-ignore>
-    <header class="site-container interactive-header">
-      <p class="eyebrow"><span>05 / AI COMPANION</span><span>ONLINE WORKSPACE</span></p>
-      <div>
-        <h1>把问题带来，<br /><em>把思路带走。</em></h1>
-        <p>这是一个了解本站内容与表达习惯的 AI 助手。它可以讨论代码、学习和项目，但重要结论仍值得你亲自验证。</p>
-      </div>
-    </header>
+    <PageIntro title="聊聊代码" description="一个用于讨论编程与学习的 AI 助手。回答可能有误，关键结论记得核对。" label="书桌旁 · AI 助手" scene={6}></PageIntro>
 
     <section class="site-container chat-stage" aria-label="AI 助手工作台">
       <aside class="chat-sidebar">
-        <div class="chat-mascot"><img src="/eagle-mascot-v2-512.png" width="240" height="240" alt="EagleCoder 像素鹰" /></div>
-        <p class="chat-sidebar-label">CONVERSATION NOTES</p>
+        <div class="chat-mascot"><img src="/eagle-gallery/eagle-scene-09.webp" width="960" height="960" alt="小鹰戴耳机整理代码片段的水彩插画" loading="lazy" /></div>
+        <p class="chat-sidebar-label">聊天前的小提醒</p>
         <ul>
           <li><span>01</span>描述你已经尝试过什么</li>
           <li><span>02</span>贴出最小的错误信息</li>
@@ -30,10 +25,9 @@ import Layout from '../layouts/Layout.astro';
       <div id="chat-app" class="chat-app">
         <div class="chat-app-header">
           <div>
-            <span class="chat-presence" aria-hidden="true"></span>
             <strong>EagleCoder AI</strong>
           </div>
-          <p>本地保存对话 · 支持流式回答</p>
+          <p>对话保存在当前浏览器</p>
         </div>
 
         <div class="chat-toolbar">
@@ -50,8 +44,8 @@ import Layout from '../layouts/Layout.astro';
 
         <div id="chat-messages" class="chat-messages" aria-live="polite">
           <div class="chat-empty">
-            <img src="/eagle-mascot-v2-128.png" width="72" height="72" alt="" />
-            <span>READY / 你好</span>
+            <img src="/eagle-gallery/eagle-scene-06.webp" width="960" height="960" alt="" loading="lazy" />
+            <span>你好呀</span>
             <h2>从一个具体问题开始</h2>
             <p>编程、学业、项目，或者只是梳理一个没想明白的念头。</p>
           </div>
@@ -139,7 +133,7 @@ import Layout from '../layouts/Layout.astro';
       if (isUser) {
         d.innerHTML = '<div class="chat-bubble-user" style="max-width:70%; padding:10px 14px; border-radius:16px 16px 4px 16px; background:var(--color-primary); color:white; font-size:14px; line-height:1.6; word-break:break-word;">' + esc(content) + '</div>';
       } else {
-        d.innerHTML = '<div style="width:32px; height:32px; flex-shrink:0;"><img src="/eagle-mascot-v2-128.png" width="32" height="32" style="object-fit:contain;" alt="EagleCoder"></div><div style="max-width:78%;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;"><span style="font-size:12px; font-weight:600; color:var(--color-primary);">EagleCoder</span><span style="font-size:10px; color:var(--color-text-secondary);">' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '</span></div><div class="chat-bubble-ai">' + md(content) + '</div></div>';
+        d.innerHTML = '<div style="width:32px; height:32px; flex-shrink:0;"><img src="/eagle-gallery/eagle-scene-06.webp" width="32" height="32" style="object-fit:contain;" alt="EagleCoder"></div><div style="max-width:78%;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;"><span style="font-size:12px; font-weight:600; color:var(--color-primary);">EagleCoder</span><span style="font-size:10px; color:var(--color-text-secondary);">' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '</span></div><div class="chat-bubble-ai">' + md(content) + '</div></div>';
       }
       messagesEl.appendChild(d);
       scrollBottom();
@@ -255,7 +249,7 @@ import Layout from '../layouts/Layout.astro';
       clearBtn.addEventListener('click', function() {
         chatHistory = [];
         localStorage.removeItem(HISTORY_KEY);
-        messagesEl.innerHTML = '<div class="chat-empty"><img src="/eagle-mascot-v2-128.png" width="72" height="72" alt=""><span>READY / 已清空</span><h2>重新开始吧</h2><p>从一个具体问题开始，会更容易得到有用的回答。</p></div>';
+        messagesEl.innerHTML = '<div class="chat-empty"><img src="/eagle-gallery/eagle-scene-06.webp" width="72" height="72" alt=""><span>READY / 已清空</span><h2>重新开始吧</h2><p>从一个具体问题开始，会更容易得到有用的回答。</p></div>';
       });
     }
   })();

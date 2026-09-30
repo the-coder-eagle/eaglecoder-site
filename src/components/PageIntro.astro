@@ -1,0 +1,26 @@
+---
+import { eagleGallery } from '../data/eagle-gallery';
+
+interface Props {
+  title: string;
+  description: string;
+  label: string;
+  scene: number;
+}
+
+const { title, description, label, scene } = Astro.props;
+const illustration = eagleGallery[scene - 1];
+---
+
+<header class="site-container page-intro">
+  <div class="page-intro-copy">
+    <p class="eyebrow">{label}</p>
+    <h1>{title}</h1>
+    <p>{description}</p>
+    {Astro.slots.has('default') && <div class="page-intro-actions"><slot /></div>}
+  </div>
+  <figure class="page-intro-art">
+    <img src={illustration.src} width="960" height="960" alt={illustration.alt} decoding="async" />
+    <figcaption>{illustration.title} · 小鹰手记</figcaption>
+  </figure>
+</header>

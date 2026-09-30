@@ -3,30 +3,19 @@
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Layout from '../../layouts/Layout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 ---
 
 <Layout title="排行榜" description="每日一题排行榜">
   <Nav />
 
   <main id="main-content" class="interactive-page challenge-archive-page" data-pagefind-ignore>
-    <header class="site-container interactive-header">
-      <p class="eyebrow"><span>04 / DAILY CHALLENGE</span><span>SCOREBOARD</span></p>
-      <div>
-        <h1>让每次提交，<br /><em>留下刻度。</em></h1>
-        <div class="challenge-header-side">
-          <p>汇总每位挑战者的最高成绩。排名是阶段性的，更重要的是下一次提交比上一次更清楚。</p>
-          <nav aria-label="排行榜辅助导航">
-            <a href="/challenge">今日题目</a>
-            <a href="/challenge/history">历史题目</a>
-          </nav>
-        </div>
-      </div>
-    </header>
+    <PageIntro title="成绩榜" description="看看大家的最高成绩，也记录自己每一次练习的进展。" label="练习本 · 排行榜" scene={12}><a href="/challenge">今日题目</a><a href="/challenge/history">历史题目</a></PageIntro>
 
     <section class="site-container leaderboard-stage" aria-labelledby="leaderboard-title">
       <div class="leaderboard-toolbar">
         <div>
-          <span>LIVE RANKING</span>
+          <span>练习记录</span>
           <h2 id="leaderboard-title">成绩榜</h2>
         </div>
         <div class="leaderboard-tabs" id="tabs" role="tablist" aria-label="排行榜范围">

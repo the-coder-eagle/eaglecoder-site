@@ -731,8 +731,8 @@ if (a > 5 && b < 10)   // && 才是逻辑与，表达"两个条件都满足"
 
 ## 🔗 相关主题
 
-- 上一课：[变量与数据类型](/learn/variables-and-types) — 运算符操作的"原材料"
-- 继续学习：[输入输出](/learn/input-output) — 让用户输入数据，用运算符处理
-- 继续学习：[条件判断](/learn/if-else) — 比较和逻辑运算符最常出现的地方
-- 继续学习：[位运算符](/learn/bitwise-operators) — 更底层的二进制位操作
+- 上一课：[变量与数据类型](/docs/variables-and-types) — 运算符操作的"原材料"
+- 继续学习：[输入输出](/docs/input-output) — 让用户输入数据，用运算符处理
+- 继续学习：[条件判断](/docs/if-else) — 比较和逻辑运算符最常出现的地方
+- 继续学习：[位运算符](/docs/bit-operations) — 更底层的二进制位操作
 - 参考：[C语言运算符优先级完整表](https://en.cppreference.com/w/c/language/operator_precedence)

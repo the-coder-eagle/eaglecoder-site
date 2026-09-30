@@ -5,140 +5,99 @@ import EagleGallery from '../components/EagleGallery.astro';
 import Nav from '../components/Nav.astro';
 import Layout from '../layouts/Layout.astro';
 import { eagleGallery } from '../data/eagle-gallery';
+import '../styles/journal.css';
 
-const allPosts = (await getCollection('posts'))
-  .filter((post) => !post.data.draft)
+const allPosts = (await getCollection('posts')).filter((post) => !post.data.draft)
   .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
-const posts = allPosts.slice(0, 3);
-
-const allProjects = (await getCollection('projects')).sort((a, b) => b.data.order - a.data.order);
-const projects = allProjects.filter((project) => project.data.featured).slice(0, 3);
+const projects = (await getCollection('projects')).sort((a, b) => b.data.order - a.data.order);
 const docs = await getCollection('docs');
-
-const stats = [
-  { value: String(allPosts.length).padStart(2, '0'), label: '篇公开文章' },
-  { value: String(allProjects.length).padStart(2, '0'), label: '个项目记录' },
-  { value: String(docs.length).padStart(2, '0'), label: '份学习文档' },
-];
+const hero = eagleGallery[13];
+const pause = eagleGallery[5];
 ---
-
-<Layout title="首页" description="EagleCoder 的个人技术花园：记录软件工程学习、项目实践与方法沉淀。">
+<Layout title="小鹰手记" description="我是 EagleCoder，南京大学软件工程学生。在这里写学习笔记、做项目，也记录写代码时遇到的问题。">
   <Nav />
-
-  <main id="main-content">
-    <section class="home-hero">
-      <div class="home-hero-backdrop" aria-hidden="true"></div>
-      <img class="home-hero-corner home-hero-corner--top" src="/botanical-corner-v1.png" width="1374" height="1145" alt="" aria-hidden="true" />
-      <div class="site-container hero-grid">
-        <div class="hero-copy fade-in">
-          <p class="eyebrow"><span>南京大学 · 软件工程</span><span>个人技术花园</span></p>
-          <h1>把学习变成<br /><em>可以检索的作品。</em></h1>
-          <p class="hero-intro">
-            我是 EagleCoder。这里收纳代码实践、项目复盘与仍在生长的想法——先把问题讲清楚，再把答案做出来。
-          </p>
-          <div class="hero-tags" aria-label="关注主题">
-            <span>代码实践</span>
-            <span>项目复盘</span>
-            <span>方法沉淀</span>
-          </div>
-          <div class="hero-actions">
-            <a class="button button-primary" href="/posts">开始阅读 <span aria-hidden="true">↗</span></a>
-            <a class="button button-secondary" href="/projects">浏览项目 <span aria-hidden="true">→</span></a>
-          </div>
+  <main id="main-content" class="journal-home">
+    <section class="site-container journal-hero" aria-labelledby="home-title">
+      <div>
+        <p class="journal-greeting">你好，我是 EagleCoder。欢迎来坐坐。</p>
+        <h1 id="home-title">写写代码，<br /><span>也记记生活。</span></h1>
+        <p class="journal-intro">南京大学软件工程在读。最熟悉 C，也在学 Python 和 Spring Boot。这里放着我的学习笔记、动手做过的项目，还有那些卡住以后终于想明白的事。</p>
+        <div class="journal-actions">
+          <a class="button button-primary" href="/posts">翻开手记 <span aria-hidden="true">↗</span></a>
+          <a class="journal-link" href="/about">多认识我一点</a>
         </div>
-
-        <aside class="hero-aside fade-in" aria-label="站点简介">
-          <div class="hero-portrait">
-            <span class="portrait-index">EC / 001</span>
-            <img src="/eagle-hero-v2.png" width="1024" height="1536" alt="被花朵环绕的娘化白头海雕水彩插画" />
-            <span class="portrait-caption">CURIOUS BY DEFAULT</span>
-          </div>
-          <p><span>当前坐标</span>南京</p>
-          <p><span>关注主题</span>软件工程 / AI / Web</p>
-        </aside>
+        <p class="journal-location"><i aria-hidden="true"></i>南京 · 软件工程 · 还在慢慢学</p>
       </div>
-
-      <div class="site-container hero-stats" aria-label="站点内容统计">
-        {stats.map((stat) => (
-          <div><strong>{stat.value}</strong><span>{stat.label}</span></div>
-        ))}
-        <p>最后更新由内容本身决定，<br />不为日更而日更。</p>
-      </div>
+      <figure class="journal-art">
+        <img class="journal-art-main" src={hero.src} width="960" height="960" alt={hero.alt} fetchpriority="high" />
+        <figcaption>树下翻开一页，今天也有新的发现。</figcaption>
+        <div class="journal-inset" aria-hidden="true">
+          <i class="journal-tape"></i>
+          <img src={pause.src} width="960" height="960" alt="" decoding="async" />
+          <span>写累了，喝杯茶。</span>
+        </div>
+      </figure>
     </section>
 
-    <section class="site-container home-section notes-section">
-      <img class="notes-flourish" src="/feather-flourish-v1.png" width="1374" height="1145" alt="" aria-hidden="true" />
-      <div class="section-heading">
-        <div><span>01 / NOTES</span><h2>最近写下</h2></div>
-        <a href="/posts">全部文章 <span aria-hidden="true">→</span></a>
-      </div>
+    <nav class="site-container journal-index" aria-label="手记目录">
+      <a href="/posts"><span>{allPosts.length}</span>篇文章</a>
+      <a href="/projects"><span>{projects.length}</span>个项目</a>
+      <a href="/docs"><span>{docs.length}</span>份文档</a>
+      <p>随手翻翻，希望有一页对你有用。</p>
+    </nav>
 
-      {posts.length > 0 ? (
+    <section class="site-container journal-section journal-notes" aria-labelledby="latest-title">
+      <div>
+        <div class="journal-heading">
+          <div><small>书桌上的新页</small><h2 id="latest-title">最近写下的</h2></div>
+          <a href="/posts">全部文章 →</a>
+        </div>
         <div class="article-list">
-          {posts.map((post, index) => (
+          {allPosts.slice(0, 3).map((post) => (
             <a class="article-row" href={`/posts/${post.id}`}>
-              <span class="article-number">{String(index + 1).padStart(2, '0')}</span>
               <div class="article-copy">
-                <div class="article-meta">
-                  <time datetime={post.data.publishedAt.toISOString()}>
-                    {post.data.publishedAt.toISOString().slice(0, 10)}
-                  </time>
-                  {post.data.tags?.slice(0, 2).map((tag) => <span>{tag}</span>)}
-                </div>
-                <h3>{post.data.title}</h3>
-                <p>{post.data.description}</p>
+                <div class="article-meta"><time datetime={post.data.publishedAt.toISOString()}>{post.data.publishedAt.toISOString().slice(0, 10)}</time>{post.data.tags.slice(0, 2).map(tag => <span>{tag}</span>)}</div>
+                <h3>{post.data.title}</h3><p>{post.data.description}</p>
               </div>
               <span class="article-arrow" aria-hidden="true">↗</span>
             </a>
           ))}
         </div>
-      ) : (
-        <p class="empty-state">第一篇文章正在路上。</p>
-      )}
+        {allPosts.length === 0 && <p class="empty-state">第一篇文章正在整理。</p>}
+      </div>
+      <figure class="journal-margin">
+        <img src={eagleGallery[0].src} width="960" height="960" alt={eagleGallery[0].alt} loading="lazy" decoding="async" />
+        <figcaption>笔记先写下来，再慢慢整理。<br />有些答案，是回头看时才发现的。<br /><a href="/docs">去书架找一找 →</a></figcaption>
+      </figure>
     </section>
 
-    <EagleGallery items={eagleGallery} />
-
-    <section class="project-band project-band--botanical">
-      <img class="project-band-sprig" src="/golden-sprig-v1.png" width="1024" height="1536" alt="" aria-hidden="true" />
-      <div class="site-container home-section">
-        <div class="section-heading light">
-          <div><span>02 / BUILDS</span><h2>选择、构建、复盘</h2></div>
-          <a href="/projects">项目档案 <span aria-hidden="true">→</span></a>
+    <section class="journal-projects" aria-labelledby="projects-title">
+      <div class="site-container journal-project-layout">
+        <figure class="journal-project-picture">
+          <img src={eagleGallery[1].src} width="960" height="960" alt={eagleGallery[1].alt} loading="lazy" decoding="async" />
+          <figcaption>电脑旁边，一点一点把想法做出来。</figcaption>
+        </figure>
+        <div>
+          <div class="journal-heading"><div><small>最近在折腾什么</small><h2 id="projects-title">动手做的东西</h2></div><a href="/projects">项目目录 →</a></div>
+          {projects.filter(project => project.data.featured).slice(0, 3).map(project => (
+            <article class="journal-project-entry">
+              <span>{project.data.tech.slice(0, 3).join(' / ')}</span>
+              <h3><a href={`/projects/${project.id}`}>{project.data.title}</a></h3>
+              <p>{project.data.description}</p><a href={`/projects/${project.id}`}>看看怎么做的 ↗</a>
+            </article>
+          ))}
         </div>
-
-        {projects.length > 0 ? (
-          <div class="project-grid">
-            {projects.map((project, index) => (
-              <article class="project-card">
-                <div class="project-card-top">
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  <span>{project.data.tech.slice(0, 2).join(' + ')}</span>
-                </div>
-                <h3>{project.data.title}</h3>
-                <p>{project.data.description}</p>
-                <a href={`/projects/${project.id}`}>阅读项目记录 <span aria-hidden="true">↗</span></a>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p class="empty-state dark">项目记录正在整理。</p>
-        )}
       </div>
     </section>
 
-    <section class="site-container start-section start-section--botanical">
-      <p class="eyebrow"><span>03 / START HERE</span></p>
-      <div>
-        <h2>从一份文档，<br />或一道题开始。</h2>
-        <p>知识不必一次学完。选一个足够小的问题，留下能复用的答案。</p>
-      </div>
-      <div class="start-links">
-        <a href="/docs"><span>学习文档</span><strong>整理过的方法与参考</strong><b aria-hidden="true">→</b></a>
-        <a href="/challenge"><span>每日一题</span><strong>用代码保持手感</strong><b aria-hidden="true">→</b></a>
+    <section class="site-container journal-section" aria-labelledby="desk-title">
+      <div class="journal-heading"><div><small>继续往下翻</small><h2 id="desk-title">书架与练习本</h2></div></div>
+      <div class="journal-desk">
+        <a class="journal-desk-link" href="/docs"><div><span>{docs.length} 份学习文档</span><h3>需要的时候，回来查</h3><p>C 语言课程与项目参考，按章节放好。<br />打开文档目录 →</p></div><img src={eagleGallery[12].src} width="960" height="960" alt="" loading="lazy" decoding="async" /></a>
+        <a class="journal-desk-link" href="/challenge"><div><span>C / JavaScript / Python</span><h3>今天也写一道题</h3><p>读题、写代码、跑测试。<br />打开练习本 →</p></div><img src={eagleGallery[10].src} width="960" height="960" alt="" loading="lazy" decoding="async" /></a>
       </div>
     </section>
+    <EagleGallery items={eagleGallery} />
   </main>
-
   <Footer />
 </Layout>

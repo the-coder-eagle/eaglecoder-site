@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Footer from '../../components/Footer.astro';
 import Nav from '../../components/Nav.astro';
 import Layout from '../../layouts/Layout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 
 const posts = (await getCollection('posts'))
   .filter((post) => !post.data.draft)
@@ -19,13 +20,7 @@ const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
   <Nav />
 
   <main id="main-content" class="archive-page">
-    <header class="site-container archive-header">
-      <p class="eyebrow"><span>01 / NOTES</span><span>{posts.length} ENTRIES</span></p>
-      <div class="archive-title-row">
-        <h1>文章与<br /><em>学习复盘</em></h1>
-        <p>记录为什么这样做、哪里出了错，以及下次可以复用的方法。</p>
-      </div>
-    </header>
+    <PageIntro title="文章" description="学到的新东西、踩过的坑，还有这个网站的改造记录。" label="手记目录 · 文章" scene={1}></PageIntro>
 
     <section class="site-container archive-content" aria-labelledby="post-list-title">
       <div class="filter-bar">

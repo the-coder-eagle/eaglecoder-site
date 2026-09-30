@@ -10,11 +10,11 @@ const pathname = Astro.url.pathname;
   <nav class="site-container nav-shell" aria-label="主导航">
     <a class="brand" href="/" aria-label="EagleCoder 首页">
       <span class="brand-mark" aria-hidden="true">
-        <img src="/eagle-hero-v2.png" width="1024" height="1536" alt="" />
+        <img src="/eagle-gallery/eagle-scene-14.webp" width="960" height="960" alt="" />
       </span>
       <span>
         <strong>EagleCoder</strong>
-        <small>LEARN · BUILD · WRITE</small>
+        <small>小鹰手记</small>
       </span>
     </a>
 
@@ -27,7 +27,7 @@ const pathname = Astro.url.pathname;
             class:list={['nav-link', { active: isActive, accent: item.accent }]}
             aria-current={isActive ? 'page' : undefined}
           >
-            <span>{item.index}</span>{item.label}
+            {item.label}
           </a>
         );
       })}
@@ -65,7 +65,6 @@ const pathname = Astro.url.pathname;
             class:list={['mobile-menu-link', { active: isActive, accent: item.accent }]}
             aria-current={isActive ? 'page' : undefined}
           >
-            <span>{item.index}</span>
             <strong>{item.label}</strong>
           </a>
         );

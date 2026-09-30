@@ -527,7 +527,7 @@ int main() {
 
 ## 🔗 相关主题
 
-- 继续学习：[变量与数据类型](/learn/variables-and-types) — 如何存储和操作数据
-- 继续学习：[输入输出](/learn/input-output) — printf 和 scanf 的更多用法
-- 继续学习：[新手避坑指南](/learn/common-mistakes) — 提前避开新手常见的坑
-- 参考：[C语言编译过程详解](/learn/compilation) — 从源代码到可执行文件的完整旅程
+- 继续学习：[变量与数据类型](/docs/variables-and-types) — 如何存储和操作数据
+- 继续学习：[输入输出](/docs/input-output) — printf 和 scanf 的更多用法
+- 继续学习：[新手避坑指南](/docs/common-mistakes) — 提前避开新手常见的坑
+- 参考：C语言编译过程详解（本站暂未收录） — 从源代码到可执行文件的完整旅程

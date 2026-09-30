@@ -3,6 +3,7 @@
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Layout from '../../layouts/Layout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 import { challenges, type Challenge } from '../../data/challenges';
 
 const difficultyLabel: Record<Challenge['difficulty'], string> = {
@@ -24,19 +25,7 @@ const difficulties = ['easy', 'medium', 'hard'] as const;
   <Nav />
 
   <main id="main-content" class="interactive-page challenge-archive-page" data-pagefind-ignore>
-    <header class="site-container interactive-header">
-      <p class="eyebrow"><span>04 / DAILY CHALLENGE</span><span>ARCHIVE</span></p>
-      <div>
-        <h1>回看题目，<br /><em>看见积累。</em></h1>
-        <div class="challenge-header-side">
-          <p>全部 {challenges.length} 道题按难度归档。回到做过的题，再写一次，往往比刷一道新题更有收获。</p>
-          <nav aria-label="历史题目辅助导航">
-            <a href="/challenge">今日题目</a>
-            <a href="/challenge/leaderboard">排行榜</a>
-          </nav>
-        </div>
-      </div>
-    </header>
+    <PageIntro title="历史题目" description="以前的题目都收在这里，可以按难度找到想练习的内容。" label="练习本 · 题目目录" scene={9}><a href="/challenge">今日题目</a><a href="/challenge/leaderboard">排行榜</a></PageIntro>
 
     <section class="site-container challenge-archive-content" aria-labelledby="challenge-list-title">
       <div class="challenge-stats" aria-label="题目难度统计">
@@ -44,17 +33,17 @@ const difficulties = ['easy', 'medium', 'hard'] as const;
           <div data-difficulty={diff}>
             <span>{difficultyLabel[diff]}</span>
             <strong>{String(counts[diff]).padStart(2, '0')}</strong>
-            <small>PROBLEMS</small>
+            <small>道题</small>
           </div>
         ))}
       </div>
 
       <div class="challenge-list-heading">
         <div>
-          <span>PROBLEM INDEX</span>
+          <span>练习目录</span>
           <h2 id="challenge-list-title">题目目录</h2>
         </div>
-        <p>{challenges.length} ENTRIES / CONTINUOUSLY UPDATED</p>
+        <p>{challenges.length} 道题</p>
       </div>
 
       <div class="challenge-card-grid">

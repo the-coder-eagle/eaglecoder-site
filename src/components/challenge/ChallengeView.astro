@@ -13,7 +13,7 @@ const { challenge } = Astro.props;
   <!-- 题目标题 + 难度 -->
   <div class="mb-6">
     <div class="flex items-center gap-3 mb-2 flex-wrap">
-      <h1 class="text-2xl font-bold">{challenge.title}</h1>
+      <h2 class="text-2xl font-bold">{challenge.title}</h2>
       <span
         class={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
           challenge.difficulty === 'easy'

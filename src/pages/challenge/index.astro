@@ -3,6 +3,7 @@
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Layout from '../../layouts/Layout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 import ChallengeView from '../../components/challenge/ChallengeView.astro';
 import CodeEditor from '../../components/challenge/CodeEditor.astro';
 import LanguageSelector from '../../components/challenge/LanguageSelector.astro';
@@ -20,23 +21,7 @@ const showBackLink = !!idParam;
   <Nav />
 
   <main id="main-content" class="interactive-page challenge-page" data-pagefind-ignore>
-    <header class="site-container interactive-header challenge-header">
-      <p class="eyebrow">
-        <span>04 / DAILY CHALLENGE</span>
-        <span>{idParam ? `ARCHIVE #${idParam}` : new Date().toISOString().slice(0, 10)}</span>
-      </p>
-      <div>
-        <h1>让思考<br /><em>保持手感。</em></h1>
-        <div class="challenge-header-side">
-          <p>读懂约束，写下代码，再让测试用例说话。支持 C、JavaScript 与 Python。</p>
-          <nav aria-label="每日一题辅助导航">
-            {showBackLink && <a href="/challenge">今日题目</a>}
-            <a href="/challenge/history">历史题目</a>
-            <a href="/challenge/leaderboard">排行榜</a>
-          </nav>
-        </div>
-      </div>
-    </header>
+    <PageIntro title="每日一题" description="支持 C、JavaScript 和 Python。读完题目，在右侧写代码，再交给测试用例检查。" label="练习本 · 每日一题" scene={11}>{showBackLink && <a href="/challenge">今日题目</a>}<a href="/challenge/history">历史题目</a><a href="/challenge/leaderboard">排行榜</a></PageIntro>
 
     <section class="site-container challenge-workbench">
       <div class="challenge-problem fade-in">
@@ -45,7 +30,7 @@ const showBackLink = !!idParam;
 
       <div class="challenge-editor-panel">
         <div class="challenge-editor-sticky">
-          <div class="challenge-editor-label"><span>CODE / SOLUTION</span><span>AUTO SAVE: LOCAL</span></div>
+          <div class="challenge-editor-label"><span>你的代码</span><span>在当前浏览器暂存</span></div>
           <LanguageSelector active={defaultLang} />
 
           <CodeEditor language={defaultLang} initialCode={challenge.template[defaultLang]} />
@@ -125,7 +110,7 @@ const showBackLink = !!idParam;
 
           view.innerHTML = '<div style="margin-bottom:24px;">' +
             '<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">' +
-            '<h1 style="font-size:24px; font-weight:700;">'+esc(data.title)+'</h1>' +
+            '<h2 style="font-size:24px; font-weight:700;">'+esc(data.title)+'</h2>' +
             '<span class="text-xs px-2.5 py-0.5 rounded-full font-medium '+diffClass+'">'+diffLabel+'</span>' +
             '</div>' +
             '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">'+tagsHtml+'</div>' +
